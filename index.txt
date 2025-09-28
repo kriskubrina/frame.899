@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>frame.899 — media & light systems</title>
+  <meta name="description" content="frame.899 — поэтичные мультимедиа-инсталляции и визуальные системы на стыке искусства, технологий и света.">
+  <meta property="og:title" content="frame.899 — media & light systems">
+  <meta property="og:description" content="Поэтичные мультимедиа-инсталляции и визуальные системы на стыке искусства, технологий и света.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="" /> <!-- TODO: поставить превью 1200x630 -->
+  <meta name="theme-color" content="#0b0b0b">
+  <style>
+    :root{
+      --bg:#0b0b0b;
+      --fg:#e9e9e9;
+      --muted:#a7a7a7;
+      --accent:#e4e4e4;
+      --rule:#1a1a1a;
+      --grid:12px;
+      --maxw:980px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family:ui-sans-serif,system-ui,Inter,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6}
+    a{color:var(--fg);text-decoration:none;border-bottom:1px solid transparent;transition:border-color .2s ease}
+    a:hover{border-color:var(--fg)}
+    .wrap{max-width:var(--maxw);margin:0 auto;padding:calc(var(--grid)*6) calc(var(--grid)*3)}
+    header,footer{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .logo{font-weight:600;letter-spacing:.5px}
+    .logo b{font-weight:700}
+    .lang{display:flex;gap:10px;font-size:14px}
+    .lang button{background:transparent;color:var(--muted);border:0;cursor:pointer;padding:4px 8px;border-radius:6px}
+    .lang button.active{color:var(--fg);outline:1px solid var(--rule)}
+    .hero{margin:64px 0 28px 0}
+    .kicker{font-size:13px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase}
+    h1{font-size:40px;line-height:1.15;margin:8px 0 0 0;font-weight:600}
+    .lead{color:var(--muted);max-width:760px;margin-top:14px}
+    .cover{
+      margin:28px 0 52px 0;aspect-ratio:16/9;background:
+        radial-gradient(80% 120% at 10% 0%, #1b1b1b 0%, transparent 60%),
+        radial-gradient(80% 120% at 90% 100%, #141414 0%, transparent 60%),
+        linear-gradient(180deg,#0f0f0f, #0b0b0b);
+      border:1px solid var(--rule); border-radius:14px; position:relative; overflow:hidden;
+    }
+    .cover::after{
+      content:"";position:absolute;inset:0;
+      background:
+        radial-gradient(40% 20% at 30% 30%, rgba(255,255,255,.05) 0%, transparent 70%),
+        radial-gradient(25% 40% at 80% 70%, rgba(255,255,255,.04) 0%, transparent 70%);
+      mix-blend:screen; pointer-events:none;
+    }
+    section{padding:28px 0;border-top:1px solid var(--rule)}
+    h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px 0;color:var(--accent)}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;color:var(--muted)}
+    .card{
+      border:1px solid var(--rule);border-radius:12px;padding:18px;background:linear-gradient(180deg,#0e0e0e,#0b0b0b);
+    }
+    .pill{display:inline-flex;gap:10px;align-items:center;padding:6px 10px;border:1px solid var(--rule);border-radius:999px;color:var(--muted);font-size:13px}
+    .list{display:flex;flex-direction:column;gap:12px}
+    .credits{color:var(--muted);font-size:14px}
+    footer{margin-top:36px;border-top:1px solid var(--rule);padding-top:18px;color:var(--muted);font-size:14px}
+    .social{display:flex;flex-wrap:wrap;gap:14px}
+    .social a{border-color:transparent}
+    .cta{display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--rule);border-radius:10px}
+    .muted{color:var(--muted)}
+    .nowrap{white-space:nowrap}
+    .projects{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .prj{border:1px solid var(--rule);border-radius:12px;overflow:hidden}
+    .prj .thumb{aspect-ratio:16/10;background:#111}
+    .prj .meta{padding:12px}
+    .tag{display:inline-block;font-size:12px;color:var(--muted);border:1px solid var(--rule);padding:2px 8px;border-radius:999px;margin-right:6px}
+    @media (max-width:840px){
+      .grid{grid-template-columns:1fr}
+      .projects{grid-template-columns:1fr}
+      h1{font-size:30px}
+    }
+    /* micro-motion */
+    @keyframes subtle{from{transform:translateY(0)}50%{transform:translateY(-.8px)}to{transform:translateY(0)}}
+    .logo b{animation:subtle 4s ease-in-out infinite}
+    .blink::after{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#5cffc2;margin-left:8px;box-shadow:0 0 12px rgba(92,255,194,.5)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo blink">frame<b>899</b></div>
+      <nav class="lang" aria-label="language">
+        <button class="active" data-lang="ru">RU</button>
+        <button data-lang="en">EN</button>
+      </nav>
+    </header>
+
+    <main>
+      <!-- HERO -->
+      <div class="hero">
+        <div class="kicker" data-i18n="kicker">media & light systems</div>
+        <h1 data-i18n="h1">
+          Поэтичные мультимедиа-инсталляции и визуальные системы
+          на стыке искусства, технологий и света.
+        </h1>
+        <p class="lead" data-i18n="lead">
+          Мы работаем с пространством, памятью и вниманием зрителя.
+          Цифровое — как метафора памяти, технологии — как инструмент созерцания.
+        </p>
+      </div>
+
+      <!-- COVER / VISUAL -->
+      <div class="cover" aria-hidden="true" title="signature visual placeholder"></div>
+
+      <!-- STATEMENT -->
+      <section id="statement">
+        <h2 data-i18n="statement_title">Statement</h2>
+        <div class="grid">
+          <div>
+            <p data-i18n="statement_p1">
+              frame.899 проектирует визуальные системы и инсталляции, где свет, экран и звук становятся телом высказывания.
+              Нас интересуют пограничные состояния: между реальным и цифровым, между документом и сном.
+            </p>
+            <p data-i18n="statement_p2">
+              Мы объединяем художественную интуицию и инженерную точность, чтобы рождались образы,
+              которые «работают» на площадке: читаются, настраиваются под контекст, выдерживают реальное производство.
+            </p>
+          </div>
+          <div class="card">
+            <div class="mono">Specs</div>
+            <div class="list" style="margin-top:10px">
+              <div class="pill"><span>R&D →</span><span class="muted">TouchDesigner / Three.js / A-Frame / OSC</span></div>
+              <div class="pill"><span>CG →</span><span class="muted">Cinema4D+Redshift / After Effects / Marvelous</span></div>
+              <div class="pill"><span>Capture →</span><span class="muted">iPhone LiDAR/photogrammetry, Gaussian splats</span></div>
+              <div class="pill"><span>AI →</span><span class="muted">image/video gen, asset ops, style systems</span></div>
+              <div class="pill"><span>Prod →</span><span class="muted">pipeline, budgeting, show delivery</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- AUTHORS -->
+      <section id="about">
+        <h2 data-i18n="about_title">Авторы</h2>
+        <div class="grid">
+          <div>
+            <h3 style="margin:0 0 6px 0">Kristina Kubrina</h3>
+            <p class="muted" style="margin:0 0 10px 0" data-i18n="kk_role">
+              Продакшен-директор и медиа-художник (Кипр). Опыт: FIFA World Cup (Closing), AFC Asian Cup (Opening),
+              The Weeknd tour, Robert Wun, Phillip Lim, Milan Design Week. Руководит продакшеном,
+              собирает визуальные системы, отвечает за соответствие площадке и качеству.
+            </p>
+            <div class="social">
+              <a class="cta" href="https://www.linkedin.com/in/kristinakubrina/" target="_blank" rel="noopener">LinkedIn</a>
+              <span class="cta muted">@chris_kub (Telegram)</span>
+            </div>
+          </div>
+          <div>
+            <h3 style="margin:0 0 6px 0">Ivan Maksimov</h3>
+            <p class="muted" style="margin:0 0 10px 0" data-i18n="im_role">
+              CG-артист и архитектор. Связывает визуализацию и пространственный дизайн, отвечает за геометрию,
+              читаемость сцены и интеграцию медиа в архитектуру. Фокус — интерактивные и световые инсталляции.
+            </p>
+            <div class="social">
+              <!-- TODO: если есть ссылки Ивана — подставить -->
+              <span class="cta muted">portfolio — on request</span>
+            </div>
+          </div>
+        </div>
+        <p class="credits" style="margin-top:14px" data-i18n="note_ip">
+          Часть перечисленных крупных проектов выполнена в составе предыдущих команд; медиа-материалы не публикуются из-за прав ИС.
+        </p>
+      </section>
+
+      <!-- PROJECT SNAPSHOTS -->
+      <section id="projects">
+        <h2 data-i18n="proj_title">Проекты (выборка)</h2>
+        <div class="projects">
+          <article class="prj">
+            <div class="thumb" style="background:
+              linear-gradient(180deg,#101010,#0b0b0b),
+              radial-gradient(50% 50% at 50% 50%, rgba(255,255,255,.06) 0%, transparent 60%)"></div>
+            <div class="meta">
+              <div class="tag">installation / interactive</div>
+              <h4 style="margin:6px 0">My Cyprus Walk</h4>
+              <p class="muted" style="margin:4px 0 0 0" data-i18n="p_mycy">
+                Цифровая прогулка о памяти и первых точках соприкосновения с новой землёй. iPhone-сканы,
+                генеративные слои, звук. WebGL-сцены: A-Frame / Three.js.
+              </p>
+            </div>
+          </article>
+          <article class="prj">
+            <div class="thumb" style="background:
+              radial-gradient(70% 70% at 50% 30%, #111 0%, #0b0b0b 60%),
+              conic-gradient(from 0deg, #111, #0b0b0b)"></div>
+            <div class="meta">
+              <div class="tag">projection / outdoors</div>
+              <h4 style="margin:6px 0">Sea Spirits — White Rocks</h4>
+              <p class="muted" style="margin:4px 0 0 0" data-i18n="p_sea">
+                Небольшая аутдор-проекция на известняке под Лимассолом. Домашний проектор, AI-визуалы (Krea),
+                диалог с ландшафтом. 5-минутный эскиз.
+              </p>
+            </div>
+          </article>
+          <article class="prj">
+            <div class="thumb" style="background:
+              linear-gradient(180deg,#101010,#0b0b0b),
+              radial-gradient(45% 45% at 70% 30%, rgba(255,255,255,.05) 0%, transparent 70%)"></div>
+            <div class="meta">
+              <div class="tag">video art / flora</div>
+              <h4 style="margin:6px 0">Cyprus Flora — Sketches</h4>
+              <p class="muted" style="margin:4px 0 0 0" data-i18n="p_flora">
+                Серия видеоскетчей: Tulipa cypria, Gladiolus triphyllus, Dianthus cyprius. Срез остроты и хрупкости,
+                «наблюдающие» цветы, минималистичная графика.
+              </p>
+            </div>
+          </article>
+          <article class="prj">
+            <div class="thumb" style="background:
+              radial-gradient(60% 60% at 50% 50%, #121212 0%, #0b0b0b 60%)"></div>
+            <div class="meta">
+              <div class="tag">R&D / pipeline</div>
+              <h4 style="margin:6px 0">Live systems & sensing</h4>
+              <p class="muted" style="margin:4px 0 0 0" data-i18n="p_rnd">
+                TouchDesigner, сенсоры, depth/gyro-ввод, лёгкие пайплайны показа; стандарты нейминга/версирования для шоу-производства.
+              </p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- CONTACTS -->
+      <section id="contacts">
+        <h2 data-i18n="contacts_title">Контакты</h2>
+        <div class="grid">
+          <div class="list">
+            <div><span class="muted">Base:</span> Cyprus, Limassol</div>
+            <div>
+              <span class="muted">Email:</span>
+              <a href="mailto:hello@frame899.com">hello@frame899.com</a>
+              <!-- TODO: при отсутствии домена — временно заменить на персональную почту -->
+            </div>
+            <div>
+              <span class="muted">Instagram:</span>
+              <a href="https://instagram.com/" target="_blank" rel="noopener">instagram.com/&nbsp;<span class="muted">[указать @handle]</span></a>
+            </div>
+            <div>
+              <span class="muted">TikTok:</span>
+              <a href="https://tiktok.com/@" target="_blank" rel="noopener">tiktok.com/@<span class="muted">[указать handle]</span></a>
+            </div>
+            <div>
+              <span class="muted">Press / decks:</span> on request
+            </div>
+          </div>
+          <div class="card">
+            <div class="mono">Quick pitch</div>
+            <p style="margin:8px 0 0 0" data-i18n="pitch">
+              Мы делаем инсталляции и визуальные системы, которые читаются в реальном пространстве.
+              Придём с готовым продакшен-планом, обеспечим адаптацию под площадку, дадим варианты под бюджет.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div>© <span id="y"></span> frame.899</div>
+      <div class="social">
+        <a href="https://instagram.com/" target="_blank" rel="noopener" title="Instagram">Instagram</a>
+        <a href="https://tiktok.com/@" target="_blank" rel="noopener" title="TikTok">TikTok</a>
+        <a href="mailto:hello@frame899.com" class="nowrap">Email</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Year
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // EN/RU content
+    const dict = {
+      ru:{
+        kicker:"media & light systems",
+        h1:"Поэтичные мультимедиа-инсталляции и визуальные системы на стыке искусства, технологий и света.",
+        lead:"Мы работаем с пространством, памятью и вниманием зрителя. Цифровое — как метафора памяти, технологии — как инструмент созерцания.",
+        statement_title:"Statement",
+        statement_p1:"frame.899 проектирует визуальные системы и инсталляции, где свет, экран и звук становятся телом высказывания. Нас интересуют пограничные состояния: между реальным и цифровым, между документом и сном.",
+        statement_p2:"Мы объединяем художественную интуицию и инженерную точность, чтобы рождались образы, которые «работают» на площадке: читаются, настраиваются под контекст, выдерживают реальное производство.",
+        about_title:"Авторы",
+        kk_role:"Продакшен-директор и медиа-художник (Кипр). Опыт: FIFA World Cup (Closing), AFC Asian Cup (Opening), The Weeknd tour, Robert Wun, Phillip Lim, Milan Design Week. Руководит продакшеном, собирает визуальные системы, отвечает за соответствие площадке и качеству.",
+        im_role:"CG-артист и архитектор. Связывает визуализацию и пространственный дизайн, отвечает за геометрию, читаемость сцены и интеграцию медиа в архитектуру. Фокус — интерактивные и световые инсталляции.",
+        note_ip:"Часть перечисленных крупных проектов выполнена в составе предыдущих команд; медиа-материалы не публикуются из-за прав ИС.",
+        proj_title:"Проекты (выборка)",
+        p_mycy:"Цифровая прогулка о памяти и первых точках соприкосновения с новой землёй. iPhone-сканы, генеративные слои, звук. WebGL-сцены: A-Frame / Three.js.",
+        p_sea:"Небольшая аутдор-проекция на известняке под Лимассолом. Домашний проектор, AI-визуалы (Krea), диалог с ландшафтом. 5-минутный эскиз.",
+        p_flora:"Серия видеоскетчей: Tulipa cypria, Gladiolus triphyllus, Dianthus cyprius. Срез остроты и хрупкости, «наблюдающие» цветы, минималистичная графика.",
+        p_rnd:"TouchDesigner, сенсоры, depth/gyro-ввод, лёгкие пайплайны показа; стандарты нейминга/версирования для шоу-производства.",
+        contacts_title:"Контакты",
+        pitch:"Мы делаем инсталляции и визуальные системы, которые читаются в реальном пространстве. Придём с готовым продакшен-планом, обеспечим адаптацию под площадку, дадим варианты под бюджет."
+      },
+      en:{
+        kicker:"media & light systems",
+        h1:"Poetic multimedia installations and visual systems at the intersection of art, technology and light.",
+        lead:"We work with space, memory and the viewer’s attention. The digital as a metaphor of memory; technology as a tool for contemplation.",
+        statement_title:"Statement",
+        statement_p1:"frame.899 designs visual systems and installations where light, screen and sound form the body of the artwork. We explore thresholds between the real and the digital, between document and dream.",
+        statement_p2:"We merge artistic intuition with engineering precision to deliver imagery that ‘works’ on site: legible, context-aware and production-ready.",
+        about_title:"Authors",
+        kk_role:"Production Director & media artist (Cyprus). Experience: FIFA World Cup (Closing), AFC Asian Cup (Opening), The Weeknd tour, Robert Wun, Phillip Lim, Milan Design Week. Leads production, assembles visual systems, ensures venue fit and quality.",
+        im_role:"CG artist & architect. Bridges visualization and spatial design, responsible for geometry, scene legibility and media-to-architecture integration. Focus on interactive and light-driven installations.",
+        note_ip:"Some large-scale works were delivered within previous teams; media not shown due to IP rights.",
+        proj_title:"Selected Works",
+        p_mycy:"A digital walk about memory and first touchpoints with a new land. iPhone scans, generative layers, sound. WebGL scenes: A-Frame / Three.js.",
+        p_sea:"A small outdoor projection on limestone near Limassol. Household projector, AI visuals (Krea) — a short dialogue with the landscape (5 min).",
+        p_flora:"A series of video sketches: Tulipa cypria, Gladiolus triphyllus, Dianthus cyprius. Edge and fragility, watching flowers, minimal graphics.",
+        p_rnd:"TouchDesigner, sensors, depth/gyro input, lean playback pipelines; naming/versioning standards for show production.",
+        contacts_title:"Contacts",
+        pitch:"We build installations and visual systems that read clearly in real spaces. We arrive with a production plan, adapt to venue constraints and propose budget-sensible options."
+      }
+    };
+
+    const $buttons = document.querySelectorAll('.lang button');
+    const setLang = (lng) => {
+      document.documentElement.lang = lng;
+      document.querySelectorAll('[data-i18n]').forEach(el=>{
+        const key = el.getAttribute('data-i18n');
+        if(dict[lng][key]) el.textContent = dict[lng][key];
+      });
+      $buttons.forEach(b=>b.classList.toggle('active', b.dataset.lang===lng));
+      localStorage.setItem('lng', lng);
+    };
+    $buttons.forEach(b=>b.addEventListener('click', ()=>setLang(b.dataset.lang)));
+    setLang(localStorage.getItem('lng') || 'ru');
+  </script>
+</body>
+</html>
