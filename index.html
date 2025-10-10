@@ -16,18 +16,26 @@ html,body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system
 a{color:var(--fg);text-decoration:none;border-bottom:1px solid transparent}
 a:hover{border-color:var(--fg)}
 .wrap{max-width:var(--max);margin:0 auto;padding:32px var(--pad)}
-/* HEADER: ровная типографика */
-header,footer{display:flex;align-items:center;justify-content:space-between;gap:16px}
-.logo{font-weight:700;letter-spacing:.01em} .logo b{font-weight:800}
+
+/* HEADER: логотип + kicker в одном блоке слева */
+header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.h-left{display:flex;align-items:center;gap:14px}
+.logo-wrap{display:flex;flex-direction:column;line-height:1}
+.logo{font-weight:800;letter-spacing:.01em;font-size:20px}
+.kicker{font-size:12px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;font-weight:600;margin-top:2px}
 nav a{font-weight:500;line-height:1.1;margin:0 10px}
-.kicker{font-size:12px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;font-weight:600;margin-bottom:8px}
-h1{font-size:46px;line-height:1.16;margin:.4rem 0 0 0;font-weight:700}
-.lang{display:flex;gap:10px}
-.lang button{background:transparent;border:1px solid var(--glass-brd);color:var(--fg);padding:4px 8px;border-radius:8px;cursor:pointer;font-weight:500;line-height:1.1}
+.lang{display:flex;gap:8px}
+.lang button{
+  display:flex;align-items:center;justify-content:center;
+  height:32px; min-width:44px; padding:0 10px;
+  background:transparent; border:1px solid var(--glass-brd); color:var(--fg);
+  border-radius:8px; cursor:pointer; font-weight:500; line-height:1;
+}
 .lang .is-active{background:rgba(255,255,255,.06)}
 
 /* HERO */
-.hero{padding:64px 0 20px} /* воздуха в шапке */
+.hero{padding:48px 0 20px}
+h1{font-size:44px;line-height:1.18;margin:.4rem 0 12px 0;font-weight:700}
 .slider{position:relative;overflow:hidden;border-radius:16px;border:1px solid var(--rule);background:#0d0d0f}
 .slides{display:flex;transition:transform .45s ease}
 .slide{min-width:100%;height:62vw;max-height:560px;position:relative;display:flex;align-items:flex-end;background:#0d0d0f}
@@ -59,8 +67,12 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 .m-close,.m-nav .prev,.m-nav .next,.fs-btn{background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.22);width:var(--icon);height:var(--icon);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:3}
 .m-close{position:absolute;top:10px;right:12px}
 .m-media{position:relative;background:#0a0a0a;z-index:1}
-.viewport{position:relative;width:100%;height:100%;padding:60px 0 64px;display:flex;align-items:center;justify-content:center;background:#0a0a0a}
-/* никакого width:100% — размеры задаём вручную из JS */
+.viewport{
+  position:relative;width:100%;height:100%;
+  padding:60px 0 64px; /* карманы под UI */
+  display:flex;align-items:center;justify-content:center;background:#0a0a0a
+}
+/* никаких width:100% — размеры ставим из JS */
 .viewport img,.viewport video{display:block;background:#000;max-width:none;max-height:none}
 .m-nav{position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);display:flex;justify-content:space-between;padding:0 var(--pad);z-index:2}
 .fs-btn{position:absolute;bottom:10px;right:12px}
@@ -81,18 +93,24 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 /* ABOUT + CONTACTS */
 .about{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .contacts-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+
 @media (max-width:900px){
   .grid,.about,.contacts-grid{grid-template-columns:1fr}
   .iconbtn,.m-close,.fs-btn{width:var(--icon-m);height:var(--icon-m)}
   h1{font-size:36px}
-  .hero{padding-top:44px}
+  .hero{padding-top:36px}
 }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <div class="logo">frame<b>899</b></div>
+    <div class="h-left">
+      <div class="logo-wrap">
+        <div class="logo">frame<b>899</b></div>
+        <div class="kicker" data-i18n="kicker">CYPRUS ART COLLECTIVE</div>
+      </div>
+    </div>
     <nav>
       <a href="#projects" data-i18n="nav.projects">Projects</a>
       <a href="#collabs" data-i18n="nav.collabs">Collabs</a>
@@ -107,10 +125,9 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 
   <main>
     <div class="hero">
-      <div class="kicker" data-i18n="kicker">CYPRUS ART COLLECTIVE</div>
       <h1 data-i18n="h1">Art, experiments, occasional sea breeze.</h1>
 
-      <!-- HERO -->
+      <!-- HERO (барабан) -->
       <div class="slider">
         <div class="slides" id="slides"></div>
         <div class="hnav">
@@ -251,7 +268,16 @@ const PROJECTS={
         stmt:{en:"Meeting a digital double.",ru:"Встреча с цифровым двойником."},
         folder:"tri",count:7,video:null,collab:true}
 };
-function buildMedia(){for(const k in PROJECTS){const p=PROJECTS[k];p.hero=`assets/images/${p.folder}00image.png`;p.media=[];for(let i=0;i<p.count;i++){const n=String(i).padStart(2,'0');p.media.push({type:'img',src:`assets/images/${p.folder}${n}.png`});}if(p.video)p.media.splice(1,0,{type:'video',src:p.video});}}
+function buildMedia(){
+  for(const k in PROJECTS){
+    const p=PROJECTS[k];
+    p.hero=`assets/images/${p.folder}00image.png`;      // для HERO
+    p.grid=`assets/images/${p.folder}00image2.png`;     // для карточек Projects/Collabs
+    p.media=[];
+    for(let i=0;i<p.count;i++){const n=String(i).padStart(2,'0');p.media.push({type:'img',src:`assets/images/${p.folder}${n}.png`});}
+    if(p.video)p.media.splice(1,0,{type:'video',src:p.video});
+  }
+}
 buildMedia();
 
 /* ========= HERO (seamless loop; порядок flora→mycy→trace→tri→water) ========= */
@@ -283,13 +309,13 @@ buildHero();
 function buildGrids(){
   const gp=document.getElementById('grid-projects'),gc=document.getElementById('grid-collabs');gp.innerHTML='';gc.innerHTML='';
   ['mycy','water','flora'].forEach(k=>{const p=PROJECTS[k],card=document.createElement('article');card.className='card';card.dataset.project=k;
-    card.innerHTML=`<div class="thumb"><img src="${p.hero}" onerror="this.src='${p.media[0]?.src||''}'" alt=""></div><div class="meta2"><h3>${p.title[LANG]}</h3><p>${p.sub[LANG]}</p></div>`;gp.append(card);card.addEventListener('click',()=>openModal(k));});
+    card.innerHTML=`<div class="thumb"><img src="${p.grid}" onerror="this.src='${p.media[0]?.src||''}' alt=""></div><div class="meta2"><h3>${p.title[LANG]}</h3><p>${p.sub[LANG]}</p></div>`;gp.append(card);card.addEventListener('click',()=>openModal(k));});
   ['trace','tri'].forEach(k=>{const p=PROJECTS[k],card=document.createElement('article');card.className='card';card.dataset.project=k;
-    card.innerHTML=`<div class="thumb"><img src="${p.hero}" onerror="this.src='${p.media[0]?.src||''}'" alt=""></div><div class="meta2"><h3>${p.title[LANG]}</h3><p>${p.sub[LANG]}</p></div>`;gc.append(card);card.addEventListener('click',()=>openModal(k));});
+    card.innerHTML=`<div class="thumb"><img src="${p.grid}" onerror="this.src='${p.media[0]?.src||''}' alt=""></div><div class="meta2"><h3>${p.title[LANG]}</h3><p>${p.sub[LANG]}</p></div>`;gc.append(card);card.addEventListener('click',()=>openModal(k));});
 }
 buildGrids();
 
-/* ========= MODAL (авто-fit любых медиа) ========= */
+/* ========= MODAL (breathing fit любых медиа) ========= */
 const overlay=document.getElementById('overlay');
 const viewport=overlay.querySelector('.viewport');
 const mTitle=overlay.querySelector('#m-title');
@@ -310,14 +336,18 @@ function getMediaNaturalSize(el){
       if(el.complete&&el.naturalWidth){resolve({w:el.naturalWidth,h:el.naturalHeight});}
       else{el.addEventListener('load',()=>resolve({w:el.naturalWidth,h:el.naturalHeight}),{once:true});
            el.addEventListener('error',()=>resolve({w:1,h:1}),{once:true});}
-    }else{const apply=()=>resolve({w:el.videoWidth||1,h:el.videoHeight||1});
-      if(el.readyState>=1)apply(); else el.addEventListener('loadedmetadata',apply,{once:true});}
+    }else{
+      const apply=()=>resolve({w:el.videoWidth||1,h:el.videoHeight||1});
+      if(el.readyState>=1)apply(); else el.addEventListener('loadedmetadata',apply,{once:true});
+    }
   });
 }
 async function fitAny(el,container){
   const nat=await getMediaNaturalSize(el);
   const rect=container.getBoundingClientRect();
-  const s=Math.min(rect.width/nat.w, rect.height/nat.h);
+  const breathing=0.92; // оставляем ~8% воздуха вокруг
+  const cw=rect.width*breathing, ch=rect.height*breathing;
+  const s=Math.min(cw/nat.w, ch/nat.h);
   el.style.maxWidth='none'; el.style.maxHeight='none';
   el.style.width=Math.floor(nat.w*s)+'px';
   el.style.height=Math.floor(nat.h*s)+'px';
@@ -386,6 +416,19 @@ function rebuildText(){
   document.querySelectorAll('#slides .slide').forEach(sl=>{const id=sl.getAttribute('data-project');const p=PROJECTS[id];if(p){sl.querySelector('.meta').innerHTML=`<h3>${p.title[LANG]}</h3><p>${p.sub[LANG]}</p>`;}});
   buildGrids();
 }
+
+/* ========= HERO build ========= */
+(function buildHeroInit(){
+  const slidesEl=document.getElementById('slides'),hdots=document.getElementById('hdots');
+  const order=['flora','mycy','trace','tri','water'];
+  const makeSlide=id=>{const p=PROJECTS[id];const a=document.createElement('article');a.className='slide';a.dataset.project=id;
+    const img=document.createElement('img');img.src=p.hero;img.onerror=()=>{img.onerror=null;img.src=p.media[0]?.src||'';};
+    const meta=document.createElement('div');meta.className='meta';meta.innerHTML=`<h3>${p.title[LANG]}</h3><p>${p.sub[LANG]}</p>`;a.append(img,meta);return a;};
+  slidesEl.innerHTML='';slidesEl.append(makeSlide(order.at(-1)).cloneNode(true));order.forEach(id=>slidesEl.append(makeSlide(id)));slidesEl.append(makeSlide(order[0]).cloneNode(true));
+  hdots.innerHTML='';order.forEach((_,i)=>{const d=document.createElement('button');if(i===0)d.classList.add('active');hdots.append(d);});
+})();
+buildHero();
+buildGrids();
 </script>
 </body>
 </html>
