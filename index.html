@@ -8,13 +8,10 @@
   <meta property="og:title" content="frame.899 — media & light systems">
   <meta property="og:description" content="Проекты: My Cyprus Walk, Cyprus Flora, Water Spirits. Коллаборации: Trace × Kolla, Trinitron Connect.">
   <meta property="og:type" content="website">
-  <meta property="og:image" content=""> <!-- подставь превью 1200x630 -->
+  <meta property="og:image" content="">
   <meta name="theme-color" content="#0b0b0b">
   <style>
-    :root{
-      --bg:#0b0b0b; --fg:#e9e9e9; --muted:#a6a6a6; --rule:#1a1a1a; --acc:#eaeaea;
-      --max:1120px; --gap:20px;
-    }
+    :root{ --bg:#0b0b0b; --fg:#e9e9e9; --muted:#a6a6a6; --rule:#1a1a1a; --acc:#eaeaea; --max:1120px; --gap:20px; }
     *{box-sizing:border-box}
     html,body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,Helvetica,Arial,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
     a{color:var(--fg);text-decoration:none;border-bottom:1px solid transparent;transition:border-color .2s}
@@ -61,33 +58,19 @@
     .social{display:flex;gap:14px;flex-wrap:wrap}
 
     /* Overlay modal */
-    #overlay{
-      position:fixed; inset:0; background:rgba(0,0,0,.66);
-      display:none; z-index:50;
-    }
+    #overlay{ position:fixed; inset:0; background:rgba(0,0,0,.66); display:none; z-index:50; }
     #overlay.show{ display:block; }
     #overlay .modal{
       position:relative; max-width:1000px; margin:6vh auto; background:#0c0c0c;
       border:1px solid var(--rule); border-radius:16px; overflow:hidden;
       display:grid; grid-template-columns:1.2fr 1fr; gap:0;
     }
-    @media (max-width:900px){
-      #overlay .modal{ grid-template-columns:1fr; margin:0; height:100%; border-radius:0 }
-    }
-    .m-close{
-      position:absolute; top:10px; right:12px; font-size:28px; line-height:1;
-      background:transparent; border:0; color:#ddd; cursor:pointer; z-index:2;
-    }
+    @media (max-width:900px){ #overlay .modal{ grid-template-columns:1fr; margin:0; height:100%; border-radius:0 } }
+    .m-close{ position:absolute; top:10px; right:12px; font-size:28px; line-height:1; background:transparent; border:0; color:#ddd; cursor:pointer; z-index:2; }
     .m-media{ position:relative; background:#111; min-height:320px }
     .m-media .viewport{ position:relative; width:100%; aspect-ratio:16/10; }
-    .m-media img,.m-media video{
-      position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
-    }
-    .m-media .nav{
-      position:absolute; top:50%; transform:translateY(-50%);
-      background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.15);
-      color:#eee; width:36px; height:36px; border-radius:50%; cursor:pointer;
-    }
+    .m-media img,.m-media video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+    .m-media .nav{ position:absolute; top:50%; transform:translateY(-50%); background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.15); color:#eee; width:36px; height:36px; border-radius:50%; cursor:pointer; }
     .m-media .prev{ left:10px } .m-media .next{ right:10px }
     .m-meta{ padding:18px 18px 20px; border-left:1px solid var(--rule) }
     .m-meta h3{ margin:0 0 6px }
@@ -95,11 +78,7 @@
     .m-desc, .m-stmt{ color:#ddd; font-size:15px; line-height:1.6 }
     .m-stmt{ margin-top:10px; border-top:1px solid var(--rule); padding-top:10px }
 
-    @media (max-width:900px){
-      h1{font-size:28px}
-      .grid,.about{grid-template-columns:1fr}
-      .slide{max-height:66vh}
-    }
+    @media (max-width:900px){ h1{font-size:28px} .grid,.about{grid-template-columns:1fr} .slide{max-height:66vh} }
   </style>
 </head>
 <body>
@@ -123,29 +102,17 @@
         <!-- HERO SLIDER -->
         <div class="slider" id="slider">
           <div class="slides" id="slides">
-            <!-- My Cyprus Walk -->
             <article class="slide" data-project="mycy" aria-label="My Cyprus Walk">
-              <img src="assets/my-cyprus-walk.jpg" alt="">
-              <div class="meta">
-                <h3>My Cyprus Walk</h3>
-                <p class="muted">Цифровая прогулка о памяти и первых точках соприкосновения.</p>
-              </div>
+              <img src="assets/images/mycy00.jpg" alt="">
+              <div class="meta"><h3>My Cyprus Walk</h3><p class="muted">Цифровая прогулка о памяти и первых точках соприкосновения.</p></div>
             </article>
-            <!-- Cyprus Flora -->
             <article class="slide" data-project="flora" aria-label="Cyprus Flora">
-              <img src="assets/cyprus-flora.jpg" alt="">
-              <div class="meta">
-                <h3>Cyprus Flora — Sketches</h3>
-                <p class="muted">Эндемики Кипра в минималистичной, «смотрящей» интерпретации.</p>
-              </div>
+              <img src="assets/images/anem00.jpg" alt="">
+              <div class="meta"><h3>Cyprus Flora — Sketches</h3><p class="muted">Эндемики Кипра в минималистичной, «смотрящей» интерпретации.</p></div>
             </article>
-            <!-- Water Spirits -->
             <article class="slide" data-project="water" aria-label="Water Spirits">
-              <img src="assets/water-spirits.jpg" alt="">
-              <div class="meta">
-                <h3>Water Spirits — White Rocks</h3>
-                <p class="muted">Аутдор-проекция на известняке у моря. 5-минутный эскиз.</p>
-              </div>
+              <img src="assets/images/waspi00.jpg" alt="">
+              <div class="meta"><h3>Water Spirits — White Rocks</h3><p class="muted">Аутдор-проекция на известняке у моря. 5-минутный эскиз.</p></div>
             </article>
           </div>
           <div class="dots" id="dots" aria-label="hero pagination"></div>
@@ -156,45 +123,30 @@
       <section id="projects">
         <h2>Projects</h2>
         <div class="grid">
-          <!-- My Cyprus Walk -->
           <article class="card" data-project="mycy">
-            <div class="thumb">
-              <img src="assets/my-cyprus-walk-thumb.jpg" alt="">
-            </div>
+            <div class="thumb"><img src="assets/images/mycy01.jpg" alt=""></div>
             <div class="meta2">
               <div class="tag">installation</div><div class="tag">interactive</div>
               <h3 style="margin:8px 0 6px">My Cyprus Walk</h3>
-              <p class="muted" style="margin:0">
-                Визуальное осмысление памяти об эмиграции: iPhone-сканы, генеративные слои, звук. Показ на iPad + наушники, WebGL (A-Frame/Three.js).
-              </p>
+              <p class="muted" style="margin:0">Визуальное осмысление памяти об эмиграции: iPhone-сканы, генеративные слои, звук. Показ на iPad + наушники, WebGL (A-Frame/Three.js).</p>
             </div>
           </article>
 
-          <!-- Cyprus Flora -->
           <article class="card" data-project="flora">
-            <div class="thumb">
-              <img src="assets/cyprus-flora-thumb.jpg" alt="">
-            </div>
+            <div class="thumb"><img src="assets/images/anem01.jpg" alt=""></div>
             <div class="meta2">
               <div class="tag">video art</div><div class="tag">flora</div>
               <h3 style="margin:8px 0 6px">Cyprus Flora — Sketches</h3>
-              <p class="muted" style="margin:0">
-                Серия видеоскетчей эндемиков: Tulipa cypria, Gladiolus triphyllus, Dianthus cyprius. Минималистично и прямолинейно.
-              </p>
+              <p class="muted" style="margin:0">Серия видеоскетчей эндемиков: Tulipa cypria, Gladiolus triphyllus, Dianthus cyprius. Минималистично и прямолинейно.</p>
             </div>
           </article>
 
-          <!-- Water Spirits -->
           <article class="card" data-project="water">
-            <div class="thumb">
-              <img src="assets/water-spirits-thumb.jpg" alt="">
-            </div>
+            <div class="thumb"><img src="assets/images/waspi01.jpg" alt=""></div>
             <div class="meta2">
               <div class="tag">projection</div><div class="tag">outdoors</div>
               <h3 style="margin:8px 0 6px">Water Spirits — White Rocks</h3>
-              <p class="muted" style="margin:0">
-                Проекция на белом известняке под Лимассолом: Krea-визуалы, «домашний» сетап, камерный показ.
-              </p>
+              <p class="muted" style="margin:0">Проекция на белом известняке под Лимассолом: Krea-визуалы, «домашний» сетап, камерный показ.</p>
             </div>
           </article>
         </div>
@@ -204,31 +156,21 @@
       <section id="collabs">
         <h2>Collabs</h2>
         <div class="grid">
-          <!-- Trace × Kolla -->
           <article class="card" data-project="trace">
-            <div class="thumb">
-              <img src="assets/trace-kolla.jpg" alt="">
-            </div>
+            <div class="thumb"><img src="assets/images/trace00.jpg" alt=""></div>
             <div class="meta2">
               <div class="tag">collaboration</div><div class="tag">participatory</div>
               <h3 style="margin:8px 0 6px">Trace × Kolla</h3>
-              <p class="muted" style="margin:0">
-                Исследование памяти и её фиксации: чёрная ткань, кристаллы, бокалы, свечи и книга с записями посетителей.
-              </p>
+              <p class="muted" style="margin:0">Исследование памяти и её фиксации: чёрная ткань, кристаллы, бокалы, свечи и книга с записями посетителей.</p>
             </div>
           </article>
 
-          <!-- Trinitron Connect -->
-          <article class="card" data-project="trinitron">
-            <div class="thumb">
-              <img src="assets/trinitron-connect.jpg" alt="">
-            </div>
+          <article class="card" data-project="tri">
+            <div class="thumb"><img src="assets/images/tri00.jpg" alt=""></div>
             <div class="meta2">
               <div class="tag">collaboration</div><div class="tag">avatar</div>
               <h3 style="margin:8px 0 6px">Trinitron Connect (с Аней Кроу)</h3>
-              <p class="muted" style="margin:0">
-                Инсталляция с цифровым аватаром: реалистичный и wireframe-двойники, реакции на жесты и телефоны, диалоговые сценарии.
-              </p>
+              <p class="muted" style="margin:0">Инсталляция с цифровым аватаром: реалистичный и wireframe-двойники, реакции на жесты и телефоны, диалоговые сценарии.</p>
             </div>
           </article>
         </div>
@@ -240,28 +182,16 @@
         <div class="about">
           <div>
             <h3 style="margin:0 0 6px">Kristina Kubrina</h3>
-            <p class="muted" style="margin:0 0 6px">
-              Продакшен-директор и медиа-художник (Кипр). Опыт: FIFA World Cup (Closing), AFC Asian Cup (Opening),
-              The Weeknd tour, Robert Wun, Phillip Lim, Milan Design Week. Соединяет художественное видение и инженерную точность:
-              визуальные системы, адаптация под площадку, продакшен-планы.
-            </p>
-            <p class="muted" style="margin:0">Контакты:
-              <a href="https://www.linkedin.com/in/kristinakubrina/" target="_blank" rel="noopener">LinkedIn</a>,
-              Telegram @chris_kub
-            </p>
+            <p class="muted" style="margin:0 0 6px">Продакшен-директор и медиа-художник (Кипр). Опыт: FIFA World Cup (Closing), AFC Asian Cup (Opening), The Weeknd tour, Robert Wun, Phillip Lim, Milan Design Week. Соединяет художественное видение и инженерную точность: визуальные системы, адаптация под площадку, продакшен-планы.</p>
+            <p class="muted" style="margin:0">Контакты: <a href="https://www.linkedin.com/in/kristinakubrina/" target="_blank" rel="noopener">LinkedIn</a>, Telegram @chris_kub</p>
           </div>
           <div>
             <h3 style="margin:0 0 6px">Ivan Maksimov</h3>
-            <p class="muted" style="margin:0 0 6px">
-              CG-артист и архитектор. Пространственная визуализация, геометрия и читаемость сцены,
-              интеграция медиа в архитектуру. Фокус — интерактив и световые инсталляции.
-            </p>
+            <p class="muted" style="margin:0 0 6px">CG-артист и архитектор. Пространственная визуализация, геометрия и читаемость сцены, интеграция медиа в архитектуру. Фокус — интерактив и световые инсталляции.</p>
             <p class="muted" style="margin:0">Портфолио — по запросу.</p>
           </div>
         </div>
-        <p class="muted" style="margin-top:10px">
-          Часть перечисленных крупных проектов выполнена в составе предыдущих команд; медиа-материалы не публикуются из-за прав ИС.
-        </p>
+        <p class="muted" style="margin-top:10px">Часть перечисленных крупных проектов выполнена в составе предыдущих команд; медиа-материалы не публикуются из-за прав ИС.</p>
       </section>
 
       <!-- CONTACTS -->
@@ -274,9 +204,7 @@
             <p style="margin:0 0 6px">Instagram: <a href="https://instagram.com/" target="_blank" rel="noopener">instagram.com/<span class="muted">[handle]</span></a></p>
             <p style="margin:0">TikTok: <a href="https://tiktok.com/@" target="_blank" rel="noopener">tiktok.com/@<span class="muted">[handle]</span></a></p>
           </div>
-          <div>
-            <p class="muted" style="margin:0">Press / deck — on request.</p>
-          </div>
+          <div><p class="muted" style="margin:0">Press / deck — on request.</p></div>
         </div>
       </section>
     </main>
@@ -311,7 +239,7 @@
   </div>
 
   <script>
-    // год в футере
+    // год
     document.getElementById('y').textContent = new Date().getFullYear();
 
     // hero-пагинация
@@ -332,67 +260,45 @@
     setActive();
 
     /* =========================
-       PROJECT DATA
+       PROJECT DATA (IDs совпадают с data-project)
        ========================= */
-   const PROJECTS = {
-  mycy: {
-    title: "My Cyprus Walk",
-    sub: "2025 · Cyprus · iPad/WebGL",
-    desc: "Интерактивная «цифровая прогулка» по памяти об эмиграции...",
-    stmt: "Память фиксирует обрывки — мы переводим их в цифровую симуляцию...",
-    folder: "mycy", // ← добавляем папку
-    video: null
-  },
-  anem: {
-    title: "Cyprus Flora — Anemones",
-    sub: "2025 · Cyprus · video sketches",
-    desc: "Серия видеоскетчей об эндемичных цветах Кипра...",
-    stmt: "Редкая флора представлена как живое, наблюдающее существо...",
-    folder: "anem",
-    video: null
-  },
-  waspi: {
-    title: "Water Spirits — White Rocks",
-    sub: "2025 · Limassol · outdoor projection",
-    desc: "Проекция на известняковых скалах у моря...",
-    stmt: "Море — дух, который одновременно утешает и тревожит...",
-    folder: "waspi",
-    video: "assets/images/waspiedit.mp4" // ← встроенное видео
-  },
-  trace: {
-    title: "Trace × Kolla",
-    sub: "2025 · Kolla Art Space, Limassol · collaboration",
-    desc: "Инсталляция об исследовании памяти и фиксации воспоминаний...",
-    stmt: "Совместная память как живой архив...",
-    folder: "trace",
-    video: null
-  },
-  tri: {
-    title: "Trinitron Connect (с Аней Кроу)",
-    sub: "2025 · Moscow · gallery installation",
-    desc: "Инсталляция с цифровым аватаром...",
-    stmt: "Исследование границы между реальным и цифровым 'я'...",
-    folder: "tri",
-    video: null
-  }
-};
-    // автозагрузка всех JPG в проекте
-for (const key in PROJECTS) {
-  const folder = PROJECTS[key].folder;
-  const media = [];
-  for (let i = 0; i < 15; i++) { // запас до 15 файлов
-    const imgPath = `assets/images/${folder}${String(i).padStart(2,'0')}.jpg`;
-    media.push({ type: "img", src: imgPath });
-  }
-  if (PROJECTS[key].video) {
-    media.splice(1, 0, { type: "video", src: PROJECTS[key].video }); // видео вставим вторым
-  }
-  PROJECTS[key].media = media;
-}
+    const PROJECTS = {
+      mycy: { title:"My Cyprus Walk", sub:"2025 · Cyprus · iPad/WebGL",
+              desc:"Интерактивная «цифровая прогулка» по памяти об эмиграции...",
+              stmt:"Память фиксирует обрывки — мы переводим их в цифровую симуляцию...",
+              folder:"mycy", count:9, video:null },
+      flora:{ title:"Cyprus Flora — Sketches", sub:"2025 · Cyprus · video sketches",
+              desc:"Серия видеоскетчей об эндемичных цветах Кипра...",
+              stmt:"Редкая флора представлена как живое, наблюдающее существо...",
+              folder:"anem", count:9, video:null },
+      water:{ title:"Water Spirits — White Rocks", sub:"2025 · Limassol · outdoor projection",
+              desc:"Проекция на известняковых скалах у моря...",
+              stmt:"Море — дух, который одновременно утешает и тревожит...",
+              folder:"waspi", count:4, video:"assets/images/waspiedit.mp4" },
+      trace:{ title:"Trace × Kolla", sub:"2025 · Kolla Art Space, Limassol · collaboration",
+              desc:"Инсталляция об исследовании памяти и фиксации воспоминаний...",
+              stmt:"Совместная память как живой архив...",
+              folder:"trace", count:9, video:null },
+      tri:{   title:"Trinitron Connect (с Аней Кроу)", sub:"2025 · Moscow · gallery installation",
+              desc:"Инсталляция с цифровым аватаром...",
+              stmt:"Исследование границы между реальным и цифровым 'я'...",
+              folder:"tri", count:7, video:null }
+    };
 
+    // автосборка медиа
+    for (const key in PROJECTS) {
+      const { folder, count, video } = PROJECTS[key];
+      const media = [];
+      for (let i = 0; i < count; i++) {
+        const n = String(i).padStart(2,'0');
+        media.push({ type: "img", src: `assets/images/${folder}${n}.jpg` });
+      }
+      if (video) media.splice(1, 0, { type: "video", src: video });
+      PROJECTS[key].media = media;
+    }
 
     /* =========================
-       MODAL RENDER
+       MODAL
        ========================= */
     const overlay = document.getElementById('overlay');
     const mTitle  = overlay.querySelector('#m-title');
@@ -404,13 +310,9 @@ for (const key in PROJECTS) {
     const btnNext = overlay.querySelector('.next');
     const btnClose= overlay.querySelector('.m-close');
 
-    let current = null; // объект проекта
-    let index = 0;      // индекс медиа
+    let current = null, index = 0;
 
-    function lockScroll(lock){
-      document.documentElement.style.overflowY = lock ? 'hidden' : '';
-      document.body.style.overflowY = lock ? 'hidden' : '';
-    }
+    function lockScroll(lock){ document.documentElement.style.overflowY = document.body.style.overflowY = lock ? 'hidden' : ''; }
 
     function renderMedia(){
       viewport.innerHTML = '';
@@ -418,88 +320,43 @@ for (const key in PROJECTS) {
       const item = current.media[index];
       if(!item) return;
       if(item.type === 'img'){
-        const img = document.createElement('img');
-        img.src = item.src;
-        img.alt = current.title;
-        viewport.appendChild(img);
+        const img = document.createElement('img'); img.src = item.src; img.alt = current.title; viewport.appendChild(img);
       } else if(item.type === 'video'){
-        const v = document.createElement('video');
-        v.src = item.src;
-        if(item.poster) v.poster = item.poster;
-        v.autoplay = true; v.muted = true; v.loop = true; v.playsInline = true;
-        viewport.appendChild(v);
+        const v = document.createElement('video'); v.src = item.src; v.autoplay = true; v.muted = true; v.loop = true; v.playsInline = true; viewport.appendChild(v);
       }
     }
 
     function openModal(projectId){
-      const data = PROJECTS[projectId];
-      if(!data) return;
+      const data = PROJECTS[projectId]; if(!data) return;
       current = data; index = 0;
-      mTitle.textContent = data.title;
-      mSub.textContent   = data.sub;
-      mDesc.textContent  = data.desc;
-      mStmt.textContent  = data.stmt;
-      renderMedia();
-      overlay.classList.add('show');
-      overlay.setAttribute('aria-hidden','false');
-      lockScroll(true);
+      mTitle.textContent = data.title; mSub.textContent = data.sub; mDesc.textContent = data.desc; mStmt.textContent = data.stmt;
+      renderMedia(); overlay.classList.add('show'); overlay.setAttribute('aria-hidden','false'); lockScroll(true);
     }
+    function closeModal(){ overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true'); lockScroll(false); viewport.innerHTML=''; current=null; }
 
-    function closeModal(){
-      overlay.classList.remove('show');
-      overlay.setAttribute('aria-hidden','true');
-      lockScroll(false);
-      viewport.innerHTML = '';
-      current = null;
-    }
-
-    btnPrev.addEventListener('click', ()=>{
-      if(!current) return;
-      index = (index - 1 + current.media.length) % current.media.length;
-      renderMedia();
-    });
-    btnNext.addEventListener('click', ()=>{
-      if(!current) return;
-      index = (index + 1) % current.media.length;
-      renderMedia();
-    });
+    btnPrev.addEventListener('click', ()=>{ if(!current) return; index = (index - 1 + current.media.length) % current.media.length; renderMedia(); });
+    btnNext.addEventListener('click', ()=>{ if(!current) return; index = (index + 1) % current.media.length; renderMedia(); });
     btnClose.addEventListener('click', closeModal);
     overlay.addEventListener('click', (e)=>{ if(e.target === overlay) closeModal(); });
-    document.addEventListener('keydown', (e)=>{
-      if(!overlay.classList.contains('show')) return;
-      if(e.key === 'Escape') closeModal();
-      if(e.key === 'ArrowRight') btnNext.click();
-      if(e.key === 'ArrowLeft')  btnPrev.click();
-    });
+    document.addEventListener('keydown', (e)=>{ if(!overlay.classList.contains('show')) return; if(e.key==='Escape') closeModal(); if(e.key==='ArrowRight') btnNext.click(); if(e.key==='ArrowLeft') btnPrev.click(); });
 
-    // swipe для мобилы
-    let sx = 0, sy = 0;
+    // свайпы
+    let sx=0, sy=0;
     const viewportEl = document.querySelector('.viewport');
     viewportEl.addEventListener('touchstart', (e)=>{ sx=e.touches[0].clientX; sy=e.touches[0].clientY; }, {passive:true});
-    viewportEl.addEventListener('touchend', (e)=>{
-      const dx = e.changedTouches[0].clientX - sx;
-      const dy = e.changedTouches[0].clientY - sy;
-      if(Math.abs(dx) > 40 && Math.abs(dy) < 60){
-        (dx<0 ? btnNext : btnPrev).click();
-      }
-    });
+    viewportEl.addEventListener('touchend',   (e)=>{ const dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy; if(Math.abs(dx)>40 && Math.abs(dy)<60){ (dx<0?btnNext:btnPrev).click(); } });
 
-    /* attach handlers */
+    // клики по карточкам/слайдам
     function attachProjectOpeners(){
       document.querySelectorAll('[data-project]').forEach(el=>{
         el.style.cursor='pointer';
-        el.addEventListener('click', (ev)=>{
-          if(ev.target.closest('a')) return; // не ломаем переходы по ссылкам
-          openModal(el.getAttribute('data-project'));
-        });
+        el.addEventListener('click',(ev)=>{ if(ev.target.closest('a')) return; openModal(el.getAttribute('data-project')); });
       });
     }
     attachProjectOpeners();
 
-    /* deeplink: ?p=mycy */
-    const url = new URL(location.href);
-    const pid = url.searchParams.get('p');
-    if(pid && PROJECTS[pid]) openModal(pid);
+    // deeplink: ?p=mycy
+    const url = new URL(location.href); const pid = url.searchParams.get('p'); if(pid && PROJECTS[pid]) openModal(pid);
   </script>
 </body>
 </html>
