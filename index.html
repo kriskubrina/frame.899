@@ -61,22 +61,55 @@
     #overlay{ position:fixed; inset:0; background:rgba(0,0,0,.66); display:none; z-index:50; }
     #overlay.show{ display:block; }
     #overlay .modal{
-      position:relative; max-width:1000px; margin:6vh auto; background:#0c0c0c;
+      position:relative; max-width:1100px; margin:5vh auto; background:#0c0c0c;
       border:1px solid var(--rule); border-radius:16px; overflow:hidden;
-      display:grid; grid-template-columns:1.2fr 1fr; gap:0;
+      display:grid; grid-template-rows:auto auto 1fr; gap:0;
     }
-    @media (max-width:900px){ #overlay .modal{ grid-template-columns:1fr; margin:0; height:100%; border-radius:0 } }
-    .m-close{ position:absolute; top:10px; right:12px; font-size:28px; line-height:1; background:transparent; border:0; color:#ddd; cursor:pointer; z-index:2; }
-    .m-media{ position:relative; background:#111; min-height:320px }
-    .m-media .viewport{ position:relative; width:100%; aspect-ratio:16/10; }
-    .m-media img,.m-media video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-    .m-media .nav{ position:absolute; top:50%; transform:translateY(-50%); background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.15); color:#eee; width:36px; height:36px; border-radius:50%; cursor:pointer; }
+    @media (min-width:950px){
+      #overlay .modal{ grid-template-columns:1.2fr 1fr; grid-template-rows:auto 1fr; }
+      .m-media{ grid-column:1; grid-row:1 / span 2; }
+      .m-meta{ grid-column:2; grid-row:1; }
+      .m-thumbs{ grid-column:2; grid-row:2; }
+    }
+    .m-close{ position:absolute; top:10px; right:12px; font-size:28px; line-height:1; background:transparent; border:0; color:#ddd; cursor:pointer; z-index:5; }
+    .m-media{ position:relative; background:#0a0a0a; min-height:320px }
+    .m-media .viewport{
+      position:relative; width:100%; height:68vh; max-height:720px;
+      display:flex; align-items:center; justify-content:center; background:#0a0a0a;
+    }
+    /* показываем медиаконтент целиком — без кропа */
+    .m-media img,.m-media video{
+      max-width:100%; max-height:100%;
+      width:auto; height:auto; object-fit:contain; display:block;
+      background:#000;
+    }
+    .m-media .nav{
+      position:absolute; top:50%; transform:translateY(-50%); z-index:4;
+      background:rgba(0,0,0,.5); border:1px solid rgba(255,255,255,.2);
+      color:#eee; width:40px; height:40px; border-radius:50%; cursor:pointer;
+    }
     .m-media .prev{ left:10px } .m-media .next{ right:10px }
-    .m-meta{ padding:18px 18px 20px; border-left:1px solid var(--rule) }
+    .m-meta{ padding:18px 18px 12px; border-left:1px solid var(--rule) }
     .m-meta h3{ margin:0 0 6px }
     .m-sub{ margin:0 0 12px; color:var(--muted); font-size:14px }
     .m-desc, .m-stmt{ color:#ddd; font-size:15px; line-height:1.6 }
     .m-stmt{ margin-top:10px; border-top:1px solid var(--rule); padding-top:10px }
+
+    /* thumbs rail */
+    .m-thumbs{
+      border-top:1px solid var(--rule);
+      padding:10px 12px; display:flex; gap:10px; overflow:auto; background:#0b0b0b;
+    }
+    .m-thumbs button{
+      border:1px solid var(--rule); background:#0f0f0f; padding:0; cursor:pointer;
+      width:84px; height:56px; border-radius:8px; overflow:hidden; position:relative; flex:0 0 auto;
+    }
+    .m-thumbs img,.m-thumbs video{ width:100%; height:100%; object-fit:cover; display:block; }
+    .m-thumbs .is-active{ outline:2px solid #e6e6e6; }
+    .m-thumbs .vid::after{
+      content:"▶"; position:absolute; right:6px; bottom:2px; font-size:14px;
+      color:#fff; background:rgba(0,0,0,.45); padding:2px 6px; border-radius:6px;
+    }
 
     @media (max-width:900px){ h1{font-size:28px} .grid,.about{grid-template-columns:1fr} .slide{max-height:66vh} }
   </style>
@@ -103,15 +136,15 @@
         <div class="slider" id="slider">
           <div class="slides" id="slides">
             <article class="slide" data-project="mycy" aria-label="My Cyprus Walk">
-              <img src="assets/images/mycy00.jpg" alt="">
+              <img src="assets/images/mycy00.png" alt="">
               <div class="meta"><h3>My Cyprus Walk</h3><p class="muted">Цифровая прогулка о памяти и первых точках соприкосновения.</p></div>
             </article>
             <article class="slide" data-project="flora" aria-label="Cyprus Flora">
-              <img src="assets/images/anem00.jpg" alt="">
+              <img src="assets/images/anem00.png" alt="">
               <div class="meta"><h3>Cyprus Flora — Sketches</h3><p class="muted">Эндемики Кипра в минималистичной, «смотрящей» интерпретации.</p></div>
             </article>
             <article class="slide" data-project="water" aria-label="Water Spirits">
-              <img src="assets/images/waspi00.jpg" alt="">
+              <img src="assets/images/waspi00.png" alt="">
               <div class="meta"><h3>Water Spirits — White Rocks</h3><p class="muted">Аутдор-проекция на известняке у моря. 5-минутный эскиз.</p></div>
             </article>
           </div>
@@ -124,7 +157,7 @@
         <h2>Projects</h2>
         <div class="grid">
           <article class="card" data-project="mycy">
-            <div class="thumb"><img src="assets/images/mycy01.jpg" alt=""></div>
+            <div class="thumb"><img src="assets/images/mycy01.png" alt=""></div>
             <div class="meta2">
               <div class="tag">installation</div><div class="tag">interactive</div>
               <h3 style="margin:8px 0 6px">My Cyprus Walk</h3>
@@ -133,16 +166,16 @@
           </article>
 
           <article class="card" data-project="flora">
-            <div class="thumb"><img src="assets/images/anem01.jpg" alt=""></div>
+            <div class="thumb"><img src="assets/images/anem01.png" alt=""></div>
             <div class="meta2">
               <div class="tag">video art</div><div class="tag">flora</div>
               <h3 style="margin:8px 0 6px">Cyprus Flora — Sketches</h3>
-              <p class="muted" style="margin:0">Серия видеоскетчей эндемиков: Tulipa cypria, Gladiolus triphyllus, Dianthus cyprius. Минималистично и прямолинейно.</p>
+              <p class="muted" style="margin:0">Серия видеоскетчей эндемиков: Tulipa cypria, Gladiolus triphyllus, Dianthus cyprius.</p>
             </div>
           </article>
 
           <article class="card" data-project="water">
-            <div class="thumb"><img src="assets/images/waspi01.jpg" alt=""></div>
+            <div class="thumb"><img src="assets/images/waspi01.png" alt=""></div>
             <div class="meta2">
               <div class="tag">projection</div><div class="tag">outdoors</div>
               <h3 style="margin:8px 0 6px">Water Spirits — White Rocks</h3>
@@ -157,7 +190,7 @@
         <h2>Collabs</h2>
         <div class="grid">
           <article class="card" data-project="trace">
-            <div class="thumb"><img src="assets/images/trace00.jpg" alt=""></div>
+            <div class="thumb"><img src="assets/images/trace00.png" alt=""></div>
             <div class="meta2">
               <div class="tag">collaboration</div><div class="tag">participatory</div>
               <h3 style="margin:8px 0 6px">Trace × Kolla</h3>
@@ -166,7 +199,7 @@
           </article>
 
           <article class="card" data-project="tri">
-            <div class="thumb"><img src="assets/images/tri00.jpg" alt=""></div>
+            <div class="thumb"><img src="assets/images/tri00.png" alt=""></div>
             <div class="meta2">
               <div class="tag">collaboration</div><div class="tag">avatar</div>
               <h3 style="margin:8px 0 6px">Trinitron Connect (с Аней Кроу)</h3>
@@ -235,6 +268,7 @@
         <div class="m-desc"></div>
         <div class="m-stmt"></div>
       </div>
+      <div class="m-thumbs" id="thumbs"></div>
     </div>
   </div>
 
@@ -260,41 +294,60 @@
     setActive();
 
     /* =========================
-       PROJECT DATA (IDs совпадают с data-project)
+       PROJECT DATA
        ========================= */
     const PROJECTS = {
-      mycy: { title:"My Cyprus Walk", sub:"2025 · Cyprus · iPad/WebGL",
-              desc:"Интерактивная «цифровая прогулка» по памяти об эмиграции...",
-              stmt:"Память фиксирует обрывки — мы переводим их в цифровую симуляцию...",
-              folder:"mycy", count:9, video:null },
-      flora:{ title:"Cyprus Flora — Sketches", sub:"2025 · Cyprus · video sketches",
-              desc:"Серия видеоскетчей об эндемичных цветах Кипра...",
-              stmt:"Редкая флора представлена как живое, наблюдающее существо...",
-              folder:"anem", count:9, video:null },
-      water:{ title:"Water Spirits — White Rocks", sub:"2025 · Limassol · outdoor projection",
-              desc:"Проекция на известняковых скалах у моря...",
-              stmt:"Море — дух, который одновременно утешает и тревожит...",
-              folder:"waspi", count:4, video:"assets/images/waspiedit.mp4" },
-      trace:{ title:"Trace × Kolla", sub:"2025 · Kolla Art Space, Limassol · collaboration",
-              desc:"Инсталляция об исследовании памяти и фиксации воспоминаний...",
-              stmt:"Совместная память как живой архив...",
-              folder:"trace", count:9, video:null },
-      tri:{   title:"Trinitron Connect (с Аней Кроу)", sub:"2025 · Moscow · gallery installation",
-              desc:"Инсталляция с цифровым аватаром...",
-              stmt:"Исследование границы между реальным и цифровым 'я'...",
-              folder:"tri", count:7, video:null }
+      mycy:  { title:"My Cyprus Walk", sub:"2025 · Cyprus · iPad/WebGL",
+               desc:"Интерактивная «цифровая прогулка» по памяти об эмиграции...",
+               stmt:"Память фиксирует обрывки — мы переводим их в цифровую симуляцию...",
+               folder:"mycy",  count:9,  video:null },
+      flora: { title:"Cyprus Flora — Sketches", sub:"2025 · Cyprus · video sketches",
+               desc:"Серия видеоскетчей об эндемичных цветах Кипра...",
+               stmt:"Редкая флора представлена как живое, наблюдающее существо...",
+               folder:"anem",  count:9,  video:null },
+      water: { title:"Water Spirits — White Rocks", sub:"2025 · Limassol · outdoor projection",
+               desc:"Проекция на известняковых скалах у моря...",
+               stmt:"Море — дух, который одновременно утешает и тревожит...",
+               folder:"waspi", count:4,  video:"assets/images/waspiedit.mp4" },
+      trace: { title:"Trace × Kolla", sub:"2025 · Kolla Art Space, Limassol · collaboration",
+               desc:"Инсталляция об исследовании памяти и фиксации воспоминаний...",
+               stmt:"Совместная память как живой архив...",
+               folder:"trace", count:9,  video:null },
+      tri:   { title:"Trinitron Connect (с Аней Кроу)", sub:"2025 · Moscow · gallery installation",
+               desc:"Инсталляция с цифровым аватаром...",
+               stmt:"Исследование границы между реальным и цифровым 'я'...",
+               folder:"tri",   count:7,  video:null }
     };
 
-    // автосборка медиа
-    for (const key in PROJECTS) {
-      const { folder, count, video } = PROJECTS[key];
-      const media = [];
-      for (let i = 0; i < count; i++) {
-        const n = String(i).padStart(2,'0');
-        media.push({ type: "img", src: `assets/images/${folder}${n}.jpg` });
+    // утилита: проверяем, что url существует (HEAD к своему домену ок)
+    async function urlExists(url){
+      try{ const r=await fetch(url,{method:'HEAD',cache:'no-cache'}); return r.ok; }catch(e){ return false; }
+    }
+
+    // собираем медиа: .png приоритетно, затем .jpg/.jpeg; видео — вторым кадром
+    async function buildMedia(){
+      for (const key in PROJECTS) {
+        const { folder, count, video } = PROJECTS[key];
+        const media = [];
+        for (let i=0;i<count;i++){
+          const n=String(i).padStart(2,'0');
+          const base=`assets/images/${folder}${n}`;
+          const png =`${base}.png`;
+          const jpg =`${base}.jpg`;
+          const jpeg=`${base}.jpeg`;
+          // eslint-disable-next-line no-await-in-loop
+          if(await urlExists(png))      media.push({type:'img',src:png});
+          else if(await urlExists(jpg)) media.push({type:'img',src:jpg});
+          else if(await urlExists(jpeg))media.push({type:'img',src:jpeg});
+          else console.warn('[MISS]', png, '(и .jpg/.jpeg)');
+        }
+        if(video){
+          const ok = await urlExists(video);
+          if(ok) media.splice(1,0,{type:'video',src:video});
+          else console.warn('[MISS video]', video);
+        }
+        PROJECTS[key].media = media;
       }
-      if (video) media.splice(1, 0, { type: "video", src: video });
-      PROJECTS[key].media = media;
     }
 
     /* =========================
@@ -309,42 +362,68 @@
     const btnPrev = overlay.querySelector('.prev');
     const btnNext = overlay.querySelector('.next');
     const btnClose= overlay.querySelector('.m-close');
+    const thumbs  = document.getElementById('thumbs');
 
     let current = null, index = 0;
 
     function lockScroll(lock){ document.documentElement.style.overflowY = document.body.style.overflowY = lock ? 'hidden' : ''; }
 
     function renderMedia(){
-      viewport.innerHTML = '';
+      viewport.innerHTML='';
       if(!current) return;
-      const item = current.media[index];
+      const item=current.media[index];
       if(!item) return;
-      if(item.type === 'img'){
-        const img = document.createElement('img'); img.src = item.src; img.alt = current.title; viewport.appendChild(img);
-      } else if(item.type === 'video'){
-        const v = document.createElement('video'); v.src = item.src; v.autoplay = true; v.muted = true; v.loop = true; v.playsInline = true; viewport.appendChild(v);
+      if(item.type==='img'){
+        const img=document.createElement('img'); img.src=item.src; img.alt=current.title; viewport.appendChild(img);
+      }else if(item.type==='video'){
+        const v=document.createElement('video');
+        v.src=item.src; v.controls=true; v.playsInline=true; // нативные контролы
+        viewport.appendChild(v);
       }
+      // активная миниатюра
+      [...thumbs.children].forEach((b,i)=>b.classList.toggle('is-active', i===index));
+    }
+
+    function renderThumbs(){
+      thumbs.innerHTML='';
+      if(!current) return;
+      current.media.forEach((m,i)=>{
+        const b=document.createElement('button');
+        if(m.type==='img'){
+          const t=document.createElement('img'); t.src=m.src; t.alt=''; b.appendChild(t);
+        }else{
+          // видео — без постера, ставим плашку
+          const p=document.createElement('div');
+          p.style.width='100%'; p.style.height='100%'; p.style.background='#111';
+          b.classList.add('vid'); b.appendChild(p);
+        }
+        b.addEventListener('click', ()=>{ index=i; renderMedia(); });
+        thumbs.appendChild(b);
+      });
     }
 
     function openModal(projectId){
       const data = PROJECTS[projectId]; if(!data) return;
-      current = data; index = 0;
-      mTitle.textContent = data.title; mSub.textContent = data.sub; mDesc.textContent = data.desc; mStmt.textContent = data.stmt;
-      renderMedia(); overlay.classList.add('show'); overlay.setAttribute('aria-hidden','false'); lockScroll(true);
+      if(!data.media || data.media.length===0){ console.warn('[EMPTY]', projectId); return; }
+      current=data; index=0;
+      mTitle.textContent=data.title; mSub.textContent=data.sub; mDesc.textContent=data.desc; mStmt.textContent=data.stmt;
+      renderThumbs(); renderMedia();
+      overlay.classList.add('show'); overlay.setAttribute('aria-hidden','false'); lockScroll(true);
     }
-    function closeModal(){ overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true'); lockScroll(false); viewport.innerHTML=''; current=null; }
+    function closeModal(){ overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true'); lockScroll(false); viewport.innerHTML=''; current=null; thumbs.innerHTML=''; }
 
-    btnPrev.addEventListener('click', ()=>{ if(!current) return; index = (index - 1 + current.media.length) % current.media.length; renderMedia(); });
-    btnNext.addEventListener('click', ()=>{ if(!current) return; index = (index + 1) % current.media.length; renderMedia(); });
+    btnPrev.style.zIndex='6'; btnNext.style.zIndex='6';
+    btnPrev.addEventListener('click', ()=>{ if(!current) return; index=(index-1+current.media.length)%current.media.length; renderMedia(); });
+    btnNext.addEventListener('click', ()=>{ if(!current) return; index=(index+1)%current.media.length; renderMedia(); });
     btnClose.addEventListener('click', closeModal);
     overlay.addEventListener('click', (e)=>{ if(e.target === overlay) closeModal(); });
     document.addEventListener('keydown', (e)=>{ if(!overlay.classList.contains('show')) return; if(e.key==='Escape') closeModal(); if(e.key==='ArrowRight') btnNext.click(); if(e.key==='ArrowLeft') btnPrev.click(); });
 
     // свайпы
     let sx=0, sy=0;
-    const viewportEl = document.querySelector('.viewport');
-    viewportEl.addEventListener('touchstart', (e)=>{ sx=e.touches[0].clientX; sy=e.touches[0].clientY; }, {passive:true});
-    viewportEl.addEventListener('touchend',   (e)=>{ const dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy; if(Math.abs(dx)>40 && Math.abs(dy)<60){ (dx<0?btnNext:btnPrev).click(); } });
+    const viewportEl=document.querySelector('.viewport');
+    viewportEl.addEventListener('touchstart',(e)=>{ sx=e.touches[0].clientX; sy=e.touches[0].clientY; },{passive:true});
+    viewportEl.addEventListener('touchend',(e)=>{ const dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy; if(Math.abs(dx)>40 && Math.abs(dy)<60){ (dx<0?btnNext:btnPrev).click(); } });
 
     // клики по карточкам/слайдам
     function attachProjectOpeners(){
@@ -353,10 +432,12 @@
         el.addEventListener('click',(ev)=>{ if(ev.target.closest('a')) return; openModal(el.getAttribute('data-project')); });
       });
     }
-    attachProjectOpeners();
 
-    // deeplink: ?p=mycy
-    const url = new URL(location.href); const pid = url.searchParams.get('p'); if(pid && PROJECTS[pid]) openModal(pid);
+    // инициализация: соберём медиа, навесим хендлеры, поддержим ?p=
+    buildMedia().then(()=>{
+      attachProjectOpeners();
+      const url=new URL(location.href); const pid=url.searchParams.get('p'); if(pid && PROJECTS[pid] && PROJECTS[pid].media?.length) openModal(pid);
+    });
   </script>
 </body>
 </html>
