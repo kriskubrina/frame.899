@@ -13,13 +13,17 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
-a{color:var(--fg);text-decoration:none}
+a{color:var(--fg);text-decoration:none;border-bottom:1px solid transparent}
+a:hover{border-color:var(--fg)}
 .wrap{max-width:var(--max);margin:0 auto;padding:32px 20px}
 header,footer{display:flex;align-items:center;justify-content:space-between;gap:16px}
 .logo{font-weight:700} .logo b{font-weight:800}
 .kicker{font-size:12px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
 h1{font-size:36px;margin:.25rem 0}
 .lead{color:var(--muted);max-width:820px;margin:8px 0 24px}
+.lang{display:flex;gap:10px}
+.lang button{background:transparent;border:1px solid var(--glass-brd);color:var(--fg);padding:4px 8px;border-radius:8px;cursor:pointer}
+.lang .is-active{background:rgba(255,255,255,.06)}
 
 /* HERO */
 .slider{position:relative;overflow:hidden;border-radius:16px;border:1px solid var(--rule)}
@@ -49,7 +53,7 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 
 /* MODAL */
 #overlay{
-  position:fixed;inset:0;background:rgba(8,8,10,.55); /* затемнение, БЕЗ blur */
+  position:fixed;inset:0;background:rgba(8,8,10,.55); /* затемнение, БЕЗ blur на всю страницу */
   display:none;z-index:50;
 }
 #overlay.show{display:block}
@@ -58,9 +62,7 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
   border:1px solid var(--glass-brd);overflow:hidden;display:grid;grid-template-columns:1.4fr 1fr;background:var(--glass-bg);
 }
 /* blur ТОЛЬКО под модалкой */
-.modal::before{
-  content:"";position:absolute;inset:0;backdrop-filter:blur(14px) saturate(160%);pointer-events:none;z-index:0;
-}
+.modal::before{content:"";position:absolute;inset:0;backdrop-filter:blur(14px) saturate(160%);pointer-events:none;z-index:0}
 .m-close,.m-nav .prev,.m-nav .next,.fs-btn{
   background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.22);
   width:var(--icon);height:var(--icon);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:3;
@@ -69,20 +71,25 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 .m-media{position:relative;background:#0a0a0a;z-index:1}
 .viewport{
   position:relative;width:100%;height:100%;
-  padding:60px 0 64px; /* карманы под ⛶ и точки справа не мешают медиа */
-  display:flex;align-items:center;justify-content:center;background:#0a0a0a;
+  padding:60px 0 64px;display:flex;align-items:center;justify-content:center;background:#0a0a0a;
 }
 .viewport img,.viewport video{
-  max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;background:#000;display:block;
+  width:auto !important;height:auto !important;max-width:100% !important;max-height:100% !important;
+  object-fit:contain;background:#000;display:block;
 }
 .m-nav{position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);display:flex;justify-content:space-between;padding:0 10px;z-index:2}
 .fs-btn{position:absolute;bottom:10px;right:12px}
-
 .m-meta{position:relative;padding:20px;overflow:auto;display:flex;flex-direction:column;gap:10px;z-index:1}
 .m-meta h3{margin:0 0 6px}
 .m-sub{margin:0 0 6px;color:#bdbdbd;font-size:14px}
 .m-desc,.m-stmt{color:#e0e0e0;font-size:15px}
-.m-thumbs{display:flex;gap:10px;overflow-x:auto;padding-top:6px}
+
+/* thumbs справа под текстом */
+.m-thumbs{
+  display:flex;gap:10px;overflow-x:auto;padding-top:6px;
+  scrollbar-width:none; -ms-overflow-style:none;
+}
+.m-thumbs::-webkit-scrollbar{display:none}
 .m-thumbs button{width:86px;height:58px;border:1px solid var(--glass-brd);border-radius:6px;overflow:hidden;background:#111;cursor:pointer;flex:0 0 auto}
 .m-thumbs img{width:100%;height:100%;object-fit:cover;display:block}
 .m-thumbs .is-active{outline:2px solid #e5e5e5}
@@ -90,10 +97,11 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 .m-dots button{width:8px;height:8px;border-radius:50%;border:0;background:#3a3a3a;cursor:pointer}
 .m-dots .active{background:#e5e5e5}
 
-/* ABOUT */
+/* ABOUT + CONTACTS */
 .about{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.contacts-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 @media (max-width:900px){
-  .grid,.about{grid-template-columns:1fr}
+  .grid,.about,.contacts-grid{grid-template-columns:1fr}
   .iconbtn,.m-close,.fs-btn{width:var(--icon-m);height:var(--icon-m)}
 }
 </style>
@@ -103,17 +111,22 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
   <header>
     <div class="logo">frame<b>899</b></div>
     <nav>
-      <a href="#projects">Projects</a>
-      <a href="#collabs">Collabs</a>
-      <a href="#about">About</a>
+      <a href="#projects" data-i18n="nav.projects">Projects</a>
+      <a href="#collabs" data-i18n="nav.collabs">Collabs</a>
+      <a href="#about" data-i18n="nav.about">About</a>
+      <a href="#contacts" data-i18n="nav.contacts">Contacts</a>
     </nav>
+    <div class="lang">
+      <button id="enBtn" class="is-active">EN</button>
+      <button id="ruBtn">RU</button>
+    </div>
   </header>
 
   <main>
     <div class="hero">
-      <div class="kicker">media & light systems</div>
-      <h1>Projects at the edge of art, tech and light</h1>
-      <p class="lead">Visual first; details and team below.</p>
+      <div class="kicker" data-i18n="kicker">media & light systems</div>
+      <h1 data-i18n="h1">Projects at the edge of art, tech and light</h1>
+      <p class="lead" data-i18n="lead">Visual first; details and team below.</p>
 
       <!-- HERO -->
       <div class="slider">
@@ -132,23 +145,23 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 
     <!-- PROJECTS -->
     <section id="projects">
-      <h2>Projects</h2>
+      <h2 data-i18n="projects.title">Projects</h2>
       <div class="grid" id="grid-projects"></div>
     </section>
 
     <!-- COLLABS -->
     <section id="collabs">
-      <h2>Collabs</h2>
+      <h2 data-i18n="collabs.title">Collabs</h2>
       <div class="grid" id="grid-collabs"></div>
     </section>
 
     <!-- ABOUT -->
     <section id="about">
-      <h2>About</h2>
+      <h2 data-i18n="about.title">About</h2>
       <div class="about">
         <div>
           <h3>Kristina Kubrina</h3>
-          <p>
+          <p data-i18n="about.kristina">
             Production director & media artist (Cyprus). Experience includes FIFA World Cup (Closing),
             AFC Asian Cup (Opening), The Weeknd tour, Robert Wun, Phillip Lim, Milan Design Week.
             Blends artistic vision with production rigor: visual systems, site adaptation, and show planning.
@@ -156,10 +169,29 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
         </div>
         <div>
           <h3>Ivan Maksimov</h3>
-          <p>
+          <p data-i18n="about.ivan">
             CG artist & architect. Spatial visualization, scene readability, integration of media into architecture.
             Focus on interactivity and light-based installations.
           </p>
+        </div>
+      </div>
+      <p class="muted" data-i18n="about.note" style="margin-top:8px">
+        Some listed large-scale works were done as part of previous teams; media not published due to IP rights.
+      </p>
+    </section>
+
+    <!-- CONTACTS -->
+    <section id="contacts">
+      <h2 data-i18n="contacts.title">Contacts</h2>
+      <div class="contacts-grid">
+        <div>
+          <p class="muted" data-i18n="contacts.loc">Base: Cyprus, Limassol</p>
+          <p>Email: <a href="mailto:hello@frame899.com">hello@frame899.com</a></p>
+          <p>Instagram: <a href="https://instagram.com/" target="_blank" rel="noopener">instagram.com/<span class="muted">[handle]</span></a></p>
+          <p>TikTok: <a href="https://tiktok.com/@" target="_blank" rel="noopener">tiktok.com/@<span class="muted">[handle]</span></a></p>
+        </div>
+        <div>
+          <p class="muted" data-i18n="contacts.press">Press / deck — on request.</p>
         </div>
       </div>
     </section>
@@ -184,7 +216,6 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
         </button>
       </div>
       <button class="fs-btn" id="fsBtn" title="Fullscreen">
-        <!-- ровный maximize-икон -->
         <svg class="icon" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
       </button>
     </div>
@@ -201,219 +232,232 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 </div>
 
 <script>
-/* ===== DATA (PNG only; hero covers strict names) ===== */
-const PROJECTS = {
-  mycy:  { title:"My Cyprus Walk",
-           sub:"2025 · Cyprus · iPad/WebGL",
-           desc:"Interactive digital walk about memory and adaptation.",
-           stmt:"Memory keeps fragments; we translate them into a digital simulation.",
-           folder:"mycy", count:9, video:null, collab:false },
-  flora: { title:"Cyprus Flora Series. 00 Anemóne coronária",
-           sub:"2025 · Cyprus · video series",
-           desc:"Endemic flora series; this chapter focuses on Anemóne coronária.",
-           stmt:"Nature as a subject that returns the gaze.",
-           folder:"anem", count:9, video:null, collab:false },
-  water: { title:"Water Spirits — White Rocks",
-           sub:"2025 · Limassol · outdoor projection",
-           desc:"Projection on limestone near the sea; a 5-min sketch.",
-           stmt:"Sea as a spirit: comforting and unsettling.",
-           folder:"waspi", count:4, video:"assets/images/waspiedit.mp4", collab:false },
-  trace: { title:"Trace × Kolla",
-           sub:"2025 · Limassol · collaboration",
-           desc:"Participatory installation about shared memory.",
-           stmt:"A living archive built by visitors.",
-           folder:"trace", count:9, video:null, collab:true },
-  tri:   { title:"Trinitron Connect (with Anya Krow)",
-           sub:"2025 · Moscow · gallery installation",
-           desc:"Digital avatar reacting to gestures and phones.",
-           stmt:"Meeting a digital double.",
-           folder:"tri", count:7, video:null, collab:true }
+/* ========= i18n ========= */
+const I18N = {
+  en:{
+    "kicker":"media & light systems",
+    "h1":"Projects at the edge of art, tech and light",
+    "lead":"Visual first; details and team below.",
+    "nav.projects":"Projects","nav.collabs":"Collabs","nav.about":"About","nav.contacts":"Contacts",
+    "projects.title":"Projects","collabs.title":"Collabs","about.title":"About","contacts.title":"Contacts",
+    "about.kristina":"Production director & media artist (Cyprus). Experience includes FIFA World Cup (Closing), AFC Asian Cup (Opening), The Weeknd tour, Robert Wun, Phillip Lim, Milan Design Week. Blends artistic vision with production rigor: visual systems, site adaptation, and show planning.",
+    "about.ivan":"CG artist & architect. Spatial visualization, scene readability, integration of media into architecture. Focus on interactivity and light-based installations.",
+    "about.note":"Some listed large-scale works were done as part of previous teams; media not published due to IP rights.",
+    "contacts.loc":"Base: Cyprus, Limassol","contacts.press":"Press / deck — on request."
+  },
+  ru:{
+    "kicker":"media & light systems",
+    "h1":"Проекты на стыке искусства, технологий и света",
+    "lead":"Сначала — визуал; ниже детали и команда.",
+    "nav.projects":"Проекты","nav.collabs":"Коллаборации","nav.about":"О нас","nav.contacts":"Контакты",
+    "projects.title":"Проекты","collabs.title":"Коллаборации","about.title":"О нас","contacts.title":"Контакты",
+    "about.kristina":"Продакшен-директор и медиа-художник (Кипр). Опыт: FIFA World Cup (Closing), AFC Asian Cup (Opening), The Weeknd, Robert Wun, Phillip Lim, Milan Design Week. Соединяет художественное видение и продакшен-точность: визуальные системы, адаптация под площадку, планы шоу.",
+    "about.ivan":"CG-артист и архитектор. Пространственная визуализация, читаемость сцены, интеграция медиа в архитектуру. Фокус — интерактив и световые инсталляции.",
+    "about.note":"Часть крупных проектов выполнена в составе предыдущих команд; медиа не публикуются из-за прав ИС.",
+    "contacts.loc":"База: Кипр, Лимассол","contacts.press":"Пресс / дека — по запросу."
+  }
 };
+let LANG=(new URL(location.href).searchParams.get('lang'))||localStorage.getItem('lang')||'en';
+function applyI18n(){
+  document.documentElement.lang=LANG;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.getAttribute('data-i18n'); if(I18N[LANG][k]) el.textContent=I18N[LANG][k];
+  });
+  enBtn.classList.toggle('is-active',LANG==='en'); ruBtn.classList.toggle('is-active',LANG==='ru');
+}
+const enBtn=document.getElementById('enBtn'); const ruBtn=document.getElementById('ruBtn');
+enBtn.onclick=()=>{LANG='en';localStorage.setItem('lang','en');applyI18n();rebuildText();};
+ruBtn.onclick=()=>{LANG='ru';localStorage.setItem('lang','ru');applyI18n();rebuildText();};
+applyI18n();
 
+/* ========= DATA (PNG + strict hero covers) ========= */
+const PROJECTS = {
+  mycy:{ title:{en:"My Cyprus Walk",ru:"My Cyprus Walk"},
+         sub:{en:"2025 · Cyprus · iPad/WebGL",ru:"2025 · Кипр · iPad/WebGL"},
+         desc:{en:"Interactive digital walk about memory and adaptation.",ru:"Интерактивная «цифровая прогулка» о памяти и адаптации."},
+         stmt:{en:"Memory keeps fragments; we translate them into a digital simulation.",ru:"Память хранит обрывки; мы переводим их в цифровую симуляцию."},
+         folder:"mycy",count:9,video:null,collab:false},
+  flora:{ title:{en:"Cyprus Flora Series. 00 Anemóne coronária",ru:"Cyprus Flora Series. 00 Anemóne coronária"},
+         sub:{en:"2025 · Cyprus · video series",ru:"2025 · Кипр · видео-серия"},
+         desc:{en:"Endemic flora series; this chapter focuses on Anemóne coronária.",ru:"Серия об эндемиках Кипра; выпуск про Anemóne coronária."},
+         stmt:{en:"Nature as a subject that returns the gaze.",ru:"Природа как субъект, возвращающий взгляд."},
+         folder:"anem",count:9,video:null,collab:false},
+  water:{ title:{en:"Water Spirits — White Rocks",ru:"Water Spirits — White Rocks"},
+         sub:{en:"2025 · Limassol · outdoor projection",ru:"2025 · Лимассол · аутдор-проекция"},
+         desc:{en:"Projection on limestone near the sea; a 5-min sketch.",ru:"Проекция на известняке у моря; 5-минутный эскиз."},
+         stmt:{en:"Sea as a spirit: comforting and unsettling.",ru:"Море как дух: утешает и тревожит."},
+         folder:"waspi",count:4,video:"assets/images/waspiedit.mp4",collab:false},
+  trace:{ title:{en:"Trace × Kolla",ru:"Trace × Kolla"},
+         sub:{en:"2025 · Limassol · collaboration",ru:"2025 · Лимассол · коллаборация"},
+         desc:{en:"Participatory installation about shared memory.",ru:"Партисипаторная инсталляция о совместной памяти."},
+         stmt:{en:"A living archive built by visitors.",ru:"Живой архив, собираемый зрителями."},
+         folder:"trace",count:9,video:null,collab:true},
+  tri:{ title:{en:"Trinitron Connect (with Anya Krow)",ru:"Trinitron Connect (с Аней Кроу)"},
+         sub:{en:"2025 · Moscow · gallery installation",ru:"2025 · Москва · галерейная инсталляция"},
+         desc:{en:"Digital avatar reacting to gestures and phones.",ru:"Цифровой аватар, реагирующий на жесты и телефоны."},
+         stmt:{en:"Meeting a digital double.",ru:"Встреча с цифровым двойником."},
+         folder:"tri",count:7,video:null,collab:true}
+};
 function buildMedia(){
   for(const k in PROJECTS){
-    const p = PROJECTS[k];
-    p.hero = `assets/images/${p.folder}00image.png`; // strict hero cover
-    p.media = [];
-    for(let i=0;i<p.count;i++){
-      const n = String(i).padStart(2,'0');
-      p.media.push({type:'img', src:`assets/images/${p.folder}${n}.png`});
-    }
-    if(p.video){ p.media.splice(1,0,{type:'video', src:p.video}); }
+    const p=PROJECTS[k];
+    p.hero=`assets/images/${p.folder}00image.png`;
+    p.media=[];
+    for(let i=0;i<p.count;i++){ const n=String(i).padStart(2,'0'); p.media.push({type:'img',src:`assets/images/${p.folder}${n}.png`}); }
+    if(p.video) p.media.splice(1,0,{type:'video',src:p.video});
   }
 }
 buildMedia();
 
-/* ===== HERO (loop, no desktop drag) ===== */
+/* ========= HERO (ordered + loop, no desktop drag) ========= */
 function buildHero(){
-  const slides = document.getElementById('slides');
-  const hdots  = document.getElementById('hdots');
-  const order = ['mycy','flora','water','trace','tri'];
-  slides.innerHTML = ''; hdots.innerHTML='';
-
+  const slides=document.getElementById('slides'); const hdots=document.getElementById('hdots');
+  const order=['flora','mycy','trace','tri','water']; // твой порядок
+  slides.innerHTML=''; hdots.innerHTML='';
   order.forEach((id,i)=>{
-    const p = PROJECTS[id];
-    const a = document.createElement('article');
-    a.className='slide'; a.dataset.project=id;
-
-    const img = document.createElement('img');
-    img.src = p.hero;
-    img.onerror = ()=>{ img.onerror=null; img.src = p.media[0]?.src || ''; }; // fallback на первый кадр
-    a.appendChild(img);
-
-    const meta = document.createElement('div'); meta.className='meta';
-    meta.innerHTML = `<h3>${p.title}</h3><p>${p.sub}</p>`;
-    a.appendChild(meta);
-
-    slides.appendChild(a);
-
-    const d=document.createElement('button');
-    if(i===0) d.classList.add('active');
-    d.onclick=()=>goTo(i);
-    hdots.appendChild(d);
+    const p=PROJECTS[id];
+    const a=document.createElement('article'); a.className='slide'; a.dataset.project=id;
+    const img=document.createElement('img'); img.src=p.hero; img.onerror=()=>{img.onerror=null; img.src=p.media[0]?.src||'';};
+    const meta=document.createElement('div'); meta.className='meta'; meta.innerHTML=`<h3>${p.title[LANG]}</h3><p>${p.sub[LANG]}</p>`;
+    a.append(img,meta); slides.append(a);
+    const d=document.createElement('button'); if(i===0)d.classList.add('active'); d.onclick=()=>goTo(i); hdots.append(d);
   });
-
   let idx=0, N=order.length;
-  function update(){
-    slides.style.transform = `translateX(${-idx*100}%)`;
-    [...hdots.children].forEach((b,i)=>b.classList.toggle('active', i===idx));
-  }
-  function goTo(i){ idx = ((i%N)+N)%N; update(); }
-  function prev(){ goTo(idx-1); }
-  function next(){ goTo(idx+1); }
+  function update(){ slides.style.transform=`translateX(${-idx*100}%)`; [...hdots.children].forEach((b,i)=>b.classList.toggle('active',i===idx)); }
+  function goTo(i){ idx=((i%N)+N)%N; update(); }
+  const prev=()=>goTo(idx-1), next=()=>goTo(idx+1);
+  document.getElementById('hPrev').onclick=prev; document.getElementById('hNext').onclick=next;
 
-  document.getElementById('hPrev').onclick = prev;
-  document.getElementById('hNext').onclick = next;
-
-  // swipe only on touch devices
-  if (matchMedia('(pointer:coarse)').matches) {
+  // touch swipe only
+  if(matchMedia('(pointer:coarse)').matches){
     let sx=0,cx=0,drag=false;
     slides.addEventListener('touchstart',e=>{drag=true;sx=e.touches[0].clientX;cx=sx;},{passive:true});
     slides.addEventListener('touchmove', e=>{if(!drag)return;cx=e.touches[0].clientX;},{passive:true});
     slides.addEventListener('touchend',  ()=>{if(!drag)return; const dx=cx-sx; drag=false; if(Math.abs(dx)>40){ dx<0?next():prev(); }},{passive:true});
   }
-
-  // open modal
   slides.querySelectorAll('.slide').forEach(el=>el.addEventListener('click',()=>openModal(el.dataset.project)));
-
   update();
 }
 buildHero();
 
-/* ===== GRIDS ===== */
+/* ========= GRIDS (ordered) ========= */
 function buildGrids(){
-  const gp = document.getElementById('grid-projects');
-  const gc = document.getElementById('grid-collabs');
+  const gp=document.getElementById('grid-projects');
+  const gc=document.getElementById('grid-collabs');
   gp.innerHTML=''; gc.innerHTML='';
 
-  for(const k in PROJECTS){
-    const p = PROJECTS[k];
-    const card = document.createElement('article');
-    card.className='card'; card.dataset.project=k;
-    card.innerHTML = `
-      <div class="thumb"><img src="${p.hero}" onerror="this.src='${p.media[0]?.src || ''}'" alt=""></div>
-      <div class="meta2"><h3>${p.title}</h3><p>${p.sub}</p></div>
-    `;
-    (p.collab?gc:gp).appendChild(card);
-    card.addEventListener('click',()=>openModal(k));
-  }
+  // projects order: mycy → water → flora
+  ['mycy','water','flora'].forEach(k=>{
+    const p=PROJECTS[k]; const card=document.createElement('article'); card.className='card'; card.dataset.project=k;
+    card.innerHTML=`<div class="thumb"><img src="${p.hero}" onerror="this.src='${p.media[0]?.src||''}'" alt=""></div>
+      <div class="meta2"><h3>${p.title[LANG]}</h3><p>${p.sub[LANG]}</p></div>`;
+    gp.append(card); card.addEventListener('click',()=>openModal(k));
+  });
+  // collabs: trace, tri
+  ['trace','tri'].forEach(k=>{
+    const p=PROJECTS[k]; const card=document.createElement('article'); card.className='card'; card.dataset.project=k;
+    card.innerHTML=`<div class="thumb"><img src="${p.hero}" onerror="this.src='${p.media[0]?.src||''}'" alt=""></div>
+      <div class="meta2"><h3>${p.title[LANG]}</h3><p>${p.sub[LANG]}</p></div>`;
+    gc.append(card); card.addEventListener('click',()=>openModal(k));
+  });
 }
 buildGrids();
 
-/* ===== MODAL ===== */
-const overlay = document.getElementById('overlay');
-const viewport= overlay.querySelector('.viewport');
-const mTitle  = overlay.querySelector('#m-title');
-const mSub    = overlay.querySelector('.m-sub');
-const mDesc   = overlay.querySelector('.m-desc');
-const mStmt   = overlay.querySelector('.m-stmt');
-const thumbs  = overlay.querySelector('#thumbs');
-const mdots   = overlay.querySelector('#mdots');
-const mPrev   = overlay.querySelector('.m-nav .prev');
-const mNext   = overlay.querySelector('.m-nav .next');
-const mClose  = overlay.querySelector('.m-close');
-const fsBtn   = document.getElementById('fsBtn');
+/* ========= MODAL ========= */
+const overlay=document.getElementById('overlay');
+const viewport=overlay.querySelector('.viewport');
+const mTitle=overlay.querySelector('#m-title');
+const mSub=overlay.querySelector('.m-sub');
+const mDesc=overlay.querySelector('.m-desc');
+const mStmt=overlay.querySelector('.m-stmt');
+const thumbs=overlay.querySelector('#thumbs');
+const mdots=overlay.querySelector('#mdots');
+const mPrev=overlay.querySelector('.m-nav .prev');
+const mNext=overlay.querySelector('.m-nav .next');
+const mClose=overlay.querySelector('.m-close');
+const fsBtn=document.getElementById('fsBtn');
 
-let current=null, index=0;
+let current=null,index=0;
 
 function renderMedia(){
-  viewport.innerHTML='';
-  if(!current) return;
-  const it = current.media[index];
-  if(!it) return;
-
-  if(it.type==='img'){
-    const im = document.createElement('img');
-    im.src = it.src;
-    viewport.appendChild(im);
-  } else {
-    const v = document.createElement('video');
-    v.src = it.src; v.controls = true; v.playsInline = true;
-    viewport.appendChild(v);
-  }
-
-  // sync thumbs + dots
-  [...thumbs.children].forEach((b,i)=>b.classList.toggle('is-active', i===index));
-  [...mdots.children].forEach((b,i)=>b.classList.toggle('active', i===index));
+  viewport.innerHTML=''; if(!current) return;
+  const it=current.media[index]; if(!it) return;
+  if(it.type==='img'){ const im=document.createElement('img'); im.src=it.src; viewport.append(im); }
+  else { const v=document.createElement('video'); v.src=it.src; v.controls=true; v.playsInline=true; viewport.append(v); }
+  [...thumbs.children].forEach((b,i)=>b.classList.toggle('is-active',i===index));
+  [...mdots.children].forEach((b,i)=>b.classList.toggle('active',i===index));
 }
-
 function renderThumbsDots(){
   thumbs.innerHTML=''; mdots.innerHTML='';
   current.media.forEach((m,i)=>{
     const b=document.createElement('button');
-    if(m.type==='img'){ const t=document.createElement('img'); t.src=m.src; b.appendChild(t); }
+    if(m.type==='img'){ const t=document.createElement('img'); t.src=m.src; b.append(t); }
     b.onclick=()=>{ index=i; renderMedia(); };
-    thumbs.appendChild(b);
-
-    const d=document.createElement('button');
-    if(i===index) d.classList.add('active');
-    d.onclick=()=>{ index=i; renderMedia(); };
-    mdots.appendChild(d);
+    thumbs.append(b);
+    const d=document.createElement('button'); if(i===index)d.classList.add('active'); d.onclick=()=>{index=i;renderMedia();}; mdots.append(d);
   });
 }
-
 function openModal(id){
-  current = PROJECTS[id]; index=0;
-  mTitle.textContent = current.title;
-  mSub.textContent   = current.sub;
-  mDesc.textContent  = current.desc;
-  mStmt.textContent  = current.stmt;
-  renderThumbsDots();
-  renderMedia();
-  overlay.classList.add('show');
-  overlay.setAttribute('aria-hidden','false');
+  current=PROJECTS[id]; index=0;
+  mTitle.textContent=current.title[LANG]; mSub.textContent=current.sub[LANG];
+  mDesc.textContent=current.desc[LANG]; mStmt.textContent=current.stmt[LANG];
+  renderThumbsDots(); renderMedia();
+  overlay.classList.add('show'); overlay.setAttribute('aria-hidden','false');
 }
 function closeModal(){
-  overlay.classList.remove('show');
-  overlay.setAttribute('aria-hidden','true');
+  overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true');
   viewport.innerHTML=''; thumbs.innerHTML=''; mdots.innerHTML='';
   current=null;
 }
-
-mPrev.addEventListener('click', ()=>{ if(!current) return; index=(index-1+current.media.length)%current.media.length; renderMedia(); });
-mNext.addEventListener('click', ()=>{ if(!current) return; index=(index+1)%current.media.length; renderMedia(); });
-mClose.addEventListener('click', closeModal);
-overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeModal(); });
-document.addEventListener('keydown', (e)=>{ if(!overlay.classList.contains('show')) return;
+mPrev.onclick=()=>{ if(!current) return; index=(index-1+current.media.length)%current.media.length; renderMedia(); };
+mNext.onclick=()=>{ if(!current) return; index=(index+1)%current.media.length; renderMedia(); };
+mClose.onclick=closeModal;
+overlay.addEventListener('click',(e)=>{ if(e.target===overlay) closeModal(); });
+document.addEventListener('keydown',(e)=>{ if(!overlay.classList.contains('show')) return;
   if(e.key==='Escape') closeModal();
-  if(e.key==='ArrowLeft')  mPrev.click();
+  if(e.key==='ArrowLeft') mPrev.click();
   if(e.key==='ArrowRight') mNext.click();
 });
-
-/* swipe inside modal ONLY on touch */
-if (matchMedia('(pointer:coarse)').matches) {
+/* swipe inside modal only on touch */
+if(matchMedia('(pointer:coarse)').matches){
   let sx=0,cx=0,drag=false;
   viewport.addEventListener('touchstart',e=>{drag=true;sx=e.touches[0].clientX;cx=sx;},{passive:true});
   viewport.addEventListener('touchmove', e=>{if(!drag)return;cx=e.touches[0].clientX;},{passive:true});
   viewport.addEventListener('touchend',  ()=>{if(!drag)return; const dx=cx-sx; drag=false; if(Math.abs(dx)>40){ dx<0?mNext.click():mPrev.click(); }},{passive:true});
 }
 
-/* Fullscreen on media area (icons stay fixed sizes) */
-fsBtn.addEventListener('click', ()=>{
-  const el = overlay.querySelector('.m-media');
+/* fullscreen */
+fsBtn.addEventListener('click',()=>{
+  const el=overlay.querySelector('.m-media');
   if(!document.fullscreenElement){ el.requestFullscreen?.(); }
   else{ document.exitFullscreen?.(); }
 });
+
+/* ========= rebuild on lang change ========= */
+function rebuildText(){
+  // hero meta
+  document.querySelectorAll('#slides .slide').forEach(sl=>{
+    const id=sl.getAttribute('data-project'); const p=PROJECTS[id];
+    sl.querySelector('.meta').innerHTML=`<h3>${p.title[LANG]}</h3><p>${p.sub[LANG]}</p>`;
+  });
+  // grids
+  buildGrids();
+}
+
+/* ========= build hero slides ========= */
+function firstBuildHeroSlides(){
+  const slides=document.getElementById('slides'); slides.innerHTML='';
+  const order=['flora','mycy','trace','tri','water'];
+  order.forEach((id)=>{
+    const p=PROJECTS[id];
+    const a=document.createElement('article'); a.className='slide'; a.dataset.project=id;
+    const img=document.createElement('img'); img.src=p.hero; img.onerror=()=>{img.onerror=null; img.src=p.media[0]?.src||'';};
+    const meta=document.createElement('div'); meta.className='meta'; meta.innerHTML=`<h3>${p.title[LANG]}</h3><p>${p.sub[LANG]}</p>`;
+    a.append(img,meta); slides.append(a);
+  });
+}
+firstBuildHeroSlides(); // затем buildHero() нарежет навигацию
+buildHero();
 </script>
 </body>
 </html>
