@@ -18,13 +18,11 @@ a:hover{border-color:var(--fg)}
 .wrap{max-width:var(--max);margin:0 auto;padding:32px var(--pad)}
 
 /* HEADER: центр меню, слева логотип+кикер единым блоком */
-header{
-  display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:16px;
-}
+header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px}
 .h-left{justify-self:start}
 .logo-wrap{display:flex;flex-direction:column;line-height:1}
 .logo{font-weight:800;letter-spacing:.01em;font-size:20px}
-.kicker{font-size:12px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;font-weight:600;margin-top:6px}
+.kicker{font-size:12px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;font-weight:600;margin-top:8px} /* +зазор */
 nav{justify-self:center}
 nav a{font-weight:500;line-height:1.1;margin:0 10px}
 .lang{justify-self:end;display:flex;gap:8px}
@@ -68,7 +66,7 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 .modal{
   position:relative;width:90vw;max-width:1400px;height:90vh;margin:5vh auto;border-radius:18px;
   border:1px solid var(--glass-brd);overflow:hidden;background:var(--glass-bg);
-  display:grid;grid-template-columns:minmax(520px,1.35fr) minmax(360px,1fr); /* фикс две колонки */
+  display:grid;grid-template-columns:minmax(520px,1.35fr) minmax(360px,1fr); /* две колонки */
 }
 .modal::before{content:"";position:absolute;inset:0;backdrop-filter:blur(14px) saturate(160%);pointer-events:none;z-index:0}
 .m-close,.m-nav .prev,.m-nav .next,.fs-btn{background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.22);width:var(--icon);height:var(--icon);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:3}
@@ -80,14 +78,12 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
   position:relative;width:100%;height:100%;
   display:flex;align-items:center;justify-content:center;background:#0a0a0a
 }
-.viewport img,.viewport video{display:block;background:#000;width:100%;height:100%;object-fit:contain}
+.viewport img,.viewport video{display:block;background:#000;max-width:none;max-height:none}
 .m-nav{position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);display:flex;justify-content:space-between;padding:0 var(--pad);z-index:2}
 .fs-btn{position:absolute;bottom:10px;right:12px}
 
 /* RIGHT: text + thumbs */
-.m-meta{
-  position:relative;padding:20px 20px 14px;overflow:auto;display:flex;flex-direction:column;gap:10px;z-index:1
-}
+.m-meta{position:relative;padding:20px 20px 14px;overflow:auto;display:flex;flex-direction:column;gap:10px;z-index:1}
 .m-meta h3{margin:0 0 6px}
 .m-sub{margin:0 0 6px;color:#bdbdbd;font-size:14px}
 .m-desc,.m-stmt{color:#e0e0e0;font-size:15px}
@@ -288,9 +284,8 @@ function buildMedia(){
   for(const k in PROJECTS){
     const p=PROJECTS[k];
     p.hero=`assets/images/${p.folder}00image.png`;             // HERO
-    p.grid=(k==='tri')                                         // Trinitron: именно image, не image2
-      ? `assets/images/${p.folder}00image.png`
-      : `assets/images/${p.folder}00image2.png`;
+    p.grid=(k==='tri') ? `assets/images/${p.folder}00image.png`
+                       : `assets/images/${p.folder}00image2.png`;
     p.media=[];
     for(let i=0;i<p.count;i++){const n=String(i).padStart(2,'0');p.media.push({type:'img',src:`assets/images/${p.folder}${n}.png`});}
     if(p.video)p.media.splice(1,0,{type:'video',src:p.video});
@@ -333,9 +328,9 @@ function buildGrids(){
 }
 buildGrids();
 
-/* ========= MODAL: fit только по левой колонке ========= */
+/* ========= MODAL: axis-aware fit ========= */
 const overlay=document.getElementById('overlay');
-const viewport=document.getElementById('vp');        // ← именно левый viewport
+const viewport=document.getElementById('vp');
 const mTitle=overlay.querySelector('#m-title');
 const mSub=overlay.querySelector('.m-sub');
 const mDesc=overlay.querySelector('.m-desc');
@@ -346,8 +341,56 @@ const mPrev=overlay.querySelector('.m-nav .prev');
 const mNext=overlay.querySelector('.m-nav .next');
 const mClose=overlay.querySelector('.m-close');
 const fsBtn=document.getElementById('fsBtn');
-let current=null,index=0;
+let current=null,index=0,viewportRO=null;
 
+function getMediaNaturalSize(el){
+  return new Promise(resolve=>{
+    if(el.tagName==='IMG'){
+      if(el.complete&&el.naturalWidth){resolve({w:el.naturalWidth,h:el.naturalHeight});}
+      else{el.addEventListener('load',()=>resolve({w:el.naturalWidth,h:el.naturalHeight}),{once:true});
+           el.addEventListener('error',()=>resolve({w:1,h:1}),{once:true});}
+    }else{
+      const apply=()=>resolve({w:el.videoWidth||1,h:el.videoHeight||1});
+      if(el.readyState>=1)apply(); else el.addEventListener('loadedmetadata',apply,{once:true});
+    }
+  });
+}
+
+/* ВАЖНО: вертикальные — по высоте; горизонтальные — по ширине */
+async function fitAny(el,container){
+  const {w:mw,h:mh}=await getMediaNaturalSize(el);
+  const cw=container.clientWidth, ch=container.clientHeight;
+  const ratio = mw/mh;
+  const squareish = Math.abs(mw-mh)/Math.max(mw,mh) < 0.06;
+
+  let w,h;
+  if(squareish){
+    const s = Math.min(cw/mw, ch/mh);
+    w = mw*s; h = mh*s;
+  } else if(ratio < 1){ // портрет
+    h = ch;
+    w = h * ratio;
+    if (w > cw){ // перестраховка, если слишком узкий контейнер
+      w = cw; h = w / ratio;
+    }
+  } else {        // альбом/панорама
+    w = cw;
+    h = w / ratio;
+    if (h > ch){
+      h = ch; w = h * ratio;
+    }
+  }
+
+  el.style.maxWidth='none'; el.style.maxHeight='none';
+  el.style.width=Math.floor(w)+'px';
+  el.style.height=Math.floor(h)+'px';
+}
+
+function attachViewportObserver(){
+  if(viewportRO) viewportRO.disconnect();
+  viewportRO=new ResizeObserver(()=>{const el=viewport.firstElementChild; if(el) fitAny(el,viewport);});
+  viewportRO.observe(viewport);
+}
 function renderMedia(){
   viewport.innerHTML=''; if(!current) return;
   const it=current.media[index]; if(!it) return;
@@ -355,8 +398,9 @@ function renderMedia(){
   if(it.type==='img'){el=document.createElement('img'); el.src=it.src;}
   else{el=document.createElement('video'); el.src=it.src; el.controls=true; el.playsInline=true;}
   viewport.append(el);
+  getMediaNaturalSize(el).then(()=>fitAny(el,viewport));
+  attachViewportObserver();
 
-  // UI sync + автопрокрутка превью
   [...thumbs.children].forEach((b,i)=>b.classList.toggle('is-active',i===index));
   [...mdots.children].forEach((b,i)=>b.classList.toggle('active',i===index));
   const t=thumbs.children[index]; if(t) t.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
@@ -389,7 +433,6 @@ document.addEventListener('keydown',(e)=>{ if(!overlay.classList.contains('show'
   if(e.key==='ArrowLeft') mPrev.click();
   if(e.key==='ArrowRight') mNext.click();
 });
-/* swipe: только на тач-устройствах */
 if(matchMedia('(pointer:coarse)').matches){
   let sx=0,cx=0,drag=false;
   viewport.addEventListener('touchstart',e=>{drag=true;sx=e.touches[0].clientX;cx=sx;},{passive:true});
