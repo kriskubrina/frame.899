@@ -3,44 +3,45 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>frame.899 — media & light systems</title>
-<meta name="description" content="frame.899 — poetic multimedia installations & light systems."/>
+<title>frame.899 — cyprus art collective</title>
+<meta name="description" content="frame.899 — poetic multimedia installations & light systems from a Cyprus art collective."/>
 <style>
 :root{
   --bg:#0b0b0b; --fg:#e9e9e9; --muted:#a6a6a6; --rule:#1a1a1a;
   --glass-bg:rgba(10,10,12,.28); --glass-brd:rgba(255,255,255,.1);
   --max:1120px; --icon:40px; --icon-m:36px;
+  --pad:20px;
 }
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
 a{color:var(--fg);text-decoration:none;border-bottom:1px solid transparent}
 a:hover{border-color:var(--fg)}
-.wrap{max-width:var(--max);margin:0 auto;padding:32px 20px}
+.wrap{max-width:var(--max);margin:0 auto;padding:32px var(--pad)}
 header,footer{display:flex;align-items:center;justify-content:space-between;gap:16px}
 .logo{font-weight:700} .logo b{font-weight:800}
 .kicker{font-size:12px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
 h1{font-size:36px;margin:.25rem 0}
-.lead{color:var(--muted);max-width:820px;margin:8px 0 24px}
+.lead{color:#cfcfcf;max-width:820px;margin:8px 0 24px}
 .lang{display:flex;gap:10px}
 .lang button{background:transparent;border:1px solid var(--glass-brd);color:var(--fg);padding:4px 8px;border-radius:8px;cursor:pointer}
 .lang .is-active{background:rgba(255,255,255,.06)}
 
 /* HERO */
-.slider{position:relative;overflow:hidden;border-radius:16px;border:1px solid var(--rule)}
+.slider{position:relative;overflow:hidden;border-radius:16px;border:1px solid var(--rule);background:#0d0d0f}
 .slides{display:flex;transition:transform .4s ease}
 .slide{min-width:100%;height:62vw;max-height:560px;position:relative;display:flex;align-items:flex-end;background:#0d0d0f}
 .slide img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.slide .meta{position:absolute;left:20px;bottom:20px;padding:10px 12px;border-radius:12px;
+.slide .meta{position:absolute;left:var(--pad);bottom:var(--pad);padding:10px 12px;border-radius:12px;
   background:rgba(0,0,0,.35);backdrop-filter:blur(10px);border:1px solid var(--glass-brd)}
 .slide h3{margin:0;font-size:18px}
 .slide p{margin:4px 0 0;color:#d0d0d0;font-size:14px}
-.hnav{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;pointer-events:none}
+.hnav{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;pointer-events:none;padding:0 var(--pad)}
 .iconbtn{pointer-events:auto;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.2);
   width:var(--icon);height:var(--icon);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .icon{width:24px;height:24px;stroke:#eee;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
-.dots{display:flex;gap:8px;justify-content:center;margin:12px 0 0}
-.dots button{width:8px;height:8px;border-radius:50%;border:0;background:#3a3a3a;cursor:pointer}
-.dots button.active{background:#e5e5e5}
+.hero-dots{display:flex;gap:8px;justify-content:center;margin:12px 0 0}
+.hero-dots button,.m-dots button{width:8px;height:8px;border-radius:50%;border:0;background:#3a3a3a;cursor:pointer}
+.hero-dots .active,.m-dots .active{background:#e5e5e5}
 
 /* GRID */
 section{padding:28px 0;border-top:1px solid var(--rule)}
@@ -52,20 +53,16 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 .meta2{padding:12px;color:#cfcfcf}
 
 /* MODAL */
-#overlay{
-  position:fixed;inset:0;background:rgba(8,8,10,.55); /* затемнение, БЕЗ blur на всю страницу */
-  display:none;z-index:50;
-}
+#overlay{position:fixed;inset:0;background:rgba(8,8,10,.55);display:none;z-index:50}
 #overlay.show{display:block}
 .modal{
   position:relative;width:90vw;max-width:1400px;height:90vh;margin:5vh auto;border-radius:18px;
   border:1px solid var(--glass-brd);overflow:hidden;display:grid;grid-template-columns:1.4fr 1fr;background:var(--glass-bg);
 }
-/* blur ТОЛЬКО под модалкой */
 .modal::before{content:"";position:absolute;inset:0;backdrop-filter:blur(14px) saturate(160%);pointer-events:none;z-index:0}
 .m-close,.m-nav .prev,.m-nav .next,.fs-btn{
-  background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.22);
-  width:var(--icon);height:var(--icon);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:3;
+  background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.22);width:var(--icon);height:var(--icon);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:3;
 }
 .m-close{position:absolute;top:10px;right:12px}
 .m-media{position:relative;background:#0a0a0a;z-index:1}
@@ -74,10 +71,9 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
   padding:60px 0 64px;display:flex;align-items:center;justify-content:center;background:#0a0a0a;
 }
 .viewport img,.viewport video{
-  width:auto !important;height:auto !important;max-width:100% !important;max-height:100% !important;
-  object-fit:contain;background:#000;display:block;
+  width:auto !important;height:auto !important;max-width:100% !important;max-height:100% !important;object-fit:contain;background:#000;display:block;
 }
-.m-nav{position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);display:flex;justify-content:space-between;padding:0 10px;z-index:2}
+.m-nav{position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);display:flex;justify-content:space-between;padding:0 var(--pad);z-index:2}
 .fs-btn{position:absolute;bottom:10px;right:12px}
 .m-meta{position:relative;padding:20px;overflow:auto;display:flex;flex-direction:column;gap:10px;z-index:1}
 .m-meta h3{margin:0 0 6px}
@@ -86,16 +82,17 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 
 /* thumbs справа под текстом */
 .m-thumbs{
-  display:flex;gap:10px;overflow-x:auto;padding-top:6px;
+  display:flex;gap:10px;overflow-x:auto;padding-top:6px;padding-bottom:6px;
   scrollbar-width:none; -ms-overflow-style:none;
 }
 .m-thumbs::-webkit-scrollbar{display:none}
-.m-thumbs button{width:86px;height:58px;border:1px solid var(--glass-brd);border-radius:6px;overflow:hidden;background:#111;cursor:pointer;flex:0 0 auto}
+.m-thumbs button{
+  width:86px;height:58px;border:1px solid var(--glass-brd);border-radius:6px;overflow:hidden;background:#111;cursor:pointer;flex:0 0 auto;
+  box-shadow: inset 0 0 0 0 rgba(0,0,0,0); /* baseline для анимации рамки */
+}
 .m-thumbs img{width:100%;height:100%;object-fit:cover;display:block}
-.m-thumbs .is-active{outline:2px solid #e5e5e5}
+.m-thumbs .is-active{box-shadow: inset 0 0 0 2px #e5e5e5}
 .m-dots{display:flex;justify-content:center;gap:8px;margin-top:8px}
-.m-dots button{width:8px;height:8px;border-radius:50%;border:0;background:#3a3a3a;cursor:pointer}
-.m-dots .active{background:#e5e5e5}
 
 /* ABOUT + CONTACTS */
 .about{display:grid;grid-template-columns:1fr 1fr;gap:20px}
@@ -124,9 +121,9 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 
   <main>
     <div class="hero">
-      <div class="kicker" data-i18n="kicker">media & light systems</div>
+      <div class="kicker" data-i18n="kicker">cyprus art collective</div>
       <h1 data-i18n="h1">Projects at the edge of art, tech and light</h1>
-      <p class="lead" data-i18n="lead">Visual first; details and team below.</p>
+      <p class="lead" data-i18n="lead">Serious systems, unserious faces.</p>
 
       <!-- HERO -->
       <div class="slider">
@@ -139,8 +136,8 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
             <svg class="icon" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
           </button>
         </div>
-        <div class="dots" id="hdots" aria-label="hero pagination"></div>
       </div>
+      <div class="hero-dots" id="hdots" aria-label="hero pagination"></div>
     </div>
 
     <!-- PROJECTS -->
@@ -190,9 +187,7 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
           <p>Instagram: <a href="https://instagram.com/" target="_blank" rel="noopener">instagram.com/<span class="muted">[handle]</span></a></p>
           <p>TikTok: <a href="https://tiktok.com/@" target="_blank" rel="noopener">tiktok.com/@<span class="muted">[handle]</span></a></p>
         </div>
-        <div>
-          <p class="muted" data-i18n="contacts.press">Press / deck — on request.</p>
-        </div>
+        <div><p class="muted" data-i18n="contacts.press">Press / deck — on request.</p></div>
       </div>
     </section>
   </main>
@@ -235,9 +230,9 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 /* ========= i18n ========= */
 const I18N = {
   en:{
-    "kicker":"media & light systems",
+    "kicker":"cyprus art collective",
     "h1":"Projects at the edge of art, tech and light",
-    "lead":"Visual first; details and team below.",
+    "lead":"Serious systems, unserious faces.",
     "nav.projects":"Projects","nav.collabs":"Collabs","nav.about":"About","nav.contacts":"Contacts",
     "projects.title":"Projects","collabs.title":"Collabs","about.title":"About","contacts.title":"Contacts",
     "about.kristina":"Production director & media artist (Cyprus). Experience includes FIFA World Cup (Closing), AFC Asian Cup (Opening), The Weeknd tour, Robert Wun, Phillip Lim, Milan Design Week. Blends artistic vision with production rigor: visual systems, site adaptation, and show planning.",
@@ -246,9 +241,9 @@ const I18N = {
     "contacts.loc":"Base: Cyprus, Limassol","contacts.press":"Press / deck — on request."
   },
   ru:{
-    "kicker":"media & light systems",
+    "kicker":"cyprus art collective",
     "h1":"Проекты на стыке искусства, технологий и света",
-    "lead":"Сначала — визуал; ниже детали и команда.",
+    "lead":"Системы серьёзные, лица — не очень.",
     "nav.projects":"Проекты","nav.collabs":"Коллаборации","nav.about":"О нас","nav.contacts":"Контакты",
     "projects.title":"Проекты","collabs.title":"Коллаборации","about.title":"О нас","contacts.title":"Контакты",
     "about.kristina":"Продакшен-директор и медиа-художник (Кипр). Опыт: FIFA World Cup (Closing), AFC Asian Cup (Opening), The Weeknd, Robert Wun, Phillip Lim, Milan Design Week. Соединяет художественное видение и продакшен-точность: визуальные системы, адаптация под площадку, планы шоу.",
@@ -270,7 +265,7 @@ enBtn.onclick=()=>{LANG='en';localStorage.setItem('lang','en');applyI18n();rebui
 ruBtn.onclick=()=>{LANG='ru';localStorage.setItem('lang','ru');applyI18n();rebuildText();};
 applyI18n();
 
-/* ========= DATA (PNG + strict hero covers) ========= */
+/* ========= DATA ========= */
 const PROJECTS = {
   mycy:{ title:{en:"My Cyprus Walk",ru:"My Cyprus Walk"},
          sub:{en:"2025 · Cyprus · iPad/WebGL",ru:"2025 · Кипр · iPad/WebGL"},
@@ -309,38 +304,66 @@ function buildMedia(){
 }
 buildMedia();
 
-/* ========= HERO (ordered + loop, no desktop drag) ========= */
+/* ========= HERO (seamless loop via clones) ========= */
 function buildHero(){
-  const slides=document.getElementById('slides'); const hdots=document.getElementById('hdots');
-  const order=['flora','mycy','trace','tri','water']; // твой порядок
-  slides.innerHTML=''; hdots.innerHTML='';
-  order.forEach((id,i)=>{
+  const slidesEl=document.getElementById('slides');
+  const hdots=document.getElementById('hdots');
+  const order=['flora','mycy','trace','tri','water']; // заданный порядок
+
+  // build slides with clones
+  slidesEl.innerHTML='';
+  const makeSlide=(id)=>{
     const p=PROJECTS[id];
     const a=document.createElement('article'); a.className='slide'; a.dataset.project=id;
     const img=document.createElement('img'); img.src=p.hero; img.onerror=()=>{img.onerror=null; img.src=p.media[0]?.src||'';};
     const meta=document.createElement('div'); meta.className='meta'; meta.innerHTML=`<h3>${p.title[LANG]}</h3><p>${p.sub[LANG]}</p>`;
-    a.append(img,meta); slides.append(a);
-    const d=document.createElement('button'); if(i===0)d.classList.add('active'); d.onclick=()=>goTo(i); hdots.append(d);
-  });
-  let idx=0, N=order.length;
-  function update(){ slides.style.transform=`translateX(${-idx*100}%)`; [...hdots.children].forEach((b,i)=>b.classList.toggle('active',i===idx)); }
-  function goTo(i){ idx=((i%N)+N)%N; update(); }
-  const prev=()=>goTo(idx-1), next=()=>goTo(idx+1);
-  document.getElementById('hPrev').onclick=prev; document.getElementById('hNext').onclick=next;
+    a.append(img,meta); return a;
+  };
+  const first=makeSlide(order[0]);
+  const last =makeSlide(order[order.length-1]);
+  slidesEl.append(last.cloneNode(true)); // clone last at head
+  order.forEach(id=>slidesEl.append(makeSlide(id)));
+  slidesEl.append(first.cloneNode(true)); // clone first at tail
 
-  // touch swipe only
+  // dots
+  hdots.innerHTML='';
+  order.forEach((_,i)=>{ const d=document.createElement('button'); if(i===0)d.classList.add('active'); d.onclick=()=>goTo(i+1); hdots.append(d); });
+
+  let idx=1; // start at first real slide
+  const N = order.length;
+  function update(animate=true){
+    slidesEl.style.transition = animate? 'transform .45s ease' : 'none';
+    slidesEl.style.transform  = `translateX(${-idx*100}%)`;
+    const dotIndex = ((idx-1+N)%N);
+    [...hdots.children].forEach((b,i)=>b.classList.toggle('active', i===dotIndex));
+  }
+  function goTo(i){ idx=i; update(true); }
+  function prev(){ idx--; update(true); }
+  function next(){ idx++; update(true); }
+
+  slidesEl.addEventListener('transitionend', ()=>{
+    if(idx===0){ idx=N; update(false); }
+    if(idx===N+1){ idx=1; update(false); }
+  });
+
+  document.getElementById('hPrev').onclick=prev;
+  document.getElementById('hNext').onclick=next;
+
+  // swipe only on touch
   if(matchMedia('(pointer:coarse)').matches){
     let sx=0,cx=0,drag=false;
-    slides.addEventListener('touchstart',e=>{drag=true;sx=e.touches[0].clientX;cx=sx;},{passive:true});
-    slides.addEventListener('touchmove', e=>{if(!drag)return;cx=e.touches[0].clientX;},{passive:true});
-    slides.addEventListener('touchend',  ()=>{if(!drag)return; const dx=cx-sx; drag=false; if(Math.abs(dx)>40){ dx<0?next():prev(); }},{passive:true});
+    slidesEl.addEventListener('touchstart',e=>{drag=true;sx=e.touches[0].clientX;cx=sx;slidesEl.style.transition='none';},{passive:true});
+    slidesEl.addEventListener('touchmove', e=>{if(!drag)return;cx=e.touches[0].clientX;const dx=(cx-sx)/slidesEl.clientWidth*100;slidesEl.style.transform=`translateX(${(-idx*100)+dx}%)`;},{passive:true});
+    slidesEl.addEventListener('touchend',  ()=>{if(!drag)return; const dx=cx-sx; drag=false; if(Math.abs(dx)>40){ dx<0?next():prev(); } else update(true);},{passive:true});
   }
-  slides.querySelectorAll('.slide').forEach(el=>el.addEventListener('click',()=>openModal(el.dataset.project)));
-  update();
+
+  slidesEl.querySelectorAll('.slide').forEach(el=>el.addEventListener('click',()=>openModal(el.dataset.project)));
+  // initial position
+  update(false);
 }
 buildHero();
 
-/* ========= GRIDS (ordered) ========= */
+/* ========= GRIDS (order) ========= */
 function buildGrids(){
   const gp=document.getElementById('grid-projects');
   const gc=document.getElementById('grid-collabs');
@@ -379,14 +402,43 @@ const fsBtn=document.getElementById('fsBtn');
 
 let current=null,index=0;
 
+function fitMedia(el){
+  // принудительно «fit»: вертикальные по высоте, горизонтальные по ширине
+  const box=viewport.getBoundingClientRect();
+  const boxRatio=box.width/box.height;
+
+  const apply=(isHorizontal)=>{
+    if(isHorizontal){ el.style.width='100%'; el.style.height='auto'; }
+    else{ el.style.height='100%'; el.style.width='auto'; }
+  };
+
+  if(el.tagName==='IMG'){
+    const r=el.naturalWidth/el.naturalHeight;
+    apply(r>=boxRatio);
+  }else if(el.tagName==='VIDEO'){
+    const onmeta=()=>{ const r=el.videoWidth/el.videoHeight; apply(r>=boxRatio); };
+    if(el.readyState>=1) onmeta(); else el.addEventListener('loadedmetadata', onmeta, {once:true});
+  }
+}
+
 function renderMedia(){
   viewport.innerHTML=''; if(!current) return;
   const it=current.media[index]; if(!it) return;
-  if(it.type==='img'){ const im=document.createElement('img'); im.src=it.src; viewport.append(im); }
-  else { const v=document.createElement('video'); v.src=it.src; v.controls=true; v.playsInline=true; viewport.append(v); }
+
+  let el;
+  if(it.type==='img'){ el=document.createElement('img'); el.src=it.src; el.onload=()=>fitMedia(el); }
+  else { el=document.createElement('video'); el.src=it.src; el.controls=true; el.playsInline=true; el.addEventListener('loadedmetadata',()=>fitMedia(el)); }
+  viewport.append(el);
+
+  // sync
   [...thumbs.children].forEach((b,i)=>b.classList.toggle('is-active',i===index));
   [...mdots.children].forEach((b,i)=>b.classList.toggle('active',i===index));
+
+  // автоцентр превью
+  const t=thumbs.children[index];
+  if(t) t.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
 }
+
 function renderThumbsDots(){
   thumbs.innerHTML=''; mdots.innerHTML='';
   current.media.forEach((m,i)=>{
@@ -394,9 +446,10 @@ function renderThumbsDots(){
     if(m.type==='img'){ const t=document.createElement('img'); t.src=m.src; b.append(t); }
     b.onclick=()=>{ index=i; renderMedia(); };
     thumbs.append(b);
-    const d=document.createElement('button'); if(i===index)d.classList.add('active'); d.onclick=()=>{index=i;renderMedia();}; mdots.append(d);
+    const d=document.createElement('button'); if(i===index)d.classList.add('active'); d.onclick=()=>{ index=i; renderMedia(); }; mdots.append(d);
   });
 }
+
 function openModal(id){
   current=PROJECTS[id]; index=0;
   mTitle.textContent=current.title[LANG]; mSub.textContent=current.sub[LANG];
@@ -406,8 +459,7 @@ function openModal(id){
 }
 function closeModal(){
   overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true');
-  viewport.innerHTML=''; thumbs.innerHTML=''; mdots.innerHTML='';
-  current=null;
+  viewport.innerHTML=''; thumbs.innerHTML=''; mdots.innerHTML=''; current=null;
 }
 mPrev.onclick=()=>{ if(!current) return; index=(index-1+current.media.length)%current.media.length; renderMedia(); };
 mNext.onclick=()=>{ if(!current) return; index=(index+1)%current.media.length; renderMedia(); };
@@ -435,29 +487,16 @@ fsBtn.addEventListener('click',()=>{
 
 /* ========= rebuild on lang change ========= */
 function rebuildText(){
-  // hero meta
+  // hero metas
   document.querySelectorAll('#slides .slide').forEach(sl=>{
     const id=sl.getAttribute('data-project'); const p=PROJECTS[id];
-    sl.querySelector('.meta').innerHTML=`<h3>${p.title[LANG]}</h3><p>${p.sub[LANG]}</p>`;
+    if(p){ sl.querySelector('.meta').innerHTML=`<h3>${p.title[LANG]}</h3><p>${p.sub[LANG]}</p>`; }
   });
-  // grids
   buildGrids();
 }
 
-/* ========= build hero slides ========= */
-function firstBuildHeroSlides(){
-  const slides=document.getElementById('slides'); slides.innerHTML='';
-  const order=['flora','mycy','trace','tri','water'];
-  order.forEach((id)=>{
-    const p=PROJECTS[id];
-    const a=document.createElement('article'); a.className='slide'; a.dataset.project=id;
-    const img=document.createElement('img'); img.src=p.hero; img.onerror=()=>{img.onerror=null; img.src=p.media[0]?.src||'';};
-    const meta=document.createElement('div'); meta.className='meta'; meta.innerHTML=`<h3>${p.title[LANG]}</h3><p>${p.sub[LANG]}</p>`;
-    a.append(img,meta); slides.append(a);
-  });
-}
-firstBuildHeroSlides(); // затем buildHero() нарежет навигацию
-buildHero();
+/* ========= initial build ========= */
+buildGrids();
 </script>
 </body>
 </html>
