@@ -6,14 +6,15 @@
 <title>frame.899 — media & light systems</title>
 <meta name="description" content="frame.899 — poetic multimedia installations & light systems." />
 <meta property="og:title" content="frame.899 — media & light systems" />
-<meta property="og:description" content="Projects: My Cyprus Walk, Cyprus Flora, Water Spirits. Collabs: Trace × Kolla, Trinitron Connect." />
+<meta property="og:description" content="Projects: My Cyprus Walk, Cyprus Flora Series. Collabs: Trace × Kolla, Trinitron Connect." />
 <meta property="og:type" content="website" />
 <meta name="theme-color" content="#0b0b0b" />
 <style>
   :root{
     --bg:#0b0b0b; --fg:#e9e9e9; --muted:#a6a6a6; --rule:#1a1a1a; --acc:#eaeaea;
-    --glass-bg: rgba(10,10,12,.25); --glass-brd: rgba(255,255,255,.07);
+    --glass-bg: rgba(10,10,12,.22); --glass-brd: rgba(255,255,255,.07);
     --max:1120px; --gap:20px;
+    --icon:40px; --icon-m:36px;
   }
   *{box-sizing:border-box}
   html,body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,Helvetica,Arial,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
@@ -36,8 +37,7 @@
   /* HERO */
   .hero{margin-top:18px}
   .slider{position:relative;border:1px solid var(--rule);border-radius:16px;overflow:hidden;background:#0f0f10}
-  .slides{display:flex;overflow:hidden;touch-action:pan-y;cursor:grab}
-  .slides:active{cursor:grabbing}
+  .slides{display:flex;overflow:hidden;touch-action:pan-y}
   .slide{min-width:100%;height:62vw;max-height:560px;position:relative;display:flex;align-items:flex-end;justify-content:flex-start;background:#0d0d0f}
   .slide .meta{
     position:absolute;left:20px;bottom:20px;padding:10px 12px;border-radius:12px;
@@ -46,11 +46,14 @@
   .slide h3{margin:0;font-size:18px}
   .slide p{margin:4px 0 0 0;color:#d0d0d0;font-size:14px}
   .slide img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+
   .hnav{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;pointer-events:none}
-  .hnav button{
-    pointer-events:auto;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.2);
-    color:#eee;width:42px;height:42px;border-radius:50%;cursor:pointer;margin:0 8px
+  .iconbtn{
+    pointer-events:auto;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.22);
+    width:var(--icon);height:var(--icon);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center
   }
+  .iconbtn:hover{background:rgba(0,0,0,.6)}
+  .icon{width:24px;height:24px;stroke:#eee;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
   .dots{display:flex;gap:8px;justify-content:center;margin:12px 0 0 0}
   .dots button{width:8px;height:8px;border-radius:50%;border:0;background:#3a3a3a;cursor:pointer}
   .dots button.active{background:#e5e5e5}
@@ -69,47 +72,75 @@
   .tag{display:inline-block;font-size:12px;color:var(--muted);border:1px solid var(--rule);padding:2px 8px;border-radius:999px;margin-right:6px}
 
   /* Modal (bigger + glass) */
-  #overlay{ position:fixed; inset:0; background:rgba(0,0,0,.66); display:none; z-index:50; }
+  #overlay{
+    position:fixed; inset:0; background:rgba(8,8,10,.55);
+    display:none; z-index:50; pointer-events:none; /* прокручиваем фон */
+    backdrop-filter: blur(10px) saturate(140%);
+  }
   #overlay.show{ display:block; }
   #overlay .modal{
     position:relative; width:90vw; max-width:1400px; height:90vh; margin:5vh auto;
     background:var(--glass-bg); backdrop-filter:blur(14px) saturate(160%);
     border:1px solid var(--glass-brd); border-radius:18px; overflow:hidden;
-    display:grid; grid-template-columns:1.4fr 1fr; grid-template-rows:1fr auto; gap:0;
+    display:grid; grid-template-columns:1.4fr 1fr; grid-template-rows:1fr auto auto; gap:0;
+    pointer-events:auto; /* клики ловим только на самой модалке */
   }
-  @media (max-width:980px){ #overlay .modal{ grid-template-columns:1fr; grid-template-rows:1fr auto auto; width:100vw; height:100vh; margin:0; border-radius:0 } }
+  @media (max-width:980px){
+    #overlay .modal{ grid-template-columns:1fr; grid-template-rows:1fr auto auto auto; width:100vw; height:100vh; margin:0; border-radius:0 }
+  }
   .m-close{
-    position:absolute; top:10px; right:12px; font-size:28px; line-height:1;
-    background:transparent; border:0; color:#ddd; cursor:pointer; z-index:5;
+    position:absolute; top:10px; right:12px;
+    background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.22);
+    width:var(--icon); height:var(--icon); border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:6;
   }
+
   .m-media{ position:relative; background:#0a0a0a; }
   .viewport{
     position:relative; width:100%; height:100%;
     display:flex; align-items:center; justify-content:center; background:#0a0a0a;
-    user-select:none; touch-action:pan-y; cursor:grab;
+    padding:56px 0 84px; /* карманы под ⛶ и точки */
   }
-  .viewport:active{cursor:grabbing}
   .viewport img, .viewport video{
     max-width:100%; max-height:100%;
     width:auto; height:auto; object-fit:contain; display:block; background:#000;
   }
-  .mnav{ position:absolute; inset:0; display:flex; align-items:center; justify-content:space-between; pointer-events:none }
-  .mnav button{
-    pointer-events:auto;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.22);
-    color:#eee;width:44px;height:44px;border-radius:50%;cursor:pointer;margin:0 10px; z-index:6;
-  }
-  .m-meta{ padding:20px; border-left:1px solid var(--glass-brd); overflow:auto }
-  .m-meta h3{ margin:0 0 6px }
-  .m-sub{ margin:0 0 12px; color:var(--muted); font-size:14px }
-  .m-desc, .m-stmt{ color:#ddd; font-size:15px; line-height:1.6 }
-  .m-stmt{ margin-top:10px; border-top:1px solid var(--glass-brd); padding-top:10px }
-  .m-dots{ grid-column:1 / -1; padding:10px; display:flex; justify-content:center; gap:8px; }
-  .m-dots button{ width:8px; height:8px; border-radius:50%; border:0; background:#3a3a3a; cursor:pointer }
-  .m-dots .active{ background:#e5e5e5 }
+  .mnav{ position:absolute; top:50%; left:0; right:0; transform:translateY(-50%); display:flex; justify-content:space-between; padding:0 10px; z-index:5 }
   .fs-btn{
     position:absolute; bottom:10px; right:12px; z-index:6;
-    background:rgba(0,0,0,.45); color:#eee; border:1px solid rgba(255,255,255,.25);
-    border-radius:8px; padding:4px 8px; cursor:pointer; display:flex; align-items:center; gap:6px;
+    background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.22);
+    width:var(--icon); height:var(--icon); border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+
+  .m-meta{ padding:20px; border-left:1px solid var(--glass-brd); overflow:auto }
+  .m-meta h3{ margin:0 0 6px }
+  .m-sub{ margin:0 0 12px; color:#bcbcbc; font-size:14px }
+  .m-desc, .m-stmt{ color:#ddd; font-size:15px; line-height:1.6 }
+  .m-stmt{ margin-top:10px; border-top:1px solid var(--glass-brd); padding-top:10px }
+
+  .m-thumbs{
+    border-top:1px solid var(--glass-brd);
+    padding:10px 12px; display:flex; gap:10px; overflow:auto; background:#0b0b0b;
+  }
+  .m-thumbs button{
+    border:1px solid var(--glass-brd); background:#0f0f0f; padding:0; cursor:pointer;
+    width:90px; height:60px; border-radius:8px; overflow:hidden; position:relative; flex:0 0 auto;
+  }
+  .m-thumbs img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .m-thumbs .is-active{ outline:2px solid #e6e6e6; }
+  .m-thumbs .vid::after{
+    content:"▶"; position:absolute; right:6px; bottom:2px; font-size:14px;
+    color:#fff; background:rgba(0,0,0,.45); padding:2px 6px; border-radius:6px;
+  }
+
+  .m-dots{ padding:10px; display:flex; justify-content:center; gap:8px; }
+  .m-dots button{ width:8px; height:8px; border-radius:50%; border:0; background:#3a3a3a; cursor:pointer }
+  .m-dots .active{ background:#e5e5e5 }
+
+  @media (max-width:900px){
+    h1{font-size:28px}
+    .grid,.about{grid-template-columns:1fr}
+    .slide{max-height:66vh}
+    .iconbtn, .fs-btn, .m-close{ width:var(--icon-m); height:var(--icon-m); }
   }
 </style>
 </head>
@@ -135,30 +166,30 @@
         <h1 data-i18n="h1">Projects at the edge of art, tech and light</h1>
         <p class="lead" data-i18n="lead">Visual first; details and team below. Built for pitching, submissions and exhibitions.</p>
 
-        <!-- HERO SLIDER -->
         <div class="slider" id="slider">
           <div class="slides" id="slides"></div>
           <div class="hnav">
-            <button id="hPrev" aria-label="Previous">&#10094;</button>
-            <button id="hNext" aria-label="Next">&#10095;</button>
+            <button id="hPrev" class="iconbtn" aria-label="Previous">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button id="hNext" class="iconbtn" aria-label="Next">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+            </button>
           </div>
           <div class="dots" id="hdots" aria-label="hero pagination"></div>
         </div>
       </div>
 
-      <!-- PROJECTS GRID -->
       <section id="projects">
         <h2 data-i18n="projects.title">Projects</h2>
         <div class="grid" id="grid-projects"></div>
       </section>
 
-      <!-- COLLABS -->
       <section id="collabs">
         <h2 data-i18n="collabs.title">Collabs</h2>
         <div class="grid" id="grid-collabs"></div>
       </section>
 
-      <!-- ABOUT -->
       <section id="about">
         <h2 data-i18n="about.title">About</h2>
         <div class="about">
@@ -181,7 +212,6 @@
         </p>
       </section>
 
-      <!-- CONTACTS -->
       <section id="contacts">
         <h2 data-i18n="contacts.title">Contacts</h2>
         <div class="grid">
@@ -207,18 +237,26 @@
     </footer>
   </div>
 
-  <!-- MODAL OVERLAY -->
+  <!-- MODAL -->
   <div id="overlay" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-title">
-      <button class="m-close" aria-label="Close (Esc)">&times;</button>
+      <button class="m-close" aria-label="Close">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
 
       <div class="m-media">
         <div class="mnav">
-          <button class="prev" aria-label="Previous">&#10094;</button>
-          <button class="next" aria-label="Next">&#10095;</button>
+          <button class="iconbtn prev" aria-label="Previous">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button class="iconbtn next" aria-label="Next">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+          </button>
         </div>
         <div class="viewport"></div>
-        <button class="fs-btn" id="fsBtn" title="Fullscreen">⛶</button>
+        <button class="fs-btn" id="fsBtn" title="Fullscreen">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M9 3H3v6M15 3h6v6M9 21H3v-6M21 21h-6v-6"/></svg>
+        </button>
       </div>
 
       <div class="m-meta">
@@ -228,6 +266,7 @@
         <div class="m-stmt"></div>
       </div>
 
+      <div class="m-thumbs" id="thumbs"></div>
       <div class="m-dots" id="mdots"></div>
     </div>
   </div>
@@ -265,25 +304,27 @@ function applyI18n(){
     const k = el.getAttribute('data-i18n');
     if(I18N[LANG][k]) el.textContent = I18N[LANG][k];
   });
-  document.getElementById('enBtn').classList.toggle('is-active', LANG==='en');
-  document.getElementById('ruBtn').classList.toggle('is-active', LANG==='ru');
+  enBtn.classList.toggle('is-active', LANG==='en');
+  ruBtn.classList.toggle('is-active', LANG==='ru');
 }
-document.getElementById('enBtn').onclick = ()=>{ LANG='en'; localStorage.setItem('lang','en'); applyI18n(); };
-document.getElementById('ruBtn').onclick = ()=>{ LANG='ru'; localStorage.setItem('lang','ru'); applyI18n(); };
+const enBtn=document.getElementById('enBtn');
+const ruBtn=document.getElementById('ruBtn');
+enBtn.onclick = ()=>{ LANG='en'; localStorage.setItem('lang','en'); applyI18n(); rebuildText(); };
+ruBtn.onclick = ()=>{ LANG='ru'; localStorage.setItem('lang','ru'); applyI18n(); rebuildText(); };
 
 /* ===== Date ===== */
 document.getElementById('y').textContent = new Date().getFullYear();
 
-/* ===== Data (ext = 'png' по умолчанию) ===== */
+/* ===== Data ===== */
 const PROJECTS = {
   mycy:  { title:{en:"My Cyprus Walk", ru:"My Cyprus Walk"},
            sub:{en:"2025 · Cyprus · iPad/WebGL", ru:"2025 · Кипр · iPad/WebGL"},
            desc:{en:"Interactive digital walk through memory and adaptation.", ru:"Интерактивная «цифровая прогулка» о памяти и адаптации."},
            stmt:{en:"Memory keeps fragments; we translate them into a digital simulation.", ru:"Память хранит обрывки; мы переводим их в цифровую симуляцию."},
            folder:"mycy",  count:9,  video:null, isCollab:false, ext:'png' },
-  flora: { title:{en:"Cyprus Flora — Sketches", ru:"Cyprus Flora — Sketches"},
-           sub:{en:"2025 · Cyprus · video sketches", ru:"2025 · Кипр · видеоскетчи"},
-           desc:{en:"Video sketches of endemic plants of Cyprus.", ru:"Скетчи об эндемичных растениях Кипра."},
+  flora: { title:{en:"Cyprus Flora Series. 00 Anemóne coronária", ru:"Cyprus Flora Series. 00 Anemóne coronária"},
+           sub:{en:"2025 · Cyprus · video series", ru:"2025 · Кипр · видео-серия"},
+           desc:{en:"A series about endemic flora; this chapter focuses on Anemóne coronária.", ru:"Серия об эндемиках Кипра; этот выпуск — Anemóne coronária."},
            stmt:{en:"Nature as a subject that returns the gaze.", ru:"Природа как субъект, возвращающий взгляд."},
            folder:"anem",  count:9,  video:null, isCollab:false, ext:'png' },
   water: { title:{en:"Water Spirits — White Rocks", ru:"Water Spirits — White Rocks"},
@@ -298,12 +339,12 @@ const PROJECTS = {
            folder:"trace", count:9,  video:null, isCollab:true, ext:'png' },
   tri:   { title:{en:"Trinitron Connect (with Anya Krow)", ru:"Trinitron Connect (с Аней Кроу)"},
            sub:{en:"2025 · Moscow · gallery installation", ru:"2025 · Москва · галерейная инсталляция"},
-           desc:{en:"Digital avatar reacting to gestures and phones.", ru:"Цифровой аватар, реагирующий на жесты и телефоны."},
+           desc:{en:"Digital avatar reacts to gestures and phones.", ru:"Цифровой аватар реагирует на жесты и телефоны."},
            stmt:{en:"Meeting a digital double.", ru:"Встреча с цифровым двойником."},
            folder:"tri",   count:7,  video:null, isCollab:true, ext:'png' }
 };
 
-/* ===== Build media & covers (без сетевых проверок) ===== */
+/* ===== Build media & covers (без сетевых проверок, с fallback) ===== */
 function buildMedia(){
   for(const id in PROJECTS){
     const p = PROJECTS[id];
@@ -325,11 +366,17 @@ function buildHero(){
   const hdots = document.getElementById('hdots');
   const order = ['mycy','flora','water','trace','tri']; // include collabs
   slidesEl.innerHTML = ''; hdots.innerHTML = '';
+
   order.forEach((id, idx)=>{
     const p = PROJECTS[id];
     const art = document.createElement('article');
     art.className='slide'; art.setAttribute('data-project', id);
-    const img = document.createElement('img'); img.src = p.heroCover || (p.media[0]?.src||''); art.appendChild(img);
+
+    const img = document.createElement('img');
+    img.src = p.heroCover || (p.media[0]?.src||'');
+    img.onerror = ()=>{ img.onerror=null; img.src = p.media[0]?.src || ''; };
+    art.appendChild(img);
+
     const meta = document.createElement('div'); meta.className='meta';
     meta.innerHTML = `<h3>${p.title[LANG]}</h3><p class="muted">${p.sub[LANG]}</p>`;
     art.appendChild(meta);
@@ -339,33 +386,35 @@ function buildHero(){
     dot.addEventListener('click',()=>goTo(idx));
   });
 
-  // drag + arrows
-  let idx = 0, startX=0, curX=0, dragging=false;
-  const prevBtn = document.getElementById('hPrev');
-  const nextBtn = document.getElementById('hNext');
+  // looped index
+  let idx = 0;
   function update(){
-    slidesEl.style.transition = dragging?'none':'transform .35s ease';
-    slidesEl.style.transform = `translateX(${-idx*100 + (dragging? ( (curX-startX)/slidesEl.clientWidth*100 ):0)}%)`;
+    slidesEl.style.transition = 'transform .35s ease';
+    slidesEl.style.transform = `translateX(${-idx*100}%)`;
     [...hdots.children].forEach((d,i)=>d.classList.toggle('active',i===idx));
   }
-  function goTo(i){ idx = Math.max(0, Math.min(i, slidesEl.children.length-1)); dragging=false; update(); }
+  function goTo(i){ const N=slidesEl.children.length; idx=((i%N)+N)%N; update(); }
   function prev(){ goTo(idx-1); }
   function next(){ goTo(idx+1); }
-  prevBtn.onclick=prev; nextBtn.onclick=next;
 
-  slidesEl.addEventListener('mousedown',e=>{ dragging=true; startX=e.clientX; curX=startX; update(); });
-  window.addEventListener('mousemove',e=>{ if(!dragging) return; curX=e.clientX; update(); });
-  window.addEventListener('mouseup',()=>{ if(!dragging) return; const dx=curX-startX; dragging=false; if(Math.abs(dx)>40) (dx<0?next():prev()); else update(); });
+  // desktop: только стрелки/точки
+  document.getElementById('hPrev').onclick=prev;
+  document.getElementById('hNext').onclick=next;
 
-  slidesEl.addEventListener('touchstart',e=>{ dragging=true; startX=e.touches[0].clientX; curX=startX; },{passive:true});
-  slidesEl.addEventListener('touchmove',e=>{ if(!dragging) return; curX=e.touches[0].clientX; update(); },{passive:true});
-  slidesEl.addEventListener('touchend',()=>{ if(!dragging) return; const dx=curX-startX; dragging=false; if(Math.abs(dx)>40) (dx<0?next():prev()); else update(); });
+  // mobile: свайп
+  const isTouch = matchMedia('(pointer: coarse)').matches;
+  if(isTouch){
+    let startX=0, curX=0, dragging=false;
+    slidesEl.addEventListener('touchstart',e=>{ dragging=true; startX=e.touches[0].clientX; curX=startX; slidesEl.style.transition='none'; },{passive:true});
+    slidesEl.addEventListener('touchmove',e=>{ if(!dragging) return; curX=e.touches[0].clientX; const dx=(curX-startX)/slidesEl.clientWidth*100; slidesEl.style.transform=`translateX(${(-idx*100)+dx}%)`; },{passive:true});
+    slidesEl.addEventListener('touchend',()=>{ if(!dragging) return; const dx=curX-startX; dragging=false; if(Math.abs(dx)>40) (dx<0?next():prev()); else update(); },{passive:true});
+  }
 
   slidesEl.querySelectorAll('.slide').forEach(el=>{
     el.addEventListener('click',()=>openModal(el.getAttribute('data-project')));
   });
 
-  return {goTo, prev, next};
+  update();
 }
 
 /* ===== GRID ===== */
@@ -377,7 +426,10 @@ function buildGrids(){
     const p = PROJECTS[id];
     const card = document.createElement('article'); card.className='card'; card.setAttribute('data-project',id);
     const thumb = document.createElement('div'); thumb.className='thumb';
-    const img = document.createElement('img'); img.src = p.cardCover || (p.media[0]?.src || ''); thumb.appendChild(img);
+    const img = document.createElement('img');
+    img.src = p.cardCover || (p.media[0]?.src || '');
+    img.onerror = ()=>{ img.onerror=null; img.src = p.media[0]?.src || ''; };
+    thumb.appendChild(img);
     const meta = document.createElement('div'); meta.className='meta2';
     meta.innerHTML = `<div class="tag">${p.isCollab?'collab':'project'}</div>
       <h3 style="margin:8px 0 6px">${p.title[LANG]}</h3>
@@ -398,6 +450,7 @@ const mSub    = overlay.querySelector('.m-sub');
 const mDesc   = overlay.querySelector('.m-desc');
 const mStmt   = overlay.querySelector('.m-stmt');
 const viewport= overlay.querySelector('.viewport');
+const thumbs  = document.getElementById('thumbs');
 const mdots   = overlay.querySelector('#mdots');
 const btnPrev = overlay.querySelector('.prev');
 const btnNext = overlay.querySelector('.next');
@@ -406,16 +459,32 @@ const fsBtn   = document.getElementById('fsBtn');
 
 let current=null, index=0;
 
-function lockScroll(lock){ document.documentElement.style.overflowY = document.body.style.overflowY = lock ? 'hidden' : ''; }
 function renderDots(){
   mdots.innerHTML=''; if(!current) return;
   current.media.forEach((_,i)=>{ const b=document.createElement('button'); if(i===index) b.classList.add('active'); b.onclick=()=>{ index=i; renderMedia(); }; mdots.appendChild(b); });
 }
+function renderThumbs(){
+  thumbs.innerHTML=''; if(!current) return;
+  current.media.forEach((m,i)=>{
+    const b=document.createElement('button');
+    if(m.type==='img'){
+      const t=document.createElement('img'); t.src=m.src; b.appendChild(t);
+      t.onerror=()=>{ b.style.visibility='hidden'; };
+    }else{
+      b.classList.add('vid');
+    }
+    b.addEventListener('click', ()=>{ index=i; renderMedia(); });
+    if(i===index) b.classList.add('is-active');
+    thumbs.appendChild(b);
+  });
+}
 function renderMedia(){
   viewport.innerHTML=''; if(!current) return;
   const item=current.media[index]; if(!item) return;
-  if(item.type==='img'){ const img=document.createElement('img'); img.src=item.src; img.alt=current.title[LANG]; viewport.appendChild(img); }
+  if(item.type==='img'){ const img=document.createElement('img'); img.src=item.src; img.alt=current.title?.[LANG]||''; viewport.appendChild(img); }
   else { const v=document.createElement('video'); v.src=item.src; v.controls=true; v.playsInline=true; viewport.appendChild(v); }
+  // sync
+  [...thumbs.children].forEach((b,i)=>b.classList.toggle('is-active', i===index));
   [...mdots.children].forEach((d,i)=>d.classList.toggle('active', i===index));
 }
 function openModal(projectId){
@@ -423,49 +492,52 @@ function openModal(projectId){
   current=data; index=0;
   mTitle.textContent=data.title[LANG]; mSub.textContent=data.sub[LANG];
   mDesc.textContent=data.desc[LANG]; mStmt.textContent=data.stmt[LANG];
-  renderDots(); renderMedia();
-  overlay.classList.add('show'); overlay.setAttribute('aria-hidden','false'); lockScroll(true);
+  renderThumbs(); renderDots(); renderMedia();
+  overlay.classList.add('show'); overlay.setAttribute('aria-hidden','false');
 }
-function closeModal(){ overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true'); lockScroll(false); viewport.innerHTML=''; current=null; mdots.innerHTML=''; }
+function closeModal(){ overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true'); viewport.innerHTML=''; current=null; thumbs.innerHTML=''; mdots.innerHTML=''; }
 
 btnPrev.addEventListener('click', ()=>{ if(!current) return; index=(index-1+current.media.length)%current.media.length; renderMedia(); });
 btnNext.addEventListener('click', ()=>{ if(!current) return; index=(index+1)%current.media.length; renderMedia(); });
 btnClose.addEventListener('click', closeModal);
-overlay.addEventListener('click', (e)=>{ if(e.target === overlay) closeModal(); });
 document.addEventListener('keydown', (e)=>{ if(!overlay.classList.contains('show')) return; if(e.key==='Escape') closeModal(); if(e.key==='ArrowRight') btnNext.click(); if(e.key==='ArrowLeft') btnPrev.click(); });
 
-/* drag/grab inside modal */
-let gStart=0, gCur=0, gDrag=false;
-viewport.addEventListener('mousedown', e=>{ gDrag=true; gStart=e.clientX; gCur=gStart; });
-window.addEventListener('mousemove', e=>{ if(!gDrag) return; gCur=e.clientX; const dx=(gCur-gStart); viewport.style.transform=`translateX(${dx/6}px)`; viewport.style.transition='none'; });
-window.addEventListener('mouseup', ()=>{ if(!gDrag) return; const dx=gCur-gStart; gDrag=false; viewport.style.transform=''; viewport.style.transition=''; if(Math.abs(dx)>60){ (dx<0?btnNext:btnPrev).click(); } });
-viewport.addEventListener('touchstart', e=>{ gDrag=true; gStart=e.touches[0].clientX; gCur=gStart; }, {passive:true});
-viewport.addEventListener('touchmove',  e=>{ if(!gDrag) return; gCur=e.touches[0].clientX; }, {passive:true});
-viewport.addEventListener('touchend',   ()=>{ if(!gDrag) return; const dx=gCur-gStart; gDrag=false; if(Math.abs(dx)>40){ (dx<0?btnNext:btnPrev).click(); } });
+/* Mobile-only swipe inside modal */
+const isTouch = matchMedia('(pointer: coarse)').matches;
+if(isTouch){
+  let sx=0, cx=0, drag=false;
+  viewport.addEventListener('touchstart', e=>{ drag=true; sx=e.touches[0].clientX; cx=sx; }, {passive:true});
+  viewport.addEventListener('touchmove',  e=>{ if(!drag) return; cx=e.touches[0].clientX; }, {passive:true});
+  viewport.addEventListener('touchend',   ()=>{ if(!drag) return; const dx=cx-sx; drag=false; if(Math.abs(dx)>40){ (dx<0?btnNext:btnPrev).click(); } }, {passive:true});
+}
 
-/* fullscreen ⛶ */
+/* fullscreen ⛶ — на блоке m-media */
 fsBtn.addEventListener('click', ()=>{
-  const el = viewport;
-  if (!document.fullscreenElement){
-    if(el.requestFullscreen) el.requestFullscreen();
-  }else{
-    if(document.exitFullscreen) document.exitFullscreen();
-  }
+  const el = document.querySelector('.m-media');
+  if (!document.fullscreenElement){ el.requestFullscreen?.(); }
+  else{ document.exitFullscreen?.(); }
 });
 
-/* ===== INIT ===== */
-function applyLanguageAndRebuild(){
-  applyI18n();
-  document.getElementById('slides').innerHTML='';
-  document.getElementById('hdots').innerHTML='';
-  document.getElementById('grid-projects').innerHTML='';
-  document.getElementById('grid-collabs').innerHTML='';
-  buildMedia(); buildGrids(); buildHero();
+/* ===== Text rebuild on lang change ===== */
+function rebuildText(){
+  // hero titles meta
+  document.querySelectorAll('#slides .slide').forEach(sl=>{
+    const id=sl.getAttribute('data-project'); const p=PROJECTS[id];
+    sl.querySelector('.meta').innerHTML=`<h3>${p.title[LANG]}</h3><p class="muted">${p.sub[LANG]}</p>`;
+  });
+  // grid
+  buildGrids();
 }
-applyLanguageAndRebuild();
 
-// deeplink ?p=
-const url = new URL(location.href); const pid = url.searchParams.get('p'); if(pid && PROJECTS[pid]) openModal(pid);
+/* ===== INIT ===== */
+function init(){
+  applyI18n();
+  buildMedia();
+  buildGrids();
+  buildHero();
+  const url = new URL(location.href); const pid = url.searchParams.get('p'); if(pid && PROJECTS[pid]) openModal(pid);
+}
+init();
 </script>
 </body>
 </html>
