@@ -33,7 +33,7 @@
   h1{font-size:36px;line-height:1.2;margin:.25rem 0 0 0}
   .lead{color:var(--muted);max-width:820px;margin:8px 0 24px}
 
-  /* HERO slider */
+  /* HERO */
   .hero{margin-top:18px}
   .slider{position:relative;border:1px solid var(--rule);border-radius:16px;overflow:hidden;background:#0f0f10}
   .slides{display:flex;overflow:hidden;touch-action:pan-y;cursor:grab}
@@ -45,7 +45,7 @@
   }
   .slide h3{margin:0;font-size:18px}
   .slide p{margin:4px 0 0 0;color:#d0d0d0;font-size:14px}
-  .slide img, .slide video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .slide img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
   .hnav{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;pointer-events:none}
   .hnav button{
     pointer-events:auto;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.2);
@@ -67,14 +67,6 @@
   .thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
   .meta2{padding:12px}
   .tag{display:inline-block;font-size:12px;color:var(--muted);border:1px solid var(--rule);padding:2px 8px;border-radius:999px;margin-right:6px}
-
-  /* About */
-  .about{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
-  .muted{color:var(--muted)}
-
-  /* Footer */
-  footer{margin-top:36px;border-top:1px solid var(--rule);padding-top:16px;color:var(--muted);font-size:14px}
-  .social{display:flex;gap:14px;flex-wrap:wrap}
 
   /* Modal (bigger + glass) */
   #overlay{ position:fixed; inset:0; background:rgba(0,0,0,.66); display:none; z-index:50; }
@@ -119,12 +111,6 @@
     background:rgba(0,0,0,.45); color:#eee; border:1px solid rgba(255,255,255,.25);
     border-radius:8px; padding:4px 8px; cursor:pointer; display:flex; align-items:center; gap:6px;
   }
-
-  @media (max-width:900px){
-    h1{font-size:28px}
-    .grid,.about{grid-template-columns:1fr}
-    .slide{max-height:66vh}
-  }
 </style>
 </head>
 <body>
@@ -151,9 +137,7 @@
 
         <!-- HERO SLIDER -->
         <div class="slider" id="slider">
-          <div class="slides" id="slides">
-            <!-- Slides will be injected from PROJECTS.hero list -->
-          </div>
+          <div class="slides" id="slides"></div>
           <div class="hnav">
             <button id="hPrev" aria-label="Previous">&#10094;</button>
             <button id="hNext" aria-label="Next">&#10095;</button>
@@ -249,7 +233,7 @@
   </div>
 
 <script>
-/* ========== i18n ========== */
+/* ===== i18n ===== */
 const I18N = {
   en: {
     "kicker":"media & light systems",
@@ -287,99 +271,55 @@ function applyI18n(){
 document.getElementById('enBtn').onclick = ()=>{ LANG='en'; localStorage.setItem('lang','en'); applyI18n(); };
 document.getElementById('ruBtn').onclick = ()=>{ LANG='ru'; localStorage.setItem('lang','ru'); applyI18n(); };
 
-/* ========== Date in footer ========== */
+/* ===== Date ===== */
 document.getElementById('y').textContent = new Date().getFullYear();
 
-/* ========== Data ========== */
+/* ===== Data (ext = 'png' по умолчанию) ===== */
 const PROJECTS = {
-  mycy: {
-    heroName: "My Cyprus Walk",
-    coverName: "My Cyprus Walk",
-    titles: {en:"My Cyprus Walk", ru:"My Cyprus Walk"},
-    sub: {en:"2025 · Cyprus · iPad/WebGL", ru:"2025 · Кипр · iPad/WebGL"},
-    desc:{en:"Interactive digital walk through memory and adaptation.", ru:"Интерактивная «цифровая прогулка» о памяти и адаптации."},
-    stmt:{en:"Memory keeps fragments; we translate them into a digital simulation.", ru:"Память хранит обрывки; мы переводим их в цифровую симуляцию."},
-    folder:"mycy", count:9, video:null, isCollab:false
-  },
-  flora: {
-    heroName: "Cyprus Flora — Sketches",
-    coverName: "Cyprus Flora — Sketches",
-    titles:{en:"Cyprus Flora — Sketches", ru:"Cyprus Flora — Sketches"},
-    sub:{en:"2025 · Cyprus · video sketches", ru:"2025 · Кипр · видеоскетчи"},
-    desc:{en:"Video sketches of endemic plants of Cyprus.", ru:"Скетчи об эндемичных растениях Кипра."},
-    stmt:{en:"Nature as a subject that returns the gaze.", ru:"Природа как субъект, возвращающий взгляд."},
-    folder:"anem", count:9, video:null, isCollab:false
-  },
-  water: {
-    heroName:"Water Spirits — White Rocks",
-    coverName:"Water Spirits — White Rocks",
-    titles:{en:"Water Spirits — White Rocks", ru:"Water Spirits — White Rocks"},
-    sub:{en:"2025 · Limassol · outdoor projection", ru:"2025 · Лимассол · аутдор-проекция"},
-    desc:{en:"Projection on limestone near the sea; a 5-min sketch.", ru:"Проекция на известняке у моря; 5-минутный эскиз."},
-    stmt:{en:"Sea as a spirit: comforting and unsettling.", ru:"Море как дух: утешает и тревожит."},
-    folder:"waspi", count:4, video:"assets/images/waspiedit.mp4", isCollab:false
-  },
-  trace: {
-    heroName:"Trace × Kolla",
-    coverName:"Trace × Kolla",
-    titles:{en:"Trace × Kolla", ru:"Trace × Kolla"},
-    sub:{en:"2025 · Limassol · collaboration", ru:"2025 · Лимассол · коллаборация"},
-    desc:{en:"Participatory installation about shared memory.", ru:"Партисипаторная инсталляция о совместной памяти."},
-    stmt:{en:"A living archive built by visitors.", ru:"Живой архив, собираемый зрителями."},
-    folder:"trace", count:9, video:null, isCollab:true
-  },
-  tri: {
-    heroName:"Trinitron Connect",
-    coverName:"Trinitron Connect",
-    titles:{en:"Trinitron Connect (with Anya Krow)", ru:"Trinitron Connect (с Аней Кроу)"},
-    sub:{en:"2025 · Moscow · gallery installation", ru:"2025 · Москва · галерейная инсталляция"},
-    desc:{en:"Installation with a digital avatar reacting to gestures and phones.", ru:"Инсталляция с цифровым аватаром, реагирующим на жесты и телефоны."},
-    stmt:{en:"A meeting with a digital double.", ru:"Встреча с цифровым двойником."},
-    folder:"tri", count:7, video:null, isCollab:true
-  }
+  mycy:  { title:{en:"My Cyprus Walk", ru:"My Cyprus Walk"},
+           sub:{en:"2025 · Cyprus · iPad/WebGL", ru:"2025 · Кипр · iPad/WebGL"},
+           desc:{en:"Interactive digital walk through memory and adaptation.", ru:"Интерактивная «цифровая прогулка» о памяти и адаптации."},
+           stmt:{en:"Memory keeps fragments; we translate them into a digital simulation.", ru:"Память хранит обрывки; мы переводим их в цифровую симуляцию."},
+           folder:"mycy",  count:9,  video:null, isCollab:false, ext:'png' },
+  flora: { title:{en:"Cyprus Flora — Sketches", ru:"Cyprus Flora — Sketches"},
+           sub:{en:"2025 · Cyprus · video sketches", ru:"2025 · Кипр · видеоскетчи"},
+           desc:{en:"Video sketches of endemic plants of Cyprus.", ru:"Скетчи об эндемичных растениях Кипра."},
+           stmt:{en:"Nature as a subject that returns the gaze.", ru:"Природа как субъект, возвращающий взгляд."},
+           folder:"anem",  count:9,  video:null, isCollab:false, ext:'png' },
+  water: { title:{en:"Water Spirits — White Rocks", ru:"Water Spirits — White Rocks"},
+           sub:{en:"2025 · Limassol · outdoor projection", ru:"2025 · Лимассол · аутдор-проекция"},
+           desc:{en:"Projection on limestone near the sea; a 5-min sketch.", ru:"Проекция на известняке у моря; 5-минутный эскиз."},
+           stmt:{en:"Sea as a spirit: comforting and unsettling.", ru:"Море как дух: утешает и тревожит."},
+           folder:"waspi", count:4,  video:"assets/images/waspiedit.mp4", isCollab:false, ext:'png' },
+  trace: { title:{en:"Trace × Kolla", ru:"Trace × Kolla"},
+           sub:{en:"2025 · Limassol · collaboration", ru:"2025 · Лимассол · коллаборация"},
+           desc:{en:"Participatory installation about shared memory.", ru:"Партисипаторная инсталляция о совместной памяти."},
+           stmt:{en:"A living archive built by visitors.", ru:"Живой архив, собираемый зрителями."},
+           folder:"trace", count:9,  video:null, isCollab:true, ext:'png' },
+  tri:   { title:{en:"Trinitron Connect (with Anya Krow)", ru:"Trinitron Connect (с Аней Кроу)"},
+           sub:{en:"2025 · Moscow · gallery installation", ru:"2025 · Москва · галерейная инсталляция"},
+           desc:{en:"Digital avatar reacting to gestures and phones.", ru:"Цифровой аватар, реагирующий на жесты и телефоны."},
+           stmt:{en:"Meeting a digital double.", ru:"Встреча с цифровым двойником."},
+           folder:"tri",   count:7,  video:null, isCollab:true, ext:'png' }
 };
 
-/* ========= utils ========= */
-async function urlExists(url){ try{ const r=await fetch(url,{method:'HEAD',cache:'no-cache'}); return r.ok; }catch(e){ return false; } }
-async function firstExisting(patterns){
-  for(const u of patterns){ if(await urlExists(u)) return u; }
-  return null;
-}
-
-/* ========= Build media and covers ========= */
-async function buildMedia(){
-  for(const key in PROJECTS){
-    const p = PROJECTS[key];
-    const media = [];
+/* ===== Build media & covers (без сетевых проверок) ===== */
+function buildMedia(){
+  for(const id in PROJECTS){
+    const p = PROJECTS[id];
+    const ext = p.ext || 'png';
+    p.media = [];
     for(let i=0;i<p.count;i++){
       const n = String(i).padStart(2,'0');
-      const base = `assets/images/${p.folder}${n}`;
-      const candidates = [`${base}.png`, `${base}.jpg`, `${base}.jpeg`];
-      // eslint-disable-next-line no-await-in-loop
-      const hit = await firstExisting(candidates);
-      if(hit) media.push({type:'img',src:hit});
+      p.media.push({ type:'img', src:`assets/images/${p.folder}${n}.${ext}` });
     }
-    if(p.video && await urlExists(p.video)) media.splice(1,0,{type:'video',src:p.video});
-    p.media = media;
-
-    // covers: pick first index that has ...image(.png/.jpg) or fallback to media[0]
-    async function coverFor(suffix){
-      for(let i=0;i<Math.max( p.count, 12); i++){
-        const n=String(i).padStart(2,'0');
-        const b=`assets/images/${p.folder}${n}${suffix}`;
-        const cands=[`${b}.png`,`${b}.jpg`,`${b}.jpeg`];
-        // eslint-disable-next-line no-await-in-loop
-        const u=await firstExisting(cands);
-        if(u) return u;
-      }
-      return p.media?.[0]?.src || null;
-    }
-    p.heroCover  = await coverFor('image');   // for top hero
-    p.cardCover  = await coverFor('image2');  // for grid card
+    if(p.video){ p.media.splice(1,0,{type:'video',src:p.video}); }
+    p.heroCover = `assets/images/${p.folder}00image.${ext}`;
+    p.cardCover = `assets/images/${p.folder}00image2.${ext}`;
   }
 }
 
-/* ========= HERO build (includes collabs) ========= */
+/* ===== HERO ===== */
 function buildHero(){
   const slidesEl = document.getElementById('slides');
   const hdots = document.getElementById('hdots');
@@ -391,7 +331,7 @@ function buildHero(){
     art.className='slide'; art.setAttribute('data-project', id);
     const img = document.createElement('img'); img.src = p.heroCover || (p.media[0]?.src||''); art.appendChild(img);
     const meta = document.createElement('div'); meta.className='meta';
-    meta.innerHTML = `<h3>${p.titles[LANG]}</h3><p class="muted">${p.sub[LANG]}</p>`;
+    meta.innerHTML = `<h3>${p.title[LANG]}</h3><p class="muted">${p.sub[LANG]}</p>`;
     art.appendChild(meta);
     slidesEl.appendChild(art);
 
@@ -399,7 +339,7 @@ function buildHero(){
     dot.addEventListener('click',()=>goTo(idx));
   });
 
-  // drag/arrow logic
+  // drag + arrows
   let idx = 0, startX=0, curX=0, dragging=false;
   const prevBtn = document.getElementById('hPrev');
   const nextBtn = document.getElementById('hNext');
@@ -421,16 +361,14 @@ function buildHero(){
   slidesEl.addEventListener('touchmove',e=>{ if(!dragging) return; curX=e.touches[0].clientX; update(); },{passive:true});
   slidesEl.addEventListener('touchend',()=>{ if(!dragging) return; const dx=curX-startX; dragging=false; if(Math.abs(dx)>40) (dx<0?next():prev()); else update(); });
 
-  // open modal on click
   slidesEl.querySelectorAll('.slide').forEach(el=>{
     el.addEventListener('click',()=>openModal(el.getAttribute('data-project')));
   });
 
-  function goToSafe(i){ goTo(i); }
-  return {goTo:goToSafe, prev, next};
+  return {goTo, prev, next};
 }
 
-/* ========= GRID build ========= */
+/* ===== GRID ===== */
 function buildGrids(){
   const projEl = document.getElementById('grid-projects');
   const collEl = document.getElementById('grid-collabs');
@@ -442,7 +380,7 @@ function buildGrids(){
     const img = document.createElement('img'); img.src = p.cardCover || (p.media[0]?.src || ''); thumb.appendChild(img);
     const meta = document.createElement('div'); meta.className='meta2';
     meta.innerHTML = `<div class="tag">${p.isCollab?'collab':'project'}</div>
-      <h3 style="margin:8px 0 6px">${p.titles[LANG]}</h3>
+      <h3 style="margin:8px 0 6px">${p.title[LANG]}</h3>
       <p class="muted" style="margin:0">${p.sub[LANG]}</p>`;
     card.appendChild(thumb); card.appendChild(meta);
     (p.isCollab?collEl:projEl).appendChild(card);
@@ -453,7 +391,7 @@ function buildGrids(){
   });
 }
 
-/* ========= MODAL ========= */
+/* ===== MODAL ===== */
 const overlay = document.getElementById('overlay');
 const mTitle  = overlay.querySelector('#m-title');
 const mSub    = overlay.querySelector('.m-sub');
@@ -476,16 +414,14 @@ function renderDots(){
 function renderMedia(){
   viewport.innerHTML=''; if(!current) return;
   const item=current.media[index]; if(!item) return;
-  if(item.type==='img'){ const img=document.createElement('img'); img.src=item.src; img.alt=current.titles[LANG]; viewport.appendChild(img); }
-  else {
-    const v=document.createElement('video'); v.src=item.src; v.controls=true; v.playsInline=true; viewport.appendChild(v);
-  }
+  if(item.type==='img'){ const img=document.createElement('img'); img.src=item.src; img.alt=current.title[LANG]; viewport.appendChild(img); }
+  else { const v=document.createElement('video'); v.src=item.src; v.controls=true; v.playsInline=true; viewport.appendChild(v); }
   [...mdots.children].forEach((d,i)=>d.classList.toggle('active', i===index));
 }
 function openModal(projectId){
-  const data = PROJECTS[projectId]; if(!data || !data.media?.length) return;
+  const data = PROJECTS[projectId]; if(!data) return;
   current=data; index=0;
-  mTitle.textContent=data.titles[LANG]; mSub.textContent=data.sub[LANG];
+  mTitle.textContent=data.title[LANG]; mSub.textContent=data.sub[LANG];
   mDesc.textContent=data.desc[LANG]; mStmt.textContent=data.stmt[LANG];
   renderDots(); renderMedia();
   overlay.classList.add('show'); overlay.setAttribute('aria-hidden','false'); lockScroll(true);
@@ -517,19 +453,19 @@ fsBtn.addEventListener('click', ()=>{
   }
 });
 
-/* ========= HERO logic attach after build ========= */
-let heroCtrl=null;
-
-/* ========= Init ========= */
-(async function init(){
+/* ===== INIT ===== */
+function applyLanguageAndRebuild(){
   applyI18n();
-  await buildMedia();
-  buildGrids();
-  heroCtrl = buildHero();
+  document.getElementById('slides').innerHTML='';
+  document.getElementById('hdots').innerHTML='';
+  document.getElementById('grid-projects').innerHTML='';
+  document.getElementById('grid-collabs').innerHTML='';
+  buildMedia(); buildGrids(); buildHero();
+}
+applyLanguageAndRebuild();
 
-  // deeplink ?p=
-  const url = new URL(location.href); const pid = url.searchParams.get('p'); if(pid && PROJECTS[pid] && PROJECTS[pid].media?.length) openModal(pid);
-})();
+// deeplink ?p=
+const url = new URL(location.href); const pid = url.searchParams.get('p'); if(pid && PROJECTS[pid]) openModal(pid);
 </script>
 </body>
 </html>
