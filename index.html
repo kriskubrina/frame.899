@@ -334,63 +334,62 @@
     /* =========================
        PROJECT DATA
        ========================= */
-    const PROJECTS = {
-      mycy: {
-        title: "My Cyprus Walk",
-        sub: "2025 · Cyprus · iPad/WebGL",
-        desc: "Интерактивная «цифровая прогулка» по памяти об эмиграции. iPhone-сканы, генеративные слои и звук; формат показов — iPad + наушники, WebGL-сцены (A-Frame/Three.js).",
-        stmt: "Как память фиксирует новые впечатления: неточно, со сдвигами и фантазиями. Мы переводим личный опыт адаптации в цифровую симуляцию — реальность дрожит и переходит в воображение.",
-        media: [
-          {type:"img", src:"assets/mycy/01.jpg"},
-          {type:"video", src:"assets/mycy/02.mp4", poster:"assets/mycy/02.jpg"},
-          {type:"img", src:"assets/mycy/03.jpg"}
-        ]
-      },
-      flora: {
-        title: "Cyprus Flora — Sketches",
-        sub: "2025 · Cyprus · video sketches",
-        desc: "Серия видеоскетчей об эндемичных растениях: Tulipa cypria, Gladiolus triphyllus, Dianthus cyprius. Минималистичные, местами «смотрящие» на зрителя образы.",
-        stmt: "Редкость и уязвимость природы Кипра: не декор, а встреча. Цветы представлены как субъекты, возвращающие взгляд.",
-        media: [
-          {type:"img", src:"assets/flora/01.jpg"},
-          {type:"video", src:"assets/flora/02.mp4", poster:"assets/flora/02.jpg"},
-          {type:"img", src:"assets/flora/03.jpg"}
-        ]
-      },
-      water: {
-        title: "Water Spirits — White Rocks",
-        sub: "2025 · White Rocks, Limassol · outdoor projection",
-        desc: "Аутдор-проекция на известняке у моря. Генеративные визуалы (Krea), 5-минутный эскиз. Бытовой проектор — намеренно камерный сетап.",
-        stmt: "Море как «дух»: одновременно утешает и тревожит. Мы оставляем на скале световой отпечаток и даём ландшафту отвечать.",
-        media: [
-          {type:"img", src:"assets/water/01.jpg"},
-          {type:"video", src:"assets/water/02.mp4", poster:"assets/water/02.jpg"},
-          {type:"img", src:"assets/water/03.jpg"}
-        ]
-      },
-      trace: {
-        title: "Trace × Kolla",
-        sub: "2025 · Kolla Art Space, Limassol · collaboration",
-        desc: "Инсталляция об исследовании памяти и фиксации воспоминаний: чёрная ткань, ваза с кристаллами, два бокала, свечи и книга, где зрители оставляли записи и отпечатки.",
-        stmt: "Совместная память как живой архив. Атмосфера загадки позволяла зрителю считывать ритуал без инструкций.",
-        media: [
-          {type:"img", src:"assets/trace/01.jpg"},
-          {type:"img", src:"assets/trace/02.jpg"},
-          {type:"video", src:"assets/trace/03.mp4", poster:"assets/trace/03.jpg"}
-        ]
-      },
-      trinitron: {
-        title: "Trinitron Connect (с Аней Кроу)",
-        sub: "2025 · Moscow · gallery installation",
-        desc: "Инсталляция с цифровым аватаром (реалистичный и wireframe). Реакции на жесты и телефоны, диалоговые сценарии и автономные видеореплики.",
-        stmt: "Граница между реальным и цифровым «я»: двойник хранит воспоминания и возвращает их зрителю.",
-        media: [
-          {type:"img", src:"assets/trinitron/01.jpg"},
-          {type:"video", src:"assets/trinitron/02.mp4", poster:"assets/trinitron/02.jpg"},
-          {type:"img", src:"assets/trinitron/03.jpg"}
-        ]
-      }
-    };
+   const PROJECTS = {
+  mycy: {
+    title: "My Cyprus Walk",
+    sub: "2025 · Cyprus · iPad/WebGL",
+    desc: "Интерактивная «цифровая прогулка» по памяти об эмиграции...",
+    stmt: "Память фиксирует обрывки — мы переводим их в цифровую симуляцию...",
+    folder: "mycy", // ← добавляем папку
+    video: null
+  },
+  anem: {
+    title: "Cyprus Flora — Anemones",
+    sub: "2025 · Cyprus · video sketches",
+    desc: "Серия видеоскетчей об эндемичных цветах Кипра...",
+    stmt: "Редкая флора представлена как живое, наблюдающее существо...",
+    folder: "anem",
+    video: null
+  },
+  waspi: {
+    title: "Water Spirits — White Rocks",
+    sub: "2025 · Limassol · outdoor projection",
+    desc: "Проекция на известняковых скалах у моря...",
+    stmt: "Море — дух, который одновременно утешает и тревожит...",
+    folder: "waspi",
+    video: "assets/images/waspiedit.mp4" // ← встроенное видео
+  },
+  trace: {
+    title: "Trace × Kolla",
+    sub: "2025 · Kolla Art Space, Limassol · collaboration",
+    desc: "Инсталляция об исследовании памяти и фиксации воспоминаний...",
+    stmt: "Совместная память как живой архив...",
+    folder: "trace",
+    video: null
+  },
+  tri: {
+    title: "Trinitron Connect (с Аней Кроу)",
+    sub: "2025 · Moscow · gallery installation",
+    desc: "Инсталляция с цифровым аватаром...",
+    stmt: "Исследование границы между реальным и цифровым 'я'...",
+    folder: "tri",
+    video: null
+  }
+};
+    // автозагрузка всех JPG в проекте
+for (const key in PROJECTS) {
+  const folder = PROJECTS[key].folder;
+  const media = [];
+  for (let i = 0; i < 15; i++) { // запас до 15 файлов
+    const imgPath = `assets/images/${folder}${String(i).padStart(2,'0')}.jpg`;
+    media.push({ type: "img", src: imgPath });
+  }
+  if (PROJECTS[key].video) {
+    media.splice(1, 0, { type: "video", src: PROJECTS[key].video }); // видео вставим вторым
+  }
+  PROJECTS[key].media = media;
+}
+
 
     /* =========================
        MODAL RENDER
