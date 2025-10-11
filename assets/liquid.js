@@ -263,9 +263,9 @@ const displayShadingShader = compileShader(gl.FRAGMENT_SHADER, `
     varying vec2 v_texcoord;
     uniform sampler2D u_texture;
     uniform sampler2D u_dye;
+    uniform vec2 u_texelSize;
 
     void main () {
-        vec2 texelSize = 1.0 / textureSize(u_texture, 0);
         vec3 C = texture2D(u_texture, v_texcoord).rgb;
         vec3 L = texture2D(u_dye, v_texcoord).rgb;
         vec3 H = vec3(0.1, 0.1, 0.1);
@@ -855,6 +855,7 @@ function render (target) {
 
     if (config.SHADING) {
         displayShadingProgram.bind();
+        gl.uniform2f(displayShadingProgram.uniforms.u_texelSize, 1.0 / dye.read.width, 1.0 / dye.read.height);
         gl.uniform1i(displayShadingProgram.uniforms.u_texture, dye.read.attach(0));
         gl.uniform1i(displayShadingProgram.uniforms.u_dye, dye.read.attach(1));
     }
