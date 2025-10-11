@@ -78,7 +78,7 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
   position:relative;width:100%;height:100%;
   display:flex;align-items:center;justify-content:center;background:#0a0a0a
 }
-.viewport img,.viewport video{display:block;background:#000;max-width:none;max-height:none}
+.viewport img,.viewport video{display:block;background:#000;width:100%;height:100%;object-fit:contain}
 .m-nav{position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);display:flex;justify-content:space-between;padding:0 var(--pad);z-index:2}
 .fs-btn{position:absolute;bottom:10px;right:12px}
 
@@ -341,56 +341,8 @@ const mPrev=overlay.querySelector('.m-nav .prev');
 const mNext=overlay.querySelector('.m-nav .next');
 const mClose=overlay.querySelector('.m-close');
 const fsBtn=document.getElementById('fsBtn');
-let current=null,index=0,viewportRO=null;
+let current=null,index=0;
 
-function getMediaNaturalSize(el){
-  return new Promise(resolve=>{
-    if(el.tagName==='IMG'){
-      if(el.complete&&el.naturalWidth){resolve({w:el.naturalWidth,h:el.naturalHeight});}
-      else{el.addEventListener('load',()=>resolve({w:el.naturalWidth,h:el.naturalHeight}),{once:true});
-           el.addEventListener('error',()=>resolve({w:1,h:1}),{once:true});}
-    }else{
-      const apply=()=>resolve({w:el.videoWidth||1,h:el.videoHeight||1});
-      if(el.readyState>=1)apply(); else el.addEventListener('loadedmetadata',apply,{once:true});
-    }
-  });
-}
-
-/* ВАЖНО: вертикальные — по высоте; горизонтальные — по ширине */
-async function fitAny(el,container){
-  const {w:mw,h:mh}=await getMediaNaturalSize(el);
-  const cw=container.clientWidth, ch=container.clientHeight;
-  const ratio = mw/mh;
-  const squareish = Math.abs(mw-mh)/Math.max(mw,mh) < 0.06;
-
-  let w,h;
-  if(squareish){
-    const s = Math.min(cw/mw, ch/mh);
-    w = mw*s; h = mh*s;
-  } else if(ratio < 1){ // портрет
-    h = ch;
-    w = h * ratio;
-    if (w > cw){ // перестраховка, если слишком узкий контейнер
-      w = cw; h = w / ratio;
-    }
-  } else {        // альбом/панорама
-    w = cw;
-    h = w / ratio;
-    if (h > ch){
-      h = ch; w = h * ratio;
-    }
-  }
-
-  el.style.maxWidth='none'; el.style.maxHeight='none';
-  el.style.width=Math.floor(w)+'px';
-  el.style.height=Math.floor(h)+'px';
-}
-
-function attachViewportObserver(){
-  if(viewportRO) viewportRO.disconnect();
-  viewportRO=new ResizeObserver(()=>{const el=viewport.firstElementChild; if(el) fitAny(el,viewport);});
-  viewportRO.observe(viewport);
-}
 function renderMedia(){
   viewport.innerHTML=''; if(!current) return;
   const it=current.media[index]; if(!it) return;
@@ -398,8 +350,6 @@ function renderMedia(){
   if(it.type==='img'){el=document.createElement('img'); el.src=it.src;}
   else{el=document.createElement('video'); el.src=it.src; el.controls=true; el.playsInline=true;}
   viewport.append(el);
-  getMediaNaturalSize(el).then(()=>fitAny(el,viewport));
-  attachViewportObserver();
 
   [...thumbs.children].forEach((b,i)=>b.classList.toggle('is-active',i===index));
   [...mdots.children].forEach((b,i)=>b.classList.toggle('active',i===index));
