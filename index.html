@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src="https://cdn.jsdelivr.net/npm/fluid-canvas@latest"></script>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>frame.899 — cyprus art collective</title>
@@ -12,7 +11,7 @@
   --glass-bg:rgba(10,10,12,.28); --glass-brd:rgba(255,255,255,.1);
   --max:1120px; --icon:40px; --icon-m:36px; --pad:20px;
 }
-#renderSurface {
+#liquid {
   position: fixed;
   left: 0; top: 0;
   width: 100vw; height: 100vh;
@@ -23,8 +22,7 @@
 html,body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
 a{color:var(--fg);text-decoration:none;border-bottom:1px solid transparent}
 a:hover{border-color:var(--fg)}
-.wrap{max-width:var(--max);margin:0 auto;padding:32px var(--pad); pointer-events: none;}
-.wrap > * {pointer-events: auto;}
+.wrap{max-width:var(--max);margin:0 auto;padding:32px var(--pad)}
 
 /* HEADER */
 header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px}
@@ -148,33 +146,8 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 </style>
 </head>
 <body>
-<canvas id="renderSurface"></canvas>
-<script>
-    const canvas = document.getElementById('renderSurface');
-    const fluid = new Fluid(canvas, {
-        SIM_RESOLUTION: 128,
-        DENSITY_DISSIPATION: 0.9,
-        VELOCITY_DISSIPATION: 0.9,
-        PRESSURE_ITERATIONS: 25,
-        CURL: 20,
-        SPLAT_RADIUS: 0.2,
-        SPLAT_FORCE: 4000,
-        SHADING: true,
-        COLORFUL: true,
-        PAUSED: false,
-        TRANSPARENT: true,
-        BLOOM: true,
-        BLOOM_ITERATIONS: 8,
-        BLOOM_RESOLUTION: 256,
-        BLOOM_INTENSITY: 0.6,
-        BLOOM_THRESHOLD: 0.5,
-        BLOOM_SOFT_KNEE: 0.7,
-        SUNRAYS: true,
-        SUNRAYS_RESOLUTION: 196,
-        SUNRAYS_WEIGHT: 1.0,
-    });
-    fluid.activate();
-</script>
+<canvas id="liquid"></canvas>
+<script src="assets/liquid.js"></script>
 <div class="wrap">
   <header>
     <div class="h-left">
