@@ -3,10 +3,15 @@
 // This script is a modified version of the WebGL-Fluid-Simulation library by Pavel Dobryakov
 // https://github.com/PavelDoGreat/WebGL-Fluid-Simulation
 
-const canvas = document.getElementsByTagName('canvas')[0];
-resizeCanvas();
+document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('background');
+    if (!canvas) {
+        console.error('Canvas element with ID "background" not found.');
+        return;
+    }
+    resizeCanvas();
 
-let config = {
+    let config = {
     SIM_RESOLUTION: 128,
     DYE_RESOLUTION: 1024,
     CAPTURE_RESOLUTION: 512,
@@ -1136,3 +1141,4 @@ let colorUpdateTimer = 0.0;
 
 initFramebuffers();
 update();
+});
