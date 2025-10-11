@@ -1,15 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="https://cdn.jsdelivr.net/npm/fluid-canvas@latest"></script>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>frame.899 — cyprus art collective</title>
 <meta name="description" content="frame.899 — poetic multimedia installations & systems from a Cyprus art collective."/>
 <style>
 :root{
-  --bg:#0b0b0b; --fg:#e9e9e9; --muted:#a6a6a6; --rule:#1a1a1a;
+  --bg:transparent; --fg:#e9e9e9; --muted:#a6a6a6; --rule:#1a1a1a;
   --glass-bg:rgba(10,10,12,.28); --glass-brd:rgba(255,255,255,.1);
   --max:1120px; --icon:40px; --icon-m:36px; --pad:20px;
+}
+#renderSurface {
+  position: fixed;
+  left: 0; top: 0;
+  width: 100vw; height: 100vh;
+  z-index: -1;
+  background-color: #0b0b0b;
 }
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
@@ -139,6 +147,12 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 </style>
 </head>
 <body>
+<canvas id="renderSurface"></canvas>
+<script>
+    const canvas = document.getElementById('renderSurface');
+    const fluid = new Fluid(canvas);
+    fluid.activate();
+</script>
 <div class="wrap">
   <header>
     <div class="h-left">
