@@ -4,11 +4,13 @@
 // https://github.com/PavelDoGreat/WebGL-Fluid-Simulation
 
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM fully loaded and parsed');
     const canvas = document.getElementById('background');
     if (!canvas) {
         console.error('Canvas element with ID "background" not found.');
         return;
     }
+    console.log('Canvas element found:', canvas);
     resizeCanvas();
 
     let config = {
@@ -69,12 +71,23 @@ if (!ext.supportLinearFiltering) {
 }
 
 function getWebGLContext (canvas) {
+    console.log('Getting WebGL context...');
     const params = { alpha: true, depth: false, stencil: false, antialias: false, preserveDrawingBuffer: false };
 
     let gl = canvas.getContext('webgl2', params);
     const isWebGL2 = !!gl;
-    if (!isWebGL2)
+    if (isWebGL2) {
+        console.log('WebGL2 context obtained.');
+    } else {
+        console.log('WebGL2 not supported, falling back to WebGL1.');
         gl = canvas.getContext('webgl', params) || canvas.getContext('experimental-webgl', params);
+        if (gl) {
+            console.log('WebGL1 context obtained.');
+        } else {
+            console.error('WebGL is not supported on this browser.');
+            return { gl: null, ext: {} };
+        }
+    }
 
     let halfFloat;
     let supportLinearFiltering;
@@ -697,6 +710,7 @@ function initSunraysFramebuffers () {
 }
 
 function update () {
+    console.log('Update function called.');
     const dt = calcDeltaTime();
     if (resizeCanvas())
         initFramebuffers();
