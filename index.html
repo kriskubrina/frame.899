@@ -150,7 +150,28 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 <canvas id="renderSurface"></canvas>
 <script>
     const canvas = document.getElementById('renderSurface');
-    const fluid = new Fluid(canvas);
+    const fluid = new Fluid(canvas, {
+        SIM_RESOLUTION: 128,
+        DENSITY_DISSIPATION: 0.9,
+        VELOCITY_DISSIPATION: 0.9,
+        PRESSURE_ITERATIONS: 25,
+        CURL: 20,
+        SPLAT_RADIUS: 0.2,
+        SPLAT_FORCE: 4000,
+        SHADING: true,
+        COLORFUL: true,
+        PAUSED: false,
+        TRANSPARENT: true,
+        BLOOM: true,
+        BLOOM_ITERATIONS: 8,
+        BLOOM_RESOLUTION: 256,
+        BLOOM_INTENSITY: 0.6,
+        BLOOM_THRESHOLD: 0.5,
+        BLOOM_SOFT_KNEE: 0.7,
+        SUNRAYS: true,
+        SUNRAYS_RESOLUTION: 196,
+        SUNRAYS_WEIGHT: 1.0,
+    });
     fluid.activate();
 </script>
 <div class="wrap">
