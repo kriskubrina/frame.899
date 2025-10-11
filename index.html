@@ -7,16 +7,9 @@
 <meta name="description" content="frame.899 — poetic multimedia installations & systems from a Cyprus art collective."/>
 <style>
 :root{
-  --bg:transparent; --fg:#e9e9e9; --muted:#a6a6a6; --rule:#1a1a1a;
+  --bg:#0b0b0b; --fg:#e9e9e9; --muted:#a6a6a6; --rule:#1a1a1a;
   --glass-bg:rgba(10,10,12,.28); --glass-brd:rgba(255,255,255,.1);
   --max:1120px; --icon:40px; --icon-m:36px; --pad:20px;
-}
-#background {
-  position: fixed;
-  left: 0; top: 0;
-  width: 100%; height: 100%;
-  z-index: -1;
-  background-color: #0b0b0b;
 }
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
@@ -146,7 +139,6 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 </style>
 </head>
 <body>
-<canvas id="background"></canvas>
 <div class="wrap">
   <header>
     <div class="h-left">
@@ -458,6 +450,5 @@ function rebuildText(){
 buildHero();
 buildGrids();
 </script>
-<script src="assets/liquid.js"></script>
 </body>
 </html>
