@@ -287,31 +287,118 @@ applyI18n();
 
 /* ========= DATA ========= */
 const PROJECTS={
-  mycy:{title:{en:"My Cyprus Walk",ru:"My Cyprus Walk"},sub:{en:"2025 · Cyprus · iPad/WebGL",ru:"2025 · Кипр · iPad/WebGL"},
-        desc:{en:"Interactive digital walk about memory and adaptation.",ru:"Интерактивная «цифровая прогулка» о памяти и адаптации."},
-        stmt:{en:"Memory keeps fragments; we translate them into a digital simulation.",ru:"Память хранит обрывки; мы переводим их в цифровую симуляцию."},
-        folder:"mycy",count:9,video:null,collab:false},
+  tri:{
+    title:{en:"TRINITRON CONNECT II x Anya Krol",ru:"TRINITRON CONNECT II x Аня Крол"},
+    sub:{en:"2025 · Moscow · gallery installation",ru:"2025 · Москва · галерейная инсталляция"},
+    desc:{
+      en:`An installation as a letter, sent from a producer’s desk.
+
+A room replicates a workspace and becomes a stage for a digital avatar.
+It lives inside an old Sony Trinitron — a TV from Anya’s collection.
+This is Kris’s avatar.
+It detects the number of viewers, gestures, and actions — and responds.
+It speaks, jokes, addresses you directly. Sometimes it calls you by name.
+Sometimes it misses you.
+
+Everything is driven by precise triggers: movement, picked-up objects, a phone in hand.
+A camera tracks the interaction, and the avatar reacts — asking to upload photos via QR,
+or commenting on what just happened. When the viewer is alone, the avatar’s lines
+become more personal — warm, a little vulnerable. Group scenes shift the tone —
+more energetic, with shared memories.
+
+The content changes depending on the situation. It’s a living archive of memory —
+built from video, personal stories, reactions, and artifacts. We miss working side by side,
+talking across the same table. So we built this table — digital, interactive, with VHS memory,
+an old screen, and a voice that’s always there.`,
+      ru:`Инсталляция — как письмо, отправленное с продюсерского стола.
+
+Комната, воссоздающая рабочее пространство, становится сценой для
+цифрового аватара. Он живёт внутри старого Sony Trinitron — телевизора из коллекции Ани.
+Это аватар Крис.
+Он распознаёт количество зрителей, жесты и действия — и реагирует на них.
+Говорит, шутит, обращается к тебе. Иногда зовёт по имени. Иногда скучает.
+
+Всё построено на точных триггерах: движения, поднятые предметы, телефон в руке.
+Камера фиксирует взаимодействие, и аватар отвечает — например,
+просит загрузить фото через QR или комментирует действие. Когда зритель остаётся один —появляются более личные реплики, тёплые и немного уязвимые. Групповые сцены — другие,
+энергичные, с общими историями.
+
+Контент варьируется в зависимости от ситуации. Это — живой архив памяти, собранный из
+видео, личных историй, реакций и артефактов. Мы скучаем по совместной работе,
+по разговору за одним столом. Поэтому построили этот стол — цифровой, интерактивный,
+с VHS-памятью, старым экраном и голосом, который всегда на связи.`
+    },
+    stmt:{
+      en:`Powered by Palatine Vision sensor system and TouchDesigner.`,
+      ru:``
+    },
+    folder:"tri",count:7,video:null,collab:true
+  },
+
+  trace:{
+    title:{en:"Trace x Kolla",ru:"Trace x Kolla"},
+    sub:{en:"2025 · Limassol · event installation",ru:"2025 · Лимассол · эвентовая инсталляция"},
+    desc:{
+      en:`An interactive installation about shared memory — a living archive built by visitors. Presented at the anniversary market of Kolla, it invited people to leave a mark: a note, a drawing, a passing thought. Each addition shifted the projected visuals, turning every gesture into part of a collective system of light and response.
+
+The work bridged ritual and technology, turning an ordinary table into a quiet, responsive organism. The atmosphere was calm and slightly mystical — intuitive enough for everyone to engage without instruction.
+
+The installation drew attention for its mystery, clarity, and emotional presence. Created in collaboration with the Kolla team with endless gratitude for their support.`,
+      ru:`Интерактивная инсталляция о коллективной памяти — живом архиве, который создают сами зрители. Проект был представлен на юбилейном маркете Kolla и приглашал оставить след: запись, рисунок, случайную мысль. Каждая отметка меняла проекцию, превращая жест в часть общей системы света и отклика.
+
+Работа соединяла ритуал и технологию, превращая стол в тихий, чувствительный организм. Атмосфера — спокойная, чуть мистическая, но достаточно ясная, чтобы каждый понимал, что делать, без слов.
+
+Инсталляция привлекала внимание своей таинственностью, простотой и эмоциональной вовлеченностью. Создано в коллаборации с командой Kolla — спасибо им за участие и поддержку.`
+    },
+    stmt:{en:``,ru:``},
+    folder:"trace",count:9,video:null,collab:true
+  },
+
+  water:{
+    title:{en:"Thin Layer",ru:"Тонкий слой"},
+    sub:{en:"2025 · Limassol · outdoor projection",ru:"2025 · Лимассол · аутдор-проекция"},
+    desc:{
+      en:`A visual experiment exploring how myths can inhabit real landscapes. Through projection and motion, we give shape to the idea of unseen presences — myths that draw you in but never fully reveal themselves.
+
+The project connects nature and perception, testing how light and technology can translate the feeling of a place into something almost alive.
+
+White Stones, Limassol.`,
+      ru:`Визуальный эксперимент о том, как мифы могут обретать форму в реальных ландшафтах. Через проекцию и движение мы исследуем идею невидимых присутствий — мифов, которые манят, но остаются недосягаемыми.
+
+Проект соединяет природу и восприятие, исследуя, как свет и технологии способны передать ощущение живого присутствия места.
+
+Белые камни, Лимассол.`
+    },
+    stmt:{en:``,ru:``},
+    folder:"waspi",count:4,video:"assets/images/waspiedit.mp4",collab:false
+  },
+
+  mycy:{
+    title:{en:"My Cyprus Walk",ru:"My Cyprus Walk"},
+    sub:{en:"2025 · Cyprus · WebGL digital walk",ru:"2025 · Кипр · WebGL цифровая прогулка"},
+    desc:{
+      en:`My Cyprus Walk — a digital walk. A visual reflection on memory, with its inaccuracies, transformations, and emotional anchors. An attempt to capture fragments of emigration and the first points of contact with a new land.
+
+Special thanks: Sergey Akulenok, Nastya Lebedianskaia, Natalia Shumskaya, Tatyana Yaksina
+And to Cyprus, which we now call home.`,
+      ru:`My Cyprus Walk — цифровая прогулка. Визуальное осмысление памяти, с ее неточностями, трансформациями и эмоциональными якорями. Попытка запечатлеть обрывки воспоминаний об эмиграции, о первых точках соприкосновения с новой землей.
+
+Отдельная благодарность: Сергею Акуленку, Насте Лебедянской, Наталье Шумской, Татьяне Яксиной. И Кипру, который мы теперь называем домом.`
+    },
+    stmt:{
+      en:`<a href="https://mycypruswalk.xyz" target="_blank"><b>mycypruswalk.xyz</b></a>`,
+      ru:`<a href="https://mycypruswalk.xyz" target="_blank"><b>mycypruswalk.xyz</b></a>`
+    },
+    folder:"mycy",count:9,video:null,collab:false
+  },
+
   flora:{title:{en:"Cyprus Flora Series. 00 Anemóne coronária",ru:"Cyprus Flora Series. 00 Anemóne coronária"},
         sub:{en:"2025 · Cyprus · video series",ru:"2025 · Кипр · видео-серия"},
         desc:{en:"Endemic flora series; this chapter focuses on Anemóne coronária.",ru:"Серия об эндемиках Кипра; выпуск про Anemóne coronária."},
         stmt:{en:"Nature as a subject that returns the gaze.",ru:"Природа как субъект, возвращающий взгляд."},
-        folder:"anem",count:9,video:null,collab:false},
-  water:{title:{en:"Water Spirits — White Rocks",ru:"Water Spirits — White Rocks"},
-        sub:{en:"2025 · Limassol · outdoor projection",ru:"2025 · Лимассол · аутдор-проекция"},
-        desc:{en:"Projection on limestone near the sea; a 5-min sketch.",ru:"Проекция на известняке у моря; 5-минутный эскиз."},
-        stmt:{en:"Sea as a spirit: comforting and unsettling.",ru:"Море как дух: утешает и тревожит."},
-        folder:"waspi",count:4,video:"assets/images/waspiedit.mp4",collab:false},
-  trace:{title:{en:"Trace × Kolla",ru:"Trace × Kolla"},
-        sub:{en:"2025 · Limassol · collaboration",ru:"2025 · Лимассол · коллаборация"},
-        desc:{en:"Participatory installation about shared memory.",ru:"Партисипаторная инсталляция о совместной памяти."},
-        stmt:{en:"A living archive built by visitors.",ru:"Живой архив, собираемый зрителями."},
-        folder:"trace",count:9,video:null,collab:true},
-  tri:{ title:{en:"Trinitron Connect (with Anya Krow)",ru:"Trinitron Connect (с Аней Кроу)"},
-        sub:{en:"2025 · Moscow · gallery installation",ru:"2025 · Москва · галерейная инсталляция"},
-        desc:{en:"Digital avatar reacting to gestures and phones.",ru:"Цифровой аватар, реагирующий на жесты и телефоны."},
-        stmt:{en:"Meeting a digital double.",ru:"Встреча с цифровым двойником."},
-        folder:"tri",count:7,video:null,collab:true}
+        folder:"anem",count:9,video:null,collab:false}
 };
+
 function buildMedia(){
   for(const k in PROJECTS){
     const p=PROJECTS[k];
