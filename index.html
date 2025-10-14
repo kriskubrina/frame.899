@@ -99,26 +99,25 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 .m-close{ position:absolute; top:10px; right:12px }
 
 /* LEFT: media column */
-.m-media{position:relative;background:transparent;z-index:1}
+.m-media{position:relative;background:#0a0a0a;z-index:1}
 .viewport{
   position:relative;width:100%;height:100%;
-  display:grid;place-items:center;background:transparent;
+  display:grid;place-items:start center;background:#0a0a0a;
 }
 .viewport img,.viewport video{
   width:100%;height:100%;
   object-fit:contain; /* ← ключ: НИКОГДА НЕ КРОПАЕМ */
-  display:block;background:transparent;
+  display:block;background:#000;
 }
 .m-nav{position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);display:flex;justify-content:space-between;padding:0 var(--pad);z-index:2}
 .fs-btn{position:absolute;bottom:10px;right:12px}
 
 /* RIGHT: text + thumbs */
-.m-meta{position:relative;padding:20px 20px 14px;overflow:auto;display:flex;flex-direction:column;gap:10px;z-index:1}
-.m-meta h3{margin:0 0 6px}
-.m-sub{margin:0 0 6px;color:#bdbdbd;font-size:14px}
-.m-desc,.m-stmt{color:#e0e0e0;font-size:15px}
-/* Improve readability & responsive wrapping inside modal text */
-.m-desc p,.m-stmt p{
+.m-meta{position:relative;padding:20px 20px 14px;overflow:hidden;display:flex;flex-direction:column;gap:10px;z-index:1}
+.m-meta h3{margin:0 0 6px; flex-shrink: 0;}
+.m-sub{margin:0 0 6px;color:#bdbdbd;font-size:14px; flex-shrink: 0;}
+.m-scroll-wrapper{flex-grow:1; overflow-y:auto; color:#e0e0e0; font-size:15px;}
+.m-scroll-wrapper p {
   max-width:66ch;
   margin:0 0 10px;
   hyphens:auto;
@@ -126,11 +125,12 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
   word-break:normal;
   text-wrap:pretty;
 }
-.m-thumbs{display:flex;gap:10px;overflow-x:auto;padding-top:8px;padding-bottom:8px;scrollbar-width:none;-ms-overflow-style:none}
+.m-thumbs{display:flex;gap:10px;overflow-x:auto;padding-top:6px;padding-bottom:6px;scrollbar-width:none;-ms-overflow-style:none}
 .m-thumbs::-webkit-scrollbar{display:none}
 .m-thumbs button{width:86px;height:58px;border:1px solid var(--glass-brd);border-radius:6px;overflow:hidden;background:#111;cursor:pointer;flex:0 0 auto;box-shadow:inset 0 0 0 0 rgba(0,0,0,0)}
 .m-thumbs img{width:100%;height:100%;object-fit:cover;display:block}
 .m-thumbs .is-active{box-shadow:inset 0 0 0 2px #e5e5e5}
+.m-thumbs, .m-dots {flex-shrink: 0;}
 .m-dots{display:flex;justify-content:center;gap:8px;margin-top:8px}
 .m-dots button{width:8px;height:8px;border-radius:50%;border:0;background:#3a3a3a;cursor:pointer}
 .m-dots .active{background:#e5e5e5}
@@ -145,12 +145,8 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
   h1{font-size:36px}
   .hero{padding-top:36px}
   .modal{grid-template-columns:1fr; width:100vw; height:100vh; margin:0; border-radius:0}
-  .m-meta{height:46vh}
-  .m-media{height:54vh}
-  .m-desc, .m-stmt {
-    overflow-y: auto;
-    flex-shrink: 1;
-  }
+  .m-meta{height:50vh}
+  .m-media{height:50vh}
 }
 </style>
 </head>
@@ -260,15 +256,13 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
         <button class="prev" aria-label="Previous"><svg class="icon" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
         <button class="next" aria-label="Next"><svg class="icon" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <button class="fs-btn" id="fsBtn" title="Fullscreen"><svg class="icon" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
     </div>
 
     <!-- RIGHT: text + thumbs -->
     <div class="m-meta">
       <h3 id="m-title"></h3>
       <p class="m-sub"></p>
-      <div class="m-desc"></div>
-      <div class="m-stmt"></div>
+      <div class="m-scroll-wrapper"></div>
       <div class="m-thumbs" id="thumbs"></div>
       <div class="m-dots" id="mdots"></div>
     </div>
@@ -465,14 +459,12 @@ const overlayEl=document.getElementById('overlay');
 const viewportEl=document.getElementById('vp');
 const mTitleEl=overlayEl.querySelector('#m-title');
 const mSubEl=overlayEl.querySelector('.m-sub');
-const mDescEl=overlayEl.querySelector('.m-desc');
-const mStmtEl=overlayEl.querySelector('.m-stmt');
+const mScrollWrapperEl=overlayEl.querySelector('.m-scroll-wrapper');
 const thumbsEl=overlayEl.querySelector('#thumbs');
 const mdotsEl=overlayEl.querySelector('#mdots');
 const mPrev=overlayEl.querySelector('.m-nav .prev');
 const mNext=overlayEl.querySelector('.m-nav .next');
 const mClose=overlayEl.querySelector('.m-close');
-const fsBtn=document.getElementById('fsBtn');
 
 let current=null,index=0;
 
@@ -515,10 +507,9 @@ function wrapText(raw){
   return paras.map(p=>`<p>${widont(p)}</p>`).join('');
 }
 function openModal(id){
-  overlayEl.querySelector('.m-meta').scrollTop = 0;
   current=PROJECTS[id]; index=0;
   mTitleEl.textContent=current.title[LANG]; mSubEl.textContent=current.sub[LANG];
-  mDescEl.innerHTML = wrapText(current.desc[LANG]); mStmtEl.innerHTML = wrapText(current.stmt[LANG]);
+  mScrollWrapperEl.innerHTML = wrapText(current.desc[LANG]) + wrapText(current.stmt[LANG]);
   renderThumbsDots(); renderMedia();
   overlayEl.classList.add('show'); overlayEl.setAttribute('aria-hidden','false');
 }
@@ -541,8 +532,6 @@ if(matchMedia('(pointer:coarse)').matches){
   viewportEl.addEventListener('touchmove',e=>{if(!drag)return;cx=e.touches[0].clientX;},{passive:true});
   viewportEl.addEventListener('touchend',()=>{if(!drag)return;const dx=cx-sx;drag=false;if(Math.abs(dx)>40){dx<0?mNext.click():mPrev.click();}},{passive:true});
 }
-/* fullscreen */
-fsBtn.addEventListener('click',()=>{const el=overlayEl.querySelector('.m-media'); if(!document.fullscreenElement){el.requestFullscreen?.();} else {document.exitFullscreen?.();}});
 
 /* ========= rebuild on lang change ========= */
 function rebuildText(){
