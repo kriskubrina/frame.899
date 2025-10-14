@@ -83,8 +83,6 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
   display:grid;
   grid-template-columns:minmax(520px,1.35fr) minmax(360px,1fr);
 }
-.m-media .m-title-container { display: none; } /* Hide mobile title on desktop */
-
 .modal::before{
   content:""; position:absolute; inset:0; z-index:0;
   backdrop-filter:blur(14px) saturate(160%);
@@ -128,7 +126,7 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
   word-break:normal;
   text-wrap:pretty;
 }
-.m-thumbs{display:flex;gap:10px;overflow-x:auto;padding-top:8px;padding-bottom:8px;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}
+.m-thumbs{display:flex;gap:10px;overflow-x:auto;padding-top:8px;padding-bottom:8px;scrollbar-width:none;-ms-overflow-style:none}
 .m-thumbs::-webkit-scrollbar{display:none}
 .m-thumbs button{width:86px;height:58px;border:1px solid var(--glass-brd);border-radius:6px;overflow:hidden;background:#111;cursor:pointer;flex:0 0 auto;box-shadow:inset 0 0 0 0 rgba(0,0,0,0)}
 .m-thumbs img{width:100%;height:100%;object-fit:cover;display:block}
@@ -146,34 +144,61 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
   .iconbtn,.m-close,.fs-btn{width:var(--icon-m);height:var(--icon-m)}
   h1{font-size:36px}
   .hero{padding-top:36px}
-  .modal{
+
+  /* New Mobile Modal Layout */
+  .modal {
     grid-template-columns:1fr; width:100vw; height:100dvh; margin:0; border-radius:0;
-    display:flex; flex-direction:column;
+    display: flex;
+    flex-direction: column;
   }
-  .m-media{ order: 1; position: relative; height: auto; flex-shrink: 0; }
-  .m-meta{ order: 2; height: auto; flex-grow: 1; }
+  .modal .viewport {
+    align-items: start; /* Stick image to top */
+  }
+  .modal .m-media {
+    order: 1;
+    position: relative;
+    height: auto;
+    flex-shrink: 0;
+    max-height: 60%; /* Prevent image from taking too much space */
+  }
+  .modal .m-meta {
+    order: 2;
+    height: auto;
+    flex-grow: 1;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .modal .m-title-container {
+    position: absolute;
+    top: 5px; /* Align with top of close icon */
+    left: 0;
+    width: 100%;
+    z-index: 5;
+    padding: 0 16px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
+    pointer-events: none;
+  }
+  .modal .m-title-container h3 { color: white; }
+  .modal .m-title-container p { color: #eee; }
 
-  .modal .m-title-container{
-    display: block; /* Show on mobile */
-    position:absolute; top:0; left:0; width:100%; z-index:5;
-    padding:16px;
-    background:linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
+  .modal .m-thumbs {
+    padding: 4px 16px; /* Reduced padding */
+    background: transparent;
+    flex-shrink: 0;
   }
-  .m-title-container h3 { color: white; }
-  .m-title-container p { color: #eee; }
-
-  .m-thumbs {
-    order: -1; /* Move gallery before description */
-    padding: 10px 16px;
-    background: #0c0c0c;
-  }
-  .m-thumbs button {
-    width: 64px; /* ~75% of 86px */
-    height: 43px; /* ~75% of 58px */
+  .modal .m-thumbs button {
+    width: 64px; /* ~75% */
+    height: 43px; /* ~75% */
   }
 
-  .m-desc, .m-stmt { display: block; padding: 16px; } /* Add padding for scrollable text */
-  .m-dots { display: none; } /* Hide dots on mobile */
+  .modal .m-scroll-wrapper {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 16px;
+  }
+
+  .modal .m-dots { display: none; }
 }
 </style>
 </head>
@@ -278,23 +303,24 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 
     <!-- LEFT: media -->
     <div class="m-media">
-      <div class="m-title-container">
-        <h3 id="m-title"></h3>
-        <p class="m-sub"></p>
-      </div>
       <div class="viewport" id="vp"></div>
       <div class="m-nav">
         <button class="prev" aria-label="Previous"><svg class="icon" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
         <button class="next" aria-label="Next"><svg class="icon" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <button class="fs-btn" id="fsBtn" title="Fullscreen"><svg class="icon" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
-      <div class="m-thumbs" id="thumbs"></div>
     </div>
 
     <!-- RIGHT: text + thumbs -->
     <div class="m-meta">
-      <div class="m-desc"></div>
-      <div class="m-stmt"></div>
+      <div class="m-title-container">
+        <h3 id="m-title"></h3>
+        <p class="m-sub"></p>
+      </div>
+      <div class="m-scroll-wrapper">
+        <div class="m-desc"></div>
+        <div class="m-stmt"></div>
+      </div>
+      <div class="m-thumbs" id="thumbs"></div>
       <div class="m-dots" id="mdots"></div>
     </div>
   </div>
@@ -440,11 +466,11 @@ And to Cyprus, which we now call home.`,
 function buildMedia(){
   for(const k in PROJECTS){
     const p=PROJECTS[k];
-    p.hero=`assets/images/${p.folder}00image.webp`;             // HERO
-    p.grid=(k==='tri') ? `assets/images/${p.folder}00image.webp`
-                       : `assets/images/${p.folder}00image2.webp`;
+    p.hero=`assets/images/${p.folder}00image.png`;             // HERO
+    p.grid=(k==='tri') ? `assets/images/${p.folder}00image.png`
+                       : `assets/images/${p.folder}00image2.png`;
     p.media=[];
-    for(let i=0;i<p.count;i++){const n=String(i).padStart(2,'0');p.media.push({type:'img',src:`assets/images/${p.folder}${n}.webp`});}
+    for(let i=0;i<p.count;i++){const n=String(i).padStart(2,'0');p.media.push({type:'img',src:`assets/images/${p.folder}${n}.png`});}
     if(p.video)p.media.splice(1,0,{type:'video',src:p.video});
   }
 }
@@ -488,18 +514,15 @@ buildGrids();
 /* ========= MODAL (fit-to-container без кропа) ========= */
 const overlayEl=document.getElementById('overlay');
 const viewportEl=document.getElementById('vp');
-// Get title/sub from the one inside m-media, which is used for both layouts now
-const mTitleEl=overlayEl.querySelector('.m-media #m-title');
-const mSubEl=overlayEl.querySelector('.m-media .m-sub');
-// Desc/stmt are now the only direct children of m-meta
-const mDescEl=overlayEl.querySelector('.m-meta .m-desc');
-const mStmtEl=overlayEl.querySelector('.m-meta .m-stmt');
-const thumbsEl=overlayEl.querySelector('.m-media #thumbs');
-const mdotsEl=overlayEl.querySelector('.m-meta #mdots');
+const mTitleEl=overlayEl.querySelector('#m-title');
+const mSubEl=overlayEl.querySelector('.m-sub');
+const mDescEl=overlayEl.querySelector('.m-desc');
+const mStmtEl=overlayEl.querySelector('.m-stmt');
+const thumbsEl=overlayEl.querySelector('#thumbs');
+const mdotsEl=overlayEl.querySelector('#mdots');
 const mPrev=overlayEl.querySelector('.m-nav .prev');
 const mNext=overlayEl.querySelector('.m-nav .next');
 const mClose=overlayEl.querySelector('.m-close');
-const fsBtn=document.getElementById('fsBtn');
 
 let current=null,index=0;
 
@@ -544,7 +567,13 @@ function wrapText(raw){
 function openModal(id){
   current=PROJECTS[id]; index=0;
   mTitleEl.textContent=current.title[LANG]; mSubEl.textContent=current.sub[LANG];
-  mDescEl.innerHTML = wrapText(current.desc[LANG]); mStmtEl.innerHTML = wrapText(current.stmt[LANG]);
+  // Reorder elements for mobile flexbox layout
+  const meta = overlayEl.querySelector('.m-meta');
+  const thumbs = meta.querySelector('.m-thumbs');
+  const scrollWrapper = meta.querySelector('.m-scroll-wrapper');
+  meta.prepend(thumbs);
+
+  scrollWrapper.innerHTML = wrapText(current.desc[LANG]) + wrapText(current.stmt[LANG]);
   renderThumbsDots(); renderMedia();
   overlayEl.classList.add('show'); overlayEl.setAttribute('aria-hidden','false');
 }
@@ -567,8 +596,6 @@ if(matchMedia('(pointer:coarse)').matches){
   viewportEl.addEventListener('touchmove',e=>{if(!drag)return;cx=e.touches[0].clientX;},{passive:true});
   viewportEl.addEventListener('touchend',()=>{if(!drag)return;const dx=cx-sx;drag=false;if(Math.abs(dx)>40){dx<0?mNext.click():mPrev.click();}},{passive:true});
 }
-/* fullscreen */
-fsBtn.addEventListener('click',()=>{const el=overlayEl.querySelector('.m-media'); if(!document.fullscreenElement){el.requestFullscreen?.();} else {document.exitFullscreen?.();}});
 
 /* ========= rebuild on lang change ========= */
 function rebuildText(){
