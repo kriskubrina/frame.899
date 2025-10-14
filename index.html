@@ -37,6 +37,41 @@ nav a{font-weight:500;line-height:1.1;margin:0 10px}
 }
 .lang .is-active{background:rgba(255,255,255,.06)}
 
+/* Burger Menu */
+.burger-btn { display: none; }
+.burger-menu-panel {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 300px;
+  height: 100%;
+  background: var(--glass-bg);
+  backdrop-filter: blur(14px) saturate(160%);
+  border-left: 1px solid var(--glass-brd);
+  z-index: 100;
+  transition: right 0.4s ease;
+  padding: 60px 20px;
+}
+.burger-menu-panel.show {
+  display: block;
+  right: 0;
+}
+.burger-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.burger-nav a {
+  font-size: 18px;
+  font-weight: 500;
+}
+.lang-switch-mobile {
+  margin-top: 30px;
+  display: flex;
+  gap: 8px;
+}
+
 /* HERO */
 .hero{padding:48px 0 20px}
 h1{font-size:44px;line-height:1.18;margin:.4rem 0 18px 0;font-weight:700}
@@ -83,6 +118,8 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
   display:grid;
   grid-template-columns:minmax(520px,1.35fr) minmax(360px,1fr);
 }
+.m-media .m-title-container, .m-media .m-thumbs { display: none; }
+
 .modal::before{
   content:""; position:absolute; inset:0; z-index:0;
   backdrop-filter:blur(14px) saturate(160%);
@@ -99,21 +136,22 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 .m-close{ position:absolute; top:10px; right:12px }
 
 /* LEFT: media column */
-.m-media{position:relative;background:transparent;z-index:1}
+.m-media{position:relative;background:#0a0a0a;z-index:1}
 .viewport{
   position:relative;width:100%;height:100%;
-  display:grid;place-items:center;background:transparent;
+  display:grid;place-items:center;background:#0a0a0a;
 }
 .viewport img,.viewport video{
   width:100%;height:100%;
   object-fit:contain; /* ← ключ: НИКОГДА НЕ КРОПАЕМ */
-  display:block;background:transparent;
+  display:block;background:#000;
 }
-.m-nav{position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);display:flex;justify-content:space-between;padding:0 var(--pad);z-index:2}
+.m-nav{position:absolute;top:25px;left:0;right:0;transform:translateY(-50%);display:flex;justify-content:space-between;padding:0 var(--pad);z-index:2}
 .fs-btn{position:absolute;bottom:10px;right:12px}
 
 /* RIGHT: text + thumbs */
 .m-meta{position:relative;padding:20px 20px 14px;overflow:auto;display:flex;flex-direction:column;gap:10px;z-index:1}
+.m-meta .m-scroll-wrapper { flex-grow: 1; }
 .m-meta h3{margin:0 0 6px}
 .m-sub{margin:0 0 6px;color:#bdbdbd;font-size:14px}
 .m-desc,.m-stmt{color:#e0e0e0;font-size:15px}
@@ -126,7 +164,7 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
   word-break:normal;
   text-wrap:pretty;
 }
-.m-thumbs{display:flex;gap:10px;overflow-x:auto;padding-top:8px;padding-bottom:8px;scrollbar-width:none;-ms-overflow-style:none}
+.m-thumbs{display:flex;gap:10px;overflow-x:auto;padding-top:6px;padding-bottom:6px;scrollbar-width:none;-ms-overflow-style:none}
 .m-thumbs::-webkit-scrollbar{display:none}
 .m-thumbs button{width:86px;height:58px;border:1px solid var(--glass-brd);border-radius:6px;overflow:hidden;background:#111;cursor:pointer;flex:0 0 auto;box-shadow:inset 0 0 0 0 rgba(0,0,0,0)}
 .m-thumbs img{width:100%;height:100%;object-fit:cover;display:block}
@@ -140,26 +178,51 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 .contacts-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 
 @media (max-width:900px){
+  header nav, header .lang { display: none; }
+  .burger-btn {
+    display: flex;
+    justify-self: end;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
   .grid,.about,.contacts-grid{grid-template-columns:1fr}
   .iconbtn,.m-close,.fs-btn{width:var(--icon-m);height:var(--icon-m)}
   h1{font-size:36px}
   .hero{padding-top:36px}
-
-  /* New Mobile Modal Layout */
   .modal {
-    grid-template-columns:1fr; width:100vw; height:100dvh; margin:0; border-radius:0;
+    grid-template-columns: 1fr;
+    width: 100vw;
+    height: 100dvh;
+    margin: 0;
+    border-radius: 0;
     display: flex;
     flex-direction: column;
   }
   .modal .viewport {
-    align-items: start; /* Stick image to top */
+    align-items: start;
   }
   .modal .m-media {
     order: 1;
     position: relative;
     height: auto;
     flex-shrink: 0;
-    max-height: 60%; /* Prevent image from taking too much space */
+    display: flex;
+    flex-direction: column;
+  }
+  .modal .m-media .m-title-container {
+    order: 1;
+    display: block;
+  }
+  .modal .m-media .viewport {
+    order: 2;
+  }
+  .modal .m-media .m-nav {
+    order: 3;
+  }
+  .modal .m-media .m-thumbs {
+    order: 4;
+    display: flex;
   }
   .modal .m-meta {
     order: 2;
@@ -168,41 +231,58 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
     padding: 0;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }
-  .modal .m-title-container {
+  .modal .m-media .m-title-container {
+    display: block;
     position: absolute;
-    top: 5px; /* Align with top of close icon */
+    top: 10px;
     left: 0;
     width: 100%;
     z-index: 5;
-    padding: 0 16px;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
+    padding: 16px 50px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
     pointer-events: none;
   }
-  .modal .m-title-container h3 { color: white; }
-  .modal .m-title-container p { color: #eee; }
-
+  .modal .m-title-container h3, .modal .m-title-container p {
+    color: white;
+    margin: 0;
+  }
   .modal .m-thumbs {
-    padding: 4px 16px; /* Reduced padding */
+    order: 1;
+    padding: 8px 16px;
     background: transparent;
     flex-shrink: 0;
   }
   .modal .m-thumbs button {
-    width: 64px; /* ~75% */
-    height: 43px; /* ~75% */
+    width: 64px;
+    height: 43px;
   }
-
   .modal .m-scroll-wrapper {
+    order: 2;
     flex-grow: 1;
     overflow-y: auto;
     padding: 16px;
   }
-
-  .modal .m-dots { display: none; }
+  .modal .m-dots {
+    display: none;
+  }
 }
 </style>
 </head>
 <body>
+<div id="burger-menu-panel" class="burger-menu-panel">
+  <nav class="burger-nav">
+    <a href="#projects" data-i18n="nav.projects">Projects</a>
+    <a href="#collabs" data-i18n="nav.collabs">Collabs</a>
+    <a href="#about" data-i18n="nav.about">About</a>
+    <a href="#contacts" data-i18n="nav.contacts">Contacts</a>
+  </nav>
+  <div class="lang-switch-mobile">
+    <button id="enBtnMobile" class="is-active">EN</button>
+    <button id="ruBtnMobile">RU</button>
+  </div>
+</div>
 <div id="liquid-ether-container" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;"></div>
 <div class="wrap">
   <header>
@@ -222,6 +302,11 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
       <button id="enBtn" class="is-active">EN</button>
       <button id="ruBtn">RU</button>
     </div>
+    <button id="burger-btn" class="burger-btn">
+      <svg class="icon" viewBox="0 0 24 24">
+        <path d="M3 12h18M3 6h18M3 18h18"/>
+      </svg>
+    </button>
   </header>
 
   <main>
@@ -303,25 +388,24 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 
     <!-- LEFT: media -->
     <div class="m-media">
+      <div class="m-title-container">
+        <h3 id="m-title"></h3>
+        <p class="m-sub"></p>
+      </div>
       <div class="viewport" id="vp"></div>
       <div class="m-nav">
         <button class="prev" aria-label="Previous"><svg class="icon" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
         <button class="next" aria-label="Next"><svg class="icon" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
+      <div class="m-thumbs" id="thumbs"></div>
     </div>
 
     <!-- RIGHT: text + thumbs -->
     <div class="m-meta">
-      <div class="m-title-container">
-        <h3 id="m-title"></h3>
-        <p class="m-sub"></p>
-      </div>
       <div class="m-scroll-wrapper">
         <div class="m-desc"></div>
         <div class="m-stmt"></div>
       </div>
-      <div class="m-thumbs" id="thumbs"></div>
-      <div class="m-dots" id="mdots"></div>
     </div>
   </div>
 </div>
@@ -501,6 +585,27 @@ function buildHero(){
 }
 buildHero();
 
+/* ========= BURGER MENU ========= */
+const burgerBtn = document.getElementById('burger-btn');
+const burgerMenuPanel = document.getElementById('burger-menu-panel');
+const burgerNavLinks = document.querySelectorAll('.burger-nav a');
+const enBtnMobile = document.getElementById('enBtnMobile');
+const ruBtnMobile = document.getElementById('ruBtnMobile');
+
+burgerBtn.addEventListener('click', () => {
+  burgerMenuPanel.classList.toggle('show');
+});
+
+burgerNavLinks.forEach(link => {
+  link.addEventListener('click', () => {
+    burgerMenuPanel.classList.remove('show');
+  });
+});
+
+enBtnMobile.onclick=()=>{LANG='en';localStorage.setItem('lang','en');applyI18n();rebuildText();burgerMenuPanel.classList.remove('show');};
+ruBtnMobile.onclick=()=>{LANG='ru';localStorage.setItem('lang','ru');applyI18n();rebuildText();burgerMenuPanel.classList.remove('show');};
+
+
 /* ========= GRIDS ========= */
 function buildGrids(){
   const gp=document.getElementById('grid-projects'),gc=document.getElementById('grid-collabs');gp.innerHTML='';gc.innerHTML='';
@@ -519,7 +624,6 @@ const mSubEl=overlayEl.querySelector('.m-sub');
 const mDescEl=overlayEl.querySelector('.m-desc');
 const mStmtEl=overlayEl.querySelector('.m-stmt');
 const thumbsEl=overlayEl.querySelector('#thumbs');
-const mdotsEl=overlayEl.querySelector('#mdots');
 const mPrev=overlayEl.querySelector('.m-nav .prev');
 const mNext=overlayEl.querySelector('.m-nav .next');
 const mClose=overlayEl.querySelector('.m-close');
@@ -541,18 +645,16 @@ function renderMedia(){
   viewportEl.append(el);
 
   [...thumbsEl.children].forEach((b,i)=>b.classList.toggle('is-active',i===index));
-  [...mdotsEl.children].forEach((b,i)=>b.classList.toggle('active',i===index));
   const t=thumbsEl.children[index]; if(t) t.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
 }
 function renderThumbsDots(){
-  thumbsEl.innerHTML=''; mdotsEl.innerHTML='';
+  thumbsEl.innerHTML='';
   current.media.forEach((m,i)=>{
     const b=document.createElement('button');
     if(m.type==='img'){const t=document.createElement('img'); t.src=m.src; b.append(t);}
     else{b.style.position='relative';const label=document.createElement('div');label.textContent='▶';Object.assign(label.style,{position:'absolute',inset:'0',display:'grid',placeItems:'center',fontWeight:'700'});b.append(label);}
     b.addEventListener('click',()=>{index=i;renderMedia();});
     thumbsEl.append(b);
-    const d=document.createElement('button'); if(i===index)d.classList.add('active'); d.addEventListener('click',()=>{index=i;renderMedia();}); mdotsEl.append(d);
   });
 }
 function wrapText(raw){
@@ -567,19 +669,16 @@ function wrapText(raw){
 function openModal(id){
   current=PROJECTS[id]; index=0;
   mTitleEl.textContent=current.title[LANG]; mSubEl.textContent=current.sub[LANG];
-  // Reorder elements for mobile flexbox layout
-  const meta = overlayEl.querySelector('.m-meta');
-  const thumbs = meta.querySelector('.m-thumbs');
-  const scrollWrapper = meta.querySelector('.m-scroll-wrapper');
-  meta.prepend(thumbs);
 
+  const scrollWrapper = overlayEl.querySelector('.m-scroll-wrapper');
   scrollWrapper.innerHTML = wrapText(current.desc[LANG]) + wrapText(current.stmt[LANG]);
+
   renderThumbsDots(); renderMedia();
   overlayEl.classList.add('show'); overlayEl.setAttribute('aria-hidden','false');
 }
 function closeModal(){
   overlayEl.classList.remove('show'); overlayEl.setAttribute('aria-hidden','true');
-  cleanupViewport(); thumbsEl.innerHTML=''; mdotsEl.innerHTML=''; current=null;
+  cleanupViewport(); thumbsEl.innerHTML=''; current=null;
 }
 mPrev.onclick=()=>{ if(!current) return; index=(index-1+current.media.length)%current.media.length; renderMedia(); };
 mNext.onclick=()=>{ if(!current) return; index=(index+1)%current.media.length; renderMedia(); };
@@ -596,7 +695,6 @@ if(matchMedia('(pointer:coarse)').matches){
   viewportEl.addEventListener('touchmove',e=>{if(!drag)return;cx=e.touches[0].clientX;},{passive:true});
   viewportEl.addEventListener('touchend',()=>{if(!drag)return;const dx=cx-sx;drag=false;if(Math.abs(dx)>40){dx<0?mNext.click():mPrev.click();}},{passive:true});
 }
-
 /* ========= rebuild on lang change ========= */
 function rebuildText(){
   document.querySelectorAll('#slides .slide').forEach(sl=>{const id=sl.getAttribute('data-project');const p=PROJECTS[id];if(p){sl.querySelector('.meta').innerHTML=`<h3>${p.title[LANG]}</h3><p>${p.sub[LANG]}</p>`;}});
