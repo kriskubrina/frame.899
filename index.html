@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>frame.899 — cyprus art collective</title>
 <meta name="description" content="frame.899 — poetic multimedia installations & systems from a Cyprus art collective."/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<link rel="stylesheet" href="assets/liquid.css">
 <style>
 :root{
   --bg:#0b0b0b; --fg:#e9e9e9; --muted:#a6a6a6; --rule:#1a1a1a;
@@ -162,6 +164,8 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
   <main>
     <div class="hero">
       <h1 data-i18n="h1">Art, experiments, occasional sea breeze.</h1>
+
+      <div id="liquid-ether-container" style="width: 100%; height: 600px; position: relative;"></div>
 
       <!-- HERO -->
       <div class="slider">
@@ -449,6 +453,11 @@ function rebuildText(){
 /* затем полноценная инициализация */
 buildHero();
 buildGrids();
+</script>
+<script src="assets/liquid.js"></script>
+<script>
+  const container = document.getElementById('liquid-ether-container');
+  const liquidEther = new LiquidEther(container);
 </script>
 </body>
 </html>
