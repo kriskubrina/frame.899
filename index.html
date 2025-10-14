@@ -102,7 +102,7 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 .m-media{position:relative;background:#0a0a0a;z-index:1}
 .viewport{
   position:relative;width:100%;height:100%;
-  display:grid;place-items:center;background:#0a0a0a;
+  display:grid;place-items:start center;background:#0a0a0a;
 }
 .viewport img,.viewport video{
   width:100%;height:100%;
@@ -113,15 +113,24 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 .fs-btn{position:absolute;bottom:10px;right:12px}
 
 /* RIGHT: text + thumbs */
-.m-meta{position:relative;padding:20px 20px 14px;overflow:auto;display:flex;flex-direction:column;gap:10px;z-index:1}
-.m-meta h3{margin:0 0 6px}
-.m-sub{margin:0 0 6px;color:#bdbdbd;font-size:14px}
-.m-desc,.m-stmt{color:#e0e0e0;font-size:15px}
+.m-meta{position:relative;padding:20px 20px 14px;overflow:hidden;display:flex;flex-direction:column;gap:10px;z-index:1}
+.m-meta h3{margin:0 0 6px; flex-shrink: 0;}
+.m-sub{margin:0 0 6px;color:#bdbdbd;font-size:14px; flex-shrink: 0;}
+.m-scroll-wrapper{flex-grow:1; overflow-y:auto; color:#e0e0e0; font-size:15px;}
+.m-scroll-wrapper p {
+  max-width:66ch;
+  margin:0 0 10px;
+  hyphens:auto;
+  overflow-wrap:break-word;
+  word-break:normal;
+  text-wrap:pretty;
+}
 .m-thumbs{display:flex;gap:10px;overflow-x:auto;padding-top:6px;padding-bottom:6px;scrollbar-width:none;-ms-overflow-style:none}
 .m-thumbs::-webkit-scrollbar{display:none}
 .m-thumbs button{width:86px;height:58px;border:1px solid var(--glass-brd);border-radius:6px;overflow:hidden;background:#111;cursor:pointer;flex:0 0 auto;box-shadow:inset 0 0 0 0 rgba(0,0,0,0)}
 .m-thumbs img{width:100%;height:100%;object-fit:cover;display:block}
 .m-thumbs .is-active{box-shadow:inset 0 0 0 2px #e5e5e5}
+.m-thumbs, .m-dots {flex-shrink: 0;}
 .m-dots{display:flex;justify-content:center;gap:8px;margin-top:8px}
 .m-dots button{width:8px;height:8px;border-radius:50%;border:0;background:#3a3a3a;cursor:pointer}
 .m-dots .active{background:#e5e5e5}
@@ -136,8 +145,8 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
   h1{font-size:36px}
   .hero{padding-top:36px}
   .modal{grid-template-columns:1fr; width:100vw; height:100vh; margin:0; border-radius:0}
-  .m-meta{height:46vh}
-  .m-media{height:54vh}
+  .m-meta{height:50vh}
+  .m-media{height:50vh}
 }
 </style>
 </head>
@@ -247,15 +256,13 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
         <button class="prev" aria-label="Previous"><svg class="icon" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
         <button class="next" aria-label="Next"><svg class="icon" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <button class="fs-btn" id="fsBtn" title="Fullscreen"><svg class="icon" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
     </div>
 
     <!-- RIGHT: text + thumbs -->
     <div class="m-meta">
       <h3 id="m-title"></h3>
       <p class="m-sub"></p>
-      <div class="m-desc"></div>
-      <div class="m-stmt"></div>
+      <div class="m-scroll-wrapper"></div>
       <div class="m-thumbs" id="thumbs"></div>
       <div class="m-dots" id="mdots"></div>
     </div>
@@ -287,31 +294,118 @@ applyI18n();
 
 /* ========= DATA ========= */
 const PROJECTS={
-  mycy:{title:{en:"My Cyprus Walk",ru:"My Cyprus Walk"},sub:{en:"2025 · Cyprus · iPad/WebGL",ru:"2025 · Кипр · iPad/WebGL"},
-        desc:{en:"Interactive digital walk about memory and adaptation.",ru:"Интерактивная «цифровая прогулка» о памяти и адаптации."},
-        stmt:{en:"Memory keeps fragments; we translate them into a digital simulation.",ru:"Память хранит обрывки; мы переводим их в цифровую симуляцию."},
-        folder:"mycy",count:9,video:null,collab:false},
+  tri:{
+    title:{en:"TRINITRON CONNECT II x Anya Krol",ru:"TRINITRON CONNECT II x Аня Крол"},
+    sub:{en:"2025 · Moscow · gallery installation",ru:"2025 · Москва · галерейная инсталляция"},
+    desc:{
+      en:`An installation as a letter, sent from a producer’s desk.
+
+A room replicates a workspace and becomes a stage for a digital avatar.
+It lives inside an old Sony Trinitron — a TV from Anya’s collection.
+This is Kris’s avatar.
+It detects the number of viewers, gestures, and actions — and responds.
+It speaks, jokes, addresses you directly. Sometimes it calls you by name.
+Sometimes it misses you.
+
+Everything is driven by precise triggers: movement, picked-up objects, a phone in hand.
+A camera tracks the interaction, and the avatar reacts — asking to upload photos via QR,
+or commenting on what just happened. When the viewer is alone, the avatar’s lines
+become more personal — warm, a little vulnerable. Group scenes shift the tone —
+more energetic, with shared memories.
+
+The content changes depending on the situation. It’s a living archive of memory —
+built from video, personal stories, reactions, and artifacts. We miss working side by side,
+talking across the same table. So we built this table — digital, interactive, with VHS memory,
+an old screen, and a voice that’s always there.`,
+      ru:`Инсталляция — как письмо, отправленное с продюсерского стола.
+
+Комната, воссоздающая рабочее пространство, становится сценой для
+цифрового аватара. Он живёт внутри старого Sony Trinitron — телевизора из коллекции Ани.
+Это аватар Крис.
+Он распознаёт количество зрителей, жесты и действия — и реагирует на них.
+Говорит, шутит, обращается к тебе. Иногда зовёт по имени. Иногда скучает.
+
+Всё построено на точных триггерах: движения, поднятые предметы, телефон в руке.
+Камера фиксирует взаимодействие, и аватар отвечает — например,
+просит загрузить фото через QR или комментирует действие. Когда зритель остаётся один —появляются более личные реплики, тёплые и немного уязвимые. Групповые сцены — другие,
+энергичные, с общими историями.
+
+Контент варьируется в зависимости от ситуации. Это — живой архив памяти, собранный из
+видео, личных историй, реакций и артефактов. Мы скучаем по совместной работе,
+по разговору за одним столом. Поэтому построили этот стол — цифровой, интерактивный,
+с VHS-памятью, старым экраном и голосом, который всегда на связи.`
+    },
+    stmt:{
+      en:`Powered by Palatine Vision sensor system and TouchDesigner.`,
+      ru:``
+    },
+    folder:"tri",count:7,video:null,collab:true
+  },
+
+  trace:{
+    title:{en:"Trace x Kolla",ru:"Trace x Kolla"},
+    sub:{en:"2025 · Limassol · event installation",ru:"2025 · Лимассол · эвентовая инсталляция"},
+    desc:{
+      en:`An interactive installation about shared memory — a living archive built by visitors. Presented at the anniversary market of Kolla, it invited people to leave a mark: a note, a drawing, a passing thought. Each addition shifted the projected visuals, turning every gesture into part of a collective system of light and response.
+
+The work bridged ritual and technology, turning an ordinary table into a quiet, responsive organism. The atmosphere was calm and slightly mystical — intuitive enough for everyone to engage without instruction.
+
+The installation drew attention for its mystery, clarity, and emotional presence. Created in collaboration with the Kolla team with endless gratitude for their support.`,
+      ru:`Интерактивная инсталляция о коллективной памяти — живом архиве, который создают сами зрители. Проект был представлен на юбилейном маркете Kolla и приглашал оставить след: запись, рисунок, случайную мысль. Каждая отметка меняла проекцию, превращая жест в часть общей системы света и отклика.
+
+Работа соединяла ритуал и технологию, превращая стол в тихий, чувствительный организм. Атмосфера — спокойная, чуть мистическая, но достаточно ясная, чтобы каждый понимал, что делать, без слов.
+
+Инсталляция привлекала внимание своей таинственностью, простотой и эмоциональной вовлеченностью. Создано в коллаборации с командой Kolla — спасибо им за участие и поддержку.`
+    },
+    stmt:{en:``,ru:``},
+    folder:"trace",count:9,video:null,collab:true
+  },
+
+  water:{
+    title:{en:"Thin Layer",ru:"Тонкий слой"},
+    sub:{en:"2025 · Limassol · outdoor projection",ru:"2025 · Лимассол · аутдор-проекция"},
+    desc:{
+      en:`A visual experiment exploring how myths can inhabit real landscapes. Through projection and motion, we give shape to the idea of unseen presences — myths that draw you in but never fully reveal themselves.
+
+The project connects nature and perception, testing how light and technology can translate the feeling of a place into something almost alive.
+
+White Stones, Limassol.`,
+      ru:`Визуальный эксперимент о том, как мифы могут обретать форму в реальных ландшафтах. Через проекцию и движение мы исследуем идею невидимых присутствий — мифов, которые манят, но остаются недосягаемыми.
+
+Проект соединяет природу и восприятие, исследуя, как свет и технологии способны передать ощущение живого присутствия места.
+
+Белые камни, Лимассол.`
+    },
+    stmt:{en:``,ru:``},
+    folder:"waspi",count:4,video:"assets/images/waspiedit.mp4",collab:false
+  },
+
+  mycy:{
+    title:{en:"My Cyprus Walk",ru:"My Cyprus Walk"},
+    sub:{en:"2025 · Cyprus · WebGL digital walk",ru:"2025 · Кипр · WebGL цифровая прогулка"},
+    desc:{
+      en:`My Cyprus Walk — a digital walk. A visual reflection on memory, with its inaccuracies, transformations, and emotional anchors. An attempt to capture fragments of emigration and the first points of contact with a new land.
+
+Special thanks: Sergey Akulenok, Nastya Lebedianskaia, Natalia Shumskaya, Tatyana Yaksina
+And to Cyprus, which we now call home.`,
+      ru:`My Cyprus Walk — цифровая прогулка. Визуальное осмысление памяти, с ее неточностями, трансформациями и эмоциональными якорями. Попытка запечатлеть обрывки воспоминаний об эмиграции, о первых точках соприкосновения с новой землей.
+
+Отдельная благодарность: Сергею Акуленку, Насте Лебедянской, Наталье Шумской, Татьяне Яксиной. И Кипру, который мы теперь называем домом.`
+    },
+    stmt:{
+      en:`<a href="https://mycypruswalk.xyz" target="_blank"><b>mycypruswalk.xyz</b></a>`,
+      ru:`<a href="https://mycypruswalk.xyz" target="_blank"><b>mycypruswalk.xyz</b></a>`
+    },
+    folder:"mycy",count:9,video:null,collab:false
+  },
+
   flora:{title:{en:"Cyprus Flora Series. 00 Anemóne coronária",ru:"Cyprus Flora Series. 00 Anemóne coronária"},
         sub:{en:"2025 · Cyprus · video series",ru:"2025 · Кипр · видео-серия"},
         desc:{en:"Endemic flora series; this chapter focuses on Anemóne coronária.",ru:"Серия об эндемиках Кипра; выпуск про Anemóne coronária."},
         stmt:{en:"Nature as a subject that returns the gaze.",ru:"Природа как субъект, возвращающий взгляд."},
-        folder:"anem",count:9,video:null,collab:false},
-  water:{title:{en:"Water Spirits — White Rocks",ru:"Water Spirits — White Rocks"},
-        sub:{en:"2025 · Limassol · outdoor projection",ru:"2025 · Лимассол · аутдор-проекция"},
-        desc:{en:"Projection on limestone near the sea; a 5-min sketch.",ru:"Проекция на известняке у моря; 5-минутный эскиз."},
-        stmt:{en:"Sea as a spirit: comforting and unsettling.",ru:"Море как дух: утешает и тревожит."},
-        folder:"waspi",count:4,video:"assets/images/waspiedit.mp4",collab:false},
-  trace:{title:{en:"Trace × Kolla",ru:"Trace × Kolla"},
-        sub:{en:"2025 · Limassol · collaboration",ru:"2025 · Лимассол · коллаборация"},
-        desc:{en:"Participatory installation about shared memory.",ru:"Партисипаторная инсталляция о совместной памяти."},
-        stmt:{en:"A living archive built by visitors.",ru:"Живой архив, собираемый зрителями."},
-        folder:"trace",count:9,video:null,collab:true},
-  tri:{ title:{en:"Trinitron Connect (with Anya Krow)",ru:"Trinitron Connect (с Аней Кроу)"},
-        sub:{en:"2025 · Moscow · gallery installation",ru:"2025 · Москва · галерейная инсталляция"},
-        desc:{en:"Digital avatar reacting to gestures and phones.",ru:"Цифровой аватар, реагирующий на жесты и телефоны."},
-        stmt:{en:"Meeting a digital double.",ru:"Встреча с цифровым двойником."},
-        folder:"tri",count:7,video:null,collab:true}
+        folder:"anem",count:9,video:null,collab:false}
 };
+
 function buildMedia(){
   for(const k in PROJECTS){
     const p=PROJECTS[k];
@@ -365,14 +459,12 @@ const overlayEl=document.getElementById('overlay');
 const viewportEl=document.getElementById('vp');
 const mTitleEl=overlayEl.querySelector('#m-title');
 const mSubEl=overlayEl.querySelector('.m-sub');
-const mDescEl=overlayEl.querySelector('.m-desc');
-const mStmtEl=overlayEl.querySelector('.m-stmt');
+const mScrollWrapperEl=overlayEl.querySelector('.m-scroll-wrapper');
 const thumbsEl=overlayEl.querySelector('#thumbs');
 const mdotsEl=overlayEl.querySelector('#mdots');
 const mPrev=overlayEl.querySelector('.m-nav .prev');
 const mNext=overlayEl.querySelector('.m-nav .next');
 const mClose=overlayEl.querySelector('.m-close');
-const fsBtn=document.getElementById('fsBtn');
 
 let current=null,index=0;
 
@@ -405,10 +497,19 @@ function renderThumbsDots(){
     const d=document.createElement('button'); if(i===index)d.classList.add('active'); d.addEventListener('click',()=>{index=i;renderMedia();}); mdotsEl.append(d);
   });
 }
+function wrapText(raw){
+  if(!raw) return "";
+  const paras = String(raw).trim().split(/\n\s*\n/);
+  function widont(s){
+    s = s.replace(/\s*\n+\s*/g,' ').trim();
+    return s.replace(/\s+([^\s]+)\s+([^\s]+)$/, '\u00A0$1\u00A0$2');
+  }
+  return paras.map(p=>`<p>${widont(p)}</p>`).join('');
+}
 function openModal(id){
   current=PROJECTS[id]; index=0;
   mTitleEl.textContent=current.title[LANG]; mSubEl.textContent=current.sub[LANG];
-  mDescEl.textContent=current.desc[LANG]; mStmtEl.textContent=current.stmt[LANG];
+  mScrollWrapperEl.innerHTML = wrapText(current.desc[LANG]) + wrapText(current.stmt[LANG]);
   renderThumbsDots(); renderMedia();
   overlayEl.classList.add('show'); overlayEl.setAttribute('aria-hidden','false');
 }
@@ -431,8 +532,6 @@ if(matchMedia('(pointer:coarse)').matches){
   viewportEl.addEventListener('touchmove',e=>{if(!drag)return;cx=e.touches[0].clientX;},{passive:true});
   viewportEl.addEventListener('touchend',()=>{if(!drag)return;const dx=cx-sx;drag=false;if(Math.abs(dx)>40){dx<0?mNext.click():mPrev.click();}},{passive:true});
 }
-/* fullscreen */
-fsBtn.addEventListener('click',()=>{const el=overlayEl.querySelector('.m-media'); if(!document.fullscreenElement){el.requestFullscreen?.();} else {document.exitFullscreen?.();}});
 
 /* ========= rebuild on lang change ========= */
 function rebuildText(){
