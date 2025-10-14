@@ -440,11 +440,11 @@ And to Cyprus, which we now call home.`,
 function buildMedia(){
   for(const k in PROJECTS){
     const p=PROJECTS[k];
-    p.hero=`assets/images/${p.folder}00image.png`;             // HERO
-    p.grid=(k==='tri') ? `assets/images/${p.folder}00image.png`
-                       : `assets/images/${p.folder}00image2.png`;
+    p.hero=`assets/images/${p.folder}00image.webp`;             // HERO
+    p.grid=(k==='tri') ? `assets/images/${p.folder}00image.webp`
+                       : `assets/images/${p.folder}00image2.webp`;
     p.media=[];
-    for(let i=0;i<p.count;i++){const n=String(i).padStart(2,'0');p.media.push({type:'img',src:`assets/images/${p.folder}${n}.png`});}
+    for(let i=0;i<p.count;i++){const n=String(i).padStart(2,'0');p.media.push({type:'img',src:`assets/images/${p.folder}${n}.webp`});}
     if(p.video)p.media.splice(1,0,{type:'video',src:p.video});
   }
 }
