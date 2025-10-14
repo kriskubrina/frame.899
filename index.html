@@ -17,9 +17,10 @@
 html,body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
 a{color:var(--fg);text-decoration:none;border-bottom:1px solid transparent}
 a:hover{border-color:var(--fg)}
-.wrap{max-width:var(--max);margin:0 auto;padding:32px var(--pad);position:relative;z-index:1}
+.wrap{max-width:var(--max);margin:0 auto;padding:32px var(--pad);position:relative;z-index:1;pointer-events:none}
 
 /* HEADER */
+header,main{pointer-events:auto}
 header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px}
 .h-left{justify-self:start}
 .logo-wrap{display:flex;flex-direction:column;line-height:1}
@@ -459,7 +460,8 @@ buildGrids();
   const liquidEther = new LiquidEther(container, {
     colors: ['#5227FF', '#8db5f7', '#e5eeff'],
     mouseForce: 8,
-    isBounce: true
+    isBounce: true,
+    cursorSize: 100
   });
 </script>
 </body>
