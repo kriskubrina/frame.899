@@ -75,18 +75,16 @@ nav a{font-weight:500;line-height:1.1;margin:0 10px}
   gap: 8px;
 }
 .lang-switch-mobile button {
-  padding: 10px; /* Same padding as nav links */
+  padding: 0;
   background: transparent;
-  border: 1px solid var(--glass-brd);
+  border: none;
   color: var(--fg);
-  border-radius: 8px;
   cursor: pointer;
+  font-size: 18px; /* Match nav link font size */
   font-weight: 500;
-  line-height: 1;
 }
 .lang-switch-mobile button.is-active {
-  background: rgba(255,255,255,.1);
-  border-color: #fff;
+  text-decoration: underline;
 }
 
 /* HERO */
@@ -162,7 +160,13 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
   flex-direction: column;
 }
 .m-media .m-thumbs {
-  flex-shrink: 0;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 2;
+  background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+  padding-top: 20px;
 }
 .m-media .viewport {
   flex-grow: 1;
@@ -170,12 +174,12 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 }
 .viewport{
   position:relative;width:100%;height:100%;
-  display:grid;place-items:center;background:#0a0a0a;
+  display:grid;place-items:center;
 }
 .viewport img,.viewport video{
   width:100%;height:100%;
   object-fit:contain; /* ← ключ: НИКОГДА НЕ КРОПАЕМ */
-  display:block;background:#000;
+  display:block;
 }
 .m-nav{position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);display:flex;justify-content:space-between;padding:0 var(--pad);z-index:2}
 .fs-btn{position:absolute;bottom:10px;right:12px}
@@ -260,6 +264,7 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
     width: 100%;
     background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
     padding-top: 20px;
+    z-index: 2; /* Ensure gallery is on top of the main image */
   }
   .modal .m-meta {
     order: 2;
@@ -268,7 +273,6 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    background: var(--bg);
   }
   .modal .m-title-container {
     flex-shrink: 0; /* Prevent title from shrinking */
@@ -316,12 +320,8 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
     <a href="#contacts" data-i18n="nav.contacts">Contacts</a>
   </nav>
   <div class="lang-switch-mobile">
-    <button id="enBtnMobile" class="is-active">
-      <svg class="icon" viewBox="0 0 24 24" style="width: 28px; height: 28px;"><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="12" font-weight="bold" fill="none" stroke="currentColor">EN</text></svg>
-    </button>
-    <button id="ruBtnMobile">
-      <svg class="icon" viewBox="0 0 24 24" style="width: 28px; height: 28px;"><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="12" font-weight="bold" fill="none" stroke="currentColor">RU</text></svg>
-    </button>
+    <button id="enBtnMobile" class="is-active">EN</button>
+    <button id="ruBtnMobile">RU</button>
   </div>
 </div>
 <div id="liquid-ether-container" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;"></div>
