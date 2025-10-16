@@ -43,22 +43,19 @@ nav a{font-weight:500;line-height:1.1;margin:0 10px}
   display: none;
   position: fixed;
   top: 0;
-  right: 0;
+  right: -100%;
   width: 300px;
   height: 100%;
   background: var(--glass-bg);
   backdrop-filter: blur(14px) saturate(160%);
   border-left: 1px solid var(--glass-brd);
   z-index: 100;
-  transform: translateX(100%);
-  opacity: 0;
-  transition: transform 0.4s ease, opacity 0.4s ease;
+  transition: right 0.4s ease;
   padding: 60px 20px;
 }
 .burger-menu-panel.show {
   display: block;
-  transform: translateX(0);
-  opacity: 1;
+  right: 0;
 }
 .burger-nav {
   display: flex;
@@ -73,20 +70,6 @@ nav a{font-weight:500;line-height:1.1;margin:0 10px}
   margin-top: 30px;
   display: flex;
   gap: 8px;
-}
-.lang-switch-mobile button {
-  padding: 10px; /* Same padding as nav links */
-  background: transparent;
-  border: 1px solid var(--glass-brd);
-  color: var(--fg);
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 500;
-  line-height: 1;
-}
-.lang-switch-mobile button.is-active {
-  background: rgba(255,255,255,.1);
-  border-color: #fff;
 }
 
 /* HERO */
@@ -135,7 +118,7 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
   display:grid;
   grid-template-columns:minmax(520px,1.35fr) minmax(360px,1fr);
 }
-.m-media .m-title-container { display: none; }
+.m-media .m-title-container, .m-media .m-thumbs { display: none; }
 
 .modal::before{
   content:""; position:absolute; inset:0; z-index:0;
@@ -153,21 +136,7 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 .m-close{ position:absolute; top:10px; right:12px }
 
 /* LEFT: media column */
-.m-media{
-  position:relative;
-  z-index:1;
-  background:var(--glass-bg);
-  backdrop-filter:blur(14px) saturate(160%);
-  display: flex;
-  flex-direction: column;
-}
-.m-media .m-thumbs {
-  flex-shrink: 0;
-}
-.m-media .viewport {
-  flex-grow: 1;
-  min-height: 0; /* Prevent viewport from growing indefinitely */
-}
+.m-media{position:relative;background:#0a0a0a;z-index:1}
 .viewport{
   position:relative;width:100%;height:100%;
   display:grid;place-items:center;background:#0a0a0a;
@@ -177,7 +146,7 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
   object-fit:contain; /* ← ключ: НИКОГДА НЕ КРОПАЕМ */
   display:block;background:#000;
 }
-.m-nav{position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);display:flex;justify-content:space-between;padding:0 var(--pad);z-index:2}
+.m-nav{position:absolute;top:25px;left:0;right:0;transform:translateY(-50%);display:flex;justify-content:space-between;padding:0 var(--pad);z-index:2}
 .fs-btn{position:absolute;bottom:10px;right:12px}
 
 /* RIGHT: text + thumbs */
@@ -209,14 +178,10 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 .contacts-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 
 @media (max-width:900px){
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
   header nav, header .lang { display: none; }
   .burger-btn {
     display: flex;
+    justify-self: end;
     background: transparent;
     border: none;
     cursor: pointer;
@@ -240,46 +205,47 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
   .modal .m-media {
     order: 1;
     position: relative;
-    height: 55vh; /* Fixed height for the image container */
+    height: auto;
     flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .modal .m-media .m-title-container {
+    order: 1;
+    display: block;
   }
   .modal .m-media .viewport {
-    order: 1;
+    order: 2;
   }
   .modal .m-media .m-nav {
-    order: 1; /* On top of viewport */
-    top: 50%;
-    transform: translateY(-50%);
+    order: 3;
   }
   .modal .m-media .m-thumbs {
-    order: 2;
+    order: 4;
     display: flex;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
-    padding-top: 20px;
   }
   .modal .m-meta {
     order: 2;
+    height: auto;
     flex-grow: 1;
     padding: 0;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    background: var(--bg);
   }
-  .modal .m-title-container {
-    flex-shrink: 0; /* Prevent title from shrinking */
-    padding: 16px;
-  }
-  .modal .m-scroll-wrapper {
-    flex-grow: 1;
-    overflow-y: auto;
+  .modal .m-media .m-title-container {
+    display: block;
+    position: absolute;
+    top: 10px;
+    left: 0;
+    width: 100%;
+    z-index: 5;
+    padding: 16px 50px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
+    pointer-events: none;
   }
   .modal .m-title-container h3, .modal .m-title-container p {
-    color: var(--fg); /* Revert to default text color */
+    color: white;
     margin: 0;
   }
   .modal .m-thumbs {
@@ -306,9 +272,6 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 </head>
 <body>
 <div id="burger-menu-panel" class="burger-menu-panel">
-  <button id="burger-close-btn" class="iconbtn" style="position:absolute;top:20px;right:20px;z-index:101;">
-    <svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M6 18l12-12"/></svg>
-  </button>
   <nav class="burger-nav">
     <a href="#projects" data-i18n="nav.projects">Projects</a>
     <a href="#collabs" data-i18n="nav.collabs">Collabs</a>
@@ -316,12 +279,8 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
     <a href="#contacts" data-i18n="nav.contacts">Contacts</a>
   </nav>
   <div class="lang-switch-mobile">
-    <button id="enBtnMobile" class="is-active">
-      <svg class="icon" viewBox="0 0 24 24" style="width: 28px; height: 28px;"><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="12" font-weight="bold" fill="none" stroke="currentColor">EN</text></svg>
-    </button>
-    <button id="ruBtnMobile">
-      <svg class="icon" viewBox="0 0 24 24" style="width: 28px; height: 28px;"><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="12" font-weight="bold" fill="none" stroke="currentColor">RU</text></svg>
-    </button>
+    <button id="enBtnMobile" class="is-active">EN</button>
+    <button id="ruBtnMobile">RU</button>
   </div>
 </div>
 <div id="liquid-ether-container" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;"></div>
@@ -429,20 +388,20 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 
     <!-- LEFT: media -->
     <div class="m-media">
-      <div class="m-thumbs" id="thumbs"></div>
+      <div class="m-title-container">
+        <h3 id="m-title"></h3>
+        <p class="m-sub"></p>
+      </div>
       <div class="viewport" id="vp"></div>
       <div class="m-nav">
         <button class="prev" aria-label="Previous"><svg class="icon" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
         <button class="next" aria-label="Next"><svg class="icon" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
+      <div class="m-thumbs" id="thumbs"></div>
     </div>
 
     <!-- RIGHT: text + thumbs -->
     <div class="m-meta">
-      <div class="m-title-container">
-        <h3 id="m-title"></h3>
-        <p class="m-sub"></p>
-      </div>
       <div class="m-scroll-wrapper">
         <div class="m-desc"></div>
         <div class="m-stmt"></div>
@@ -450,25 +409,6 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
     </div>
   </div>
 </div>
-
-<button id="scrollTopBtn" class="iconbtn" title="Go to top">
-  <svg class="icon" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-</button>
-
-<style>
-#scrollTopBtn {
-  display: none;
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 99;
-}
-@media (max-width: 900px) {
-  #scrollTopBtn {
-    display: flex;
-  }
-}
-</style>
 
 <script>
 /* ========= i18n ========= */
@@ -540,7 +480,7 @@ an old screen, and a voice that’s always there.`,
       en:`Powered by Palatine Vision sensor system and TouchDesigner.`,
       ru:``
     },
-    folder:"tri",count:7,video:"assets/images/triedit.mp4",collab:true
+    folder:"tri",count:7,video:null,collab:true
   },
 
   trace:{
@@ -559,7 +499,7 @@ The installation drew attention for its mystery, clarity, and emotional presence
 Инсталляция привлекала внимание своей таинственностью, простотой и эмоциональной вовлеченностью. Создано в коллаборации с командой Kolla — спасибо им за участие и поддержку.`
     },
     stmt:{en:``,ru:``},
-    folder:"trace",count:9,video:"assets/images/traceedit.mp4",collab:true
+    folder:"trace",count:9,video:null,collab:true
   },
 
   water:{
@@ -604,17 +544,17 @@ And to Cyprus, which we now call home.`,
         sub:{en:"2025 · Cyprus · video series",ru:"2025 · Кипр · видео-серия"},
         desc:{en:"Endemic flora series; this chapter focuses on Anemóne coronária.",ru:"Серия об эндемиках Кипра; выпуск про Anemóne coronária."},
         stmt:{en:"Nature as a subject that returns the gaze.",ru:"Природа как субъект, возвращающий взгляд."},
-        folder:"anem",count:9,video:"assets/images/anemedit.mp4",collab:false}
+        folder:"anem",count:9,video:null,collab:false}
 };
 
 function buildMedia(){
   for(const k in PROJECTS){
     const p=PROJECTS[k];
-    p.hero=`assets/images/${p.folder}00image.webp`;             // HERO
-    p.grid=(k==='tri') ? `assets/images/${p.folder}00image.webp`
-                       : `assets/images/${p.folder}00image2.webp`;
+    p.hero=`assets/images/${p.folder}00image.png`;             // HERO
+    p.grid=(k==='tri') ? `assets/images/${p.folder}00image.png`
+                       : `assets/images/${p.folder}00image2.png`;
     p.media=[];
-    for(let i=0;i<p.count;i++){const n=String(i).padStart(2,'0');p.media.push({type:'img',src:`assets/images/${p.folder}${n}.webp`});}
+    for(let i=0;i<p.count;i++){const n=String(i).padStart(2,'0');p.media.push({type:'img',src:`assets/images/${p.folder}${n}.png`});}
     if(p.video)p.media.splice(1,0,{type:'video',src:p.video});
   }
 }
@@ -648,17 +588,12 @@ buildHero();
 /* ========= BURGER MENU ========= */
 const burgerBtn = document.getElementById('burger-btn');
 const burgerMenuPanel = document.getElementById('burger-menu-panel');
-const burgerCloseBtn = document.getElementById('burger-close-btn');
 const burgerNavLinks = document.querySelectorAll('.burger-nav a');
 const enBtnMobile = document.getElementById('enBtnMobile');
 const ruBtnMobile = document.getElementById('ruBtnMobile');
 
 burgerBtn.addEventListener('click', () => {
-  burgerMenuPanel.classList.add('show');
-});
-
-burgerCloseBtn.addEventListener('click', () => {
-  burgerMenuPanel.classList.remove('show');
+  burgerMenuPanel.classList.toggle('show');
 });
 
 burgerNavLinks.forEach(link => {
@@ -765,12 +700,6 @@ function rebuildText(){
   document.querySelectorAll('#slides .slide').forEach(sl=>{const id=sl.getAttribute('data-project');const p=PROJECTS[id];if(p){sl.querySelector('.meta').innerHTML=`<h3>${p.title[LANG]}</h3><p>${p.sub[LANG]}</p>`;}});
   buildGrids();
 }
-
-/* ========= SCROLL TO TOP ========= */
-const scrollTopBtn = document.getElementById('scrollTopBtn');
-scrollTopBtn.addEventListener('click', () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-});
 
 /* ========= HERO init (первичная сборка для SSR-стабильности) ========= */
 (function buildHeroInit(){
