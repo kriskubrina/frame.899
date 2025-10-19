@@ -118,7 +118,7 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
   display:grid;
   grid-template-columns:minmax(520px,1.35fr) minmax(360px,1fr);
 }
-.m-media .m-title-container, .m-media .m-thumbs { display: none; }
+.m-media .m-title-container { display: none; }
 
 .modal::before{
   content:""; position:absolute; inset:0; z-index:0;
@@ -146,12 +146,12 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
   object-fit:contain; /* ← ключ: НИКОГДА НЕ КРОПАЕМ */
   display:block;background:#000;
 }
-.m-nav{position:absolute;top:25px;left:0;right:0;transform:translateY(-50%);display:flex;justify-content:space-between;padding:0 var(--pad);z-index:2}
+.m-nav{position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);display:flex;justify-content:space-between;padding:0 var(--pad);z-index:2}
 .fs-btn{position:absolute;bottom:10px;right:12px}
 
 /* RIGHT: text + thumbs */
-.m-meta{position:relative;padding:20px 20px 14px;overflow:auto;display:flex;flex-direction:column;gap:10px;z-index:1}
-.m-meta .m-scroll-wrapper { flex-grow: 1; }
+.m-meta{position:relative;padding:20px 20px 14px;display:flex;flex-direction:column;gap:10px;z-index:1;overflow:hidden}
+.m-meta .m-scroll-wrapper { flex-grow: 1; overflow-y: auto; }
 .m-meta h3{margin:0 0 6px}
 .m-sub{margin:0 0 6px;color:#bdbdbd;font-size:14px}
 .m-desc,.m-stmt{color:#e0e0e0;font-size:15px}
@@ -210,19 +210,11 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
     display: flex;
     flex-direction: column;
   }
-  .modal .m-media .m-title-container {
-    order: 1;
-    display: block;
-  }
   .modal .m-media .viewport {
-    order: 2;
+    order: 1;
   }
   .modal .m-media .m-nav {
-    order: 3;
-  }
-  .modal .m-media .m-thumbs {
-    order: 4;
-    display: flex;
+    order: 2;
   }
   .modal .m-meta {
     order: 2;
@@ -233,23 +225,11 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
     flex-direction: column;
     overflow: hidden;
   }
-  .modal .m-media .m-title-container {
-    display: block;
-    position: absolute;
-    top: 10px;
-    left: 0;
-    width: 100%;
-    z-index: 5;
-    padding: 16px 50px;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
-    pointer-events: none;
-  }
-  .modal .m-title-container h3, .modal .m-title-container p {
-    color: white;
-    margin: 0;
+  .modal .m-meta h3, .modal .m-meta p {
+    padding: 0 16px;
   }
   .modal .m-thumbs {
-    order: 1;
+    order: 2;
     padding: 8px 16px;
     background: transparent;
     flex-shrink: 0;
@@ -259,7 +239,7 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
     height: 43px;
   }
   .modal .m-scroll-wrapper {
-    order: 2;
+    order: 3;
     flex-grow: 1;
     overflow-y: auto;
     padding: 16px;
@@ -388,20 +368,19 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 
     <!-- LEFT: media -->
     <div class="m-media">
-      <div class="m-title-container">
-        <h3 id="m-title"></h3>
-        <p class="m-sub"></p>
-      </div>
+      <div class="m-title-container"></div>
       <div class="viewport" id="vp"></div>
       <div class="m-nav">
         <button class="prev" aria-label="Previous"><svg class="icon" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
         <button class="next" aria-label="Next"><svg class="icon" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <div class="m-thumbs" id="thumbs"></div>
     </div>
 
     <!-- RIGHT: text + thumbs -->
     <div class="m-meta">
+      <h3 id="m-title"></h3>
+      <p class="m-sub"></p>
+      <div class="m-thumbs" id="thumbs"></div>
       <div class="m-scroll-wrapper">
         <div class="m-desc"></div>
         <div class="m-stmt"></div>
@@ -619,8 +598,6 @@ buildGrids();
 /* ========= MODAL (fit-to-container без кропа) ========= */
 const overlayEl=document.getElementById('overlay');
 const viewportEl=document.getElementById('vp');
-const mTitleEl=overlayEl.querySelector('#m-title');
-const mSubEl=overlayEl.querySelector('.m-sub');
 const mDescEl=overlayEl.querySelector('.m-desc');
 const mStmtEl=overlayEl.querySelector('.m-stmt');
 const thumbsEl=overlayEl.querySelector('#thumbs');
@@ -668,7 +645,8 @@ function wrapText(raw){
 }
 function openModal(id){
   current=PROJECTS[id]; index=0;
-  mTitleEl.textContent=current.title[LANG]; mSubEl.textContent=current.sub[LANG];
+  overlayEl.querySelector('.m-meta #m-title').textContent=current.title[LANG];
+  overlayEl.querySelector('.m-meta .m-sub').textContent=current.sub[LANG];
 
   const scrollWrapper = overlayEl.querySelector('.m-scroll-wrapper');
   scrollWrapper.innerHTML = wrapText(current.desc[LANG]) + wrapText(current.stmt[LANG]);
