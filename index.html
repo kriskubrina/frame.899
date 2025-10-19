@@ -636,9 +636,9 @@ ruBtnMobile.classList.toggle('is-active', LANG === 'ru');
 function buildGrids(){
   const gp=document.getElementById('grid-projects'),gc=document.getElementById('grid-collabs');gp.innerHTML='';gc.innerHTML='';
   ['mycy','water','flora'].forEach(k=>{const p=PROJECTS[k],card=document.createElement('article');card.className='card';card.dataset.project=k;
-    card.innerHTML=`<div class="thumb"><img src="${p.grid}" onerror="this.src='${p.media[0]?.src||''}' alt=""></div><div class="meta2"><h2>${p.title[LANG]}</h2><p>${p.sub[LANG]}</p></div>`;gp.append(card);card.addEventListener('click',()=>openModal(k));});
+    card.innerHTML=`<div class="thumb"><img src="${p.grid}" onerror="this.src='${p.media[0]?.src||''}' alt=""></div><div class="meta2"><h3>${p.title[LANG]}</h3><p>${p.sub[LANG]}</p></div>`;gp.append(card);card.addEventListener('click',()=>openModal(k));});
   ['trace','tri'].forEach(k=>{const p=PROJECTS[k],card=document.createElement('article');card.className='card';card.dataset.project=k;
-    card.innerHTML=`<div class="thumb"><img src="${p.grid}" onerror="this.src='${p.media[0]?.src||''}' alt=""></div><div class="meta2"><h2>${p.title[LANG]}</h2><p>${p.sub[LANG]}</p></div>`;gc.append(card);card.addEventListener('click',()=>openModal(k));});
+    card.innerHTML=`<div class="thumb"><img src="${p.grid}" onerror="this.src='${p.media[0]?.src||''}' alt=""></div><div class="meta2"><h3>${p.title[LANG]}</h3><p>${p.sub[LANG]}</p></div>`;gc.append(card);card.addEventListener('click',()=>openModal(k));});
 }
 buildGrids();
 
