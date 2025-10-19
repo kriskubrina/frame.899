@@ -39,6 +39,14 @@ nav a{font-weight:500;line-height:1.1;margin:0 10px}
 
 /* Burger Menu */
 .burger-btn { display: none; }
+.burger-close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
 .burger-menu-panel {
   display: none;
   position: fixed;
@@ -69,7 +77,23 @@ nav a{font-weight:500;line-height:1.1;margin:0 10px}
 .lang-switch-mobile {
   margin-top: 30px;
   display: flex;
-  gap: 8px;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+}
+.lang-switch-mobile button {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 18px;
+  font-weight: 500;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+.lang-switch-mobile button.is-active {
+  color: var(--fg);
+  font-weight: 700;
 }
 
 /* HERO */
@@ -96,7 +120,9 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 .card{border:1px solid var(--glass-brd);border-radius:14px;overflow:hidden;background:var(--glass-bg);backdrop-filter:blur(8px) saturate(140%);cursor:pointer}
 .thumb{aspect-ratio:16/10;position:relative}
 .thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.meta2{padding:12px;color:#cfcfcf}
+.meta2{padding:8px 12px;color:#cfcfcf}
+.meta2 h3{margin:0 0 4px}
+.meta2 p{margin:0;color:var(--muted)}
 
 /* MODAL — обновленная версия (fit-to-popup, NO CROP) */
 #overlay{
@@ -181,6 +207,8 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
   header nav, header .lang { display: none; }
   .burger-btn {
     display: flex;
+    grid-column: 3;
+    grid-row: 1;
     justify-self: end;
     background: transparent;
     border: none;
@@ -250,10 +278,28 @@ h2{font-size:18px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
     display: none;
   }
 }
+.to-top-btn {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 100;
+}
+
+@media (max-width: 900px) {
+  .to-top-btn {
+    display: flex;
+  }
+}
 </style>
 </head>
 <body>
 <div id="burger-menu-panel" class="burger-menu-panel">
+  <button id="burger-close-btn" class="burger-close-btn">
+    <svg class="icon" viewBox="0 0 24 24" style="stroke: #fff;">
+      <path d="M6 6l12 12M6 18l12-12"/>
+    </svg>
+  </button>
   <nav class="burger-nav">
     <a href="#projects" data-i18n="nav.projects">Projects</a>
     <a href="#collabs" data-i18n="nav.collabs">Collabs</a>
@@ -543,23 +589,45 @@ buildHero();
 
 /* ========= BURGER MENU ========= */
 const burgerBtn = document.getElementById('burger-btn');
+const burgerCloseBtn = document.getElementById('burger-close-btn');
 const burgerMenuPanel = document.getElementById('burger-menu-panel');
 const burgerNavLinks = document.querySelectorAll('.burger-nav a');
 const enBtnMobile = document.getElementById('enBtnMobile');
 const ruBtnMobile = document.getElementById('ruBtnMobile');
 
-burgerBtn.addEventListener('click', () => {
+function toggleBurgerMenu() {
   burgerMenuPanel.classList.toggle('show');
-});
+}
+
+burgerBtn.addEventListener('click', toggleBurgerMenu);
+burgerCloseBtn.addEventListener('click', toggleBurgerMenu);
 
 burgerNavLinks.forEach(link => {
   link.addEventListener('click', () => {
-    burgerMenuPanel.classList.remove('show');
+    if (burgerMenuPanel.classList.contains('show')) {
+      toggleBurgerMenu();
+    }
   });
 });
 
-enBtnMobile.onclick=()=>{LANG='en';localStorage.setItem('lang','en');applyI18n();rebuildText();burgerMenuPanel.classList.remove('show');};
-ruBtnMobile.onclick=()=>{LANG='ru';localStorage.setItem('lang','ru');applyI18n();rebuildText();burgerMenuPanel.classList.remove('show');};
+function setLanguage(lang) {
+  LANG = lang;
+  localStorage.setItem('lang', lang);
+  applyI18n();
+  rebuildText();
+  if (burgerMenuPanel.classList.contains('show')) {
+    toggleBurgerMenu();
+  }
+  enBtnMobile.classList.toggle('is-active', lang === 'en');
+  ruBtnMobile.classList.toggle('is-active', lang === 'ru');
+}
+
+enBtnMobile.onclick = () => setLanguage('en');
+ruBtnMobile.onclick = () => setLanguage('ru');
+
+// Initial state for mobile language buttons
+enBtnMobile.classList.toggle('is-active', LANG === 'en');
+ruBtnMobile.classList.toggle('is-active', LANG === 'ru');
 
 
 /* ========= GRIDS ========= */
@@ -679,6 +747,20 @@ buildGrids();
     isBounce: true,
     cursorSize: 150,
     autoSpeed: 0.1
+  });
+</script>
+<button id="to-top-btn" class="to-top-btn iconbtn">
+  <svg class="icon" viewBox="0 0 24 24">
+    <path d="M12 19V5M5 12l7-7 7 7"/>
+  </svg>
+</button>
+<script>
+  const toTopBtn = document.getElementById('to-top-btn');
+  toTopBtn.addEventListener('click', () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
   });
 </script>
 </body>
