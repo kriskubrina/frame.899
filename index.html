@@ -171,7 +171,7 @@ h2{font-size:16px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 }
 .viewport img,.viewport video{
   width:100%;height:100%;
-  object-fit:contain; /* ← ключ: НИКОГДА НЕ КРОПАЕМ */
+  object-fit:fill; 
   display:block;
 }
 .m-nav{position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);display:flex;justify-content:space-between;padding:0 var(--pad);z-index:2}
@@ -180,8 +180,8 @@ h2{font-size:16px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px;
 /* RIGHT: text + thumbs */
 .m-meta{position:relative;padding:20px 20px 14px;display:flex;flex-direction:column;gap:10px;z-index:1;overflow:hidden}
 .m-meta .m-scroll-wrapper { flex-grow: 1; overflow-y: auto; }
-.m-meta h3{margin:0 0 6px}
-.m-sub{margin:0 0 6px;color:#bdbdbd;font-size:14px}
+.m-meta h3{margin:0 0 0px}
+.m-sub{margin:0 0 0px;color:#bdbdbd;font-size:14px}
 .m-desc,.m-stmt{color:#e0e0e0;font-size:15px}
 /* Improve readability & responsive wrapping inside modal text */
 .m-desc p,.m-stmt p{
