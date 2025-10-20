@@ -176,11 +176,19 @@ h2{font-size:16px;letter-spacing:.08em;text-transform:uppercase;margin:4 0 10px;
   overflow: hidden;
 
   /* фон как у правой части */
-  background: var(--glass-bg);
-  backdrop-filter: blur(14px) saturate(160%);
+  background: transparent;
+  backdrop-filter: none;
   border-right: 1px solid var(--glass-brd);
 }
-
+.m-media::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--glass-bg);
+  backdrop-filter: blur(14px) saturate(160%);
+  opacity: 1;
+  z-index: 0;
+}
 
 /* контейнер изображения */
 .viewport {
