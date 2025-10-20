@@ -857,7 +857,16 @@ const updateTransform = (anim = true) => {
   [...thumbsEl.children].forEach((b, i) =>
     b.classList.toggle('is-active', i === index)
   );
+
+  // автопрокрутка активного превью в зону видимости
+  thumbsEl.children[index]?.scrollIntoView({
+    behavior: 'smooth',
+    inline: 'center',
+    block: 'nearest'
+  });
 };
+
+
 
 
   // управление стрелками
