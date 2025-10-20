@@ -889,13 +889,57 @@ function renderMedia(direction = 1, instant = false) {
     updateTransform();
   };
 
-  // свайп
+    // свайп
   if (matchMedia('(pointer:coarse)').matches) {
     let startX = 0,
       dx = 0,
       dragging = false;
 
-    viewportEl.addEventLi
+    viewportEl.addEventListener(
+      'touchstart',
+      (e) => {
+        dragging = true;
+        startX = e.touches[0].clientX;
+        track.style.transition = 'none';
+        track.querySelectorAll('video').forEach(
+          (v) => (v.style.pointerEvents = 'none')
+        );
+      },
+      { passive: true }
+    );
+
+    viewportEl.addEventListener(
+      'touchmove',
+      (e) => {
+        if (!dragging) return;
+        dx = e.touches[0].clientX - startX;
+        track.style.transform = `translateX(calc(${-index * 100}% + ${dx}px))`;
+      },
+      { passive: true }
+    );
+
+    viewportEl.addEventListener(
+      'touchend',
+      () => {
+        dragging = false;
+        track.querySelectorAll('video').forEach(
+          (v) => (v.style.pointerEvents = 'auto')
+        );
+        if (Math.abs(dx) > 40) {
+          index =
+            dx < 0
+              ? (index + 1) % current.media.length
+              : (index - 1 + current.media.length) % current.media.length;
+        }
+        updateTransform();
+      },
+      { passive: true }
+    );
+  }
+
+  updateTransform(false);
+}
+
 
 
 function renderThumbsDots(){
