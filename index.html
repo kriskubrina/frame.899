@@ -203,65 +203,32 @@ h2{font-size:16px;letter-spacing:.08em;text-transform:uppercase;margin:4 0 10px;
   height: 100%;
 }
 
-/* базовые стили */
-.viewport img,
-.viewport video {
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  max-width: 100%;
-  max-height: 100%;
+.viewport {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.viewport-track {
+  display: flex;
+  transition: transform 0.6s ease;
+  width: 100%;
+  height: 100%;
+}
+
+.viewport-track img,
+.viewport-track video {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-  opacity: 0;
-  transform: translateX(0);
-  transition: none;
-  z-index: 1;
+  pointer-events: none;
 }
 
-/* активный кадр (на экране) */
-.viewport .media-active {
-  opacity: 1;
-  z-index: 2;
-  transition: opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease;
-  filter: brightness(1);
-}
-
-/* уходящий кадр */
-.viewport .media-leave-left {
-  opacity: 0;
-  transform: translateX(-8%) scale(0.98);
-  filter: brightness(0.4);
-  transition: opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease;
-}
-
-.viewport .media-leave-right {
-  opacity: 0;
-  transform: translateX(8%) scale(0.98);
-  filter: brightness(0.4);
-  transition: opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease;
-}
-
-/* приходящий кадр */
-.viewport .media-enter-left {
-  opacity: 0;
-  transform: translateX(-8%) scale(1.02);
-  filter: brightness(0.4);
-}
-
-.viewport .media-enter-right {
-  opacity: 0;
-  transform: translateX(8%) scale(1.02);
-  filter: brightness(0.4);
-}
-
-/* активируем появление */
-.viewport .media-enter-left.active,
-.viewport .media-enter-right.active {
-  opacity: 1;
-  transform: translateX(0) scale(1);
-  filter: brightness(1);
-  transition: opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease;
-}
 
 
 /* навигация */
@@ -868,50 +835,66 @@ function cleanupViewport(){
   if(v){try{v.pause();v.src='';v.load();}catch(e){}}
   viewportEl.innerHTML='';
 }
-function renderMedia(direction = 1) {
-  const old = viewportEl.querySelector('img.media-active, video.media-active');
-  if (old) {
-    old.classList.remove('media-active');
-    old.classList.add(direction > 0 ? 'media-leave-left' : 'media-leave-right');
-    setTimeout(() => old.remove(), 600);
-  }
+function renderMedia(direction = 1, instant = false) {
+  viewportEl.innerHTML = '';
+  const track = document.createElement('div');
+  track.className = 'viewport-track';
+  viewportEl.append(track);
 
-  const it = current.media[index];
-  if (!it) return;
-  const el = document.createElement(it.type);
-  el.src = it.src;
-  if (it.type === 'video') {
-    el.controls = true;
-    el.playsInline = true;
-    el.preload = 'metadata';
-    el.controlsList = 'nodownload';
-  }
-
-  el.classList.add(direction > 0 ? 'media-enter-right' : 'media-enter-left');
-  viewportEl.append(el);
-
-  requestAnimationFrame(() => {
-    el.classList.add('active', 'media-active');
+  current.media.forEach((m, i) => {
+    const el = document.createElement(m.type);
+    el.src = m.src;
+    if (m.type === 'video') {
+      el.controls = true;
+      el.playsInline = true;
+    }
+    track.append(el);
   });
 
-  [...thumbsEl.children].forEach((b, i) =>
-    b.classList.toggle('is-active', i === index)
-  );
-  const t = thumbsEl.children[index];
-  if (t) t.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  const updateTransform = (anim = true) => {
+    track.style.transition = anim ? 'transform 0.6s ease' : 'none';
+    track.style.transform = `translateX(${-index * 100}%)`;
+  };
+
+  // управление стрелками
+  mPrev.onclick = () => {
+    index = (index - 1 + current.media.length) % current.media.length;
+    updateTransform();
+  };
+  mNext.onclick = () => {
+    index = (index + 1) % current.media.length;
+    updateTransform();
+  };
+
+  // свайп
+  if (matchMedia('(pointer:coarse)').matches) {
+    let startX = 0, dx = 0, dragging = false;
+    viewportEl.addEventListener('touchstart', e => {
+      dragging = true;
+      startX = e.touches[0].clientX;
+      track.style.transition = 'none';
+    }, { passive: true });
+
+    viewportEl.addEventListener('touchmove', e => {
+      if (!dragging) return;
+      dx = e.touches[0].clientX - startX;
+      track.style.transform = `translateX(calc(${-index * 100}% + ${dx}px))`;
+    }, { passive: true });
+
+    viewportEl.addEventListener('touchend', () => {
+      dragging = false;
+      if (Math.abs(dx) > 40) {
+        index = dx < 0
+          ? (index + 1) % current.media.length
+          : (index - 1 + current.media.length) % current.media.length;
+      }
+      updateTransform();
+    }, { passive: true });
+  }
+
+  updateTransform(false);
 }
 
-/* Обнови вызовы стрелок, чтобы передавать направление */
-mPrev.onclick = () => {
-  if (!current) return;
-  index = (index - 1 + current.media.length) % current.media.length;
-  renderMedia(-1);
-};
-mNext.onclick = () => {
-  if (!current) return;
-  index = (index + 1) % current.media.length;
-  renderMedia(1);
-};
 
 
 function renderThumbsDots(){
