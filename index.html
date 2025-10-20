@@ -851,10 +851,16 @@ function renderMedia(direction = 1, instant = false) {
     track.append(el);
   });
 
-  const updateTransform = (anim = true) => {
-    track.style.transition = anim ? 'transform 0.6s ease' : 'none';
-    track.style.transform = `translateX(${-index * 100}%)`;
-  };
+const updateTransform = (anim = true) => {
+  track.style.transition = anim ? 'transform 0.6s ease' : 'none';
+  track.style.transform = `translateX(${-index * 100}%)`;
+
+  // обновляем активное превью
+  [...thumbsEl.children].forEach((b, i) =>
+    b.classList.toggle('is-active', i === index)
+  );
+};
+
 
   // управление стрелками
   mPrev.onclick = () => {
