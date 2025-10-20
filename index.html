@@ -828,11 +828,18 @@ const mClose=overlayEl.querySelector('.m-close');
 
 let current=null,index=0;
 
-function cleanupViewport(){
-  const v=viewportEl.querySelector('video');
-  if(v){try{v.pause();v.src='';v.load();}catch(e){}}
-  viewportEl.innerHTML='';
+function cleanupViewport() {
+  const v = viewportEl.querySelector('video');
+  if (v) {
+    try {
+      v.pause();
+      v.src = '';
+      v.load();
+    } catch (e) {}
+  }
+  viewportEl.innerHTML = '';
 }
+
 function renderMedia(direction = 1, instant = false) {
   viewportEl.innerHTML = '';
   const track = document.createElement('div');
@@ -840,7 +847,7 @@ function renderMedia(direction = 1, instant = false) {
   viewportEl.append(track);
 
   // создаём изображения и видео
-  current.media.forEach((m, i) => {
+  current.media.forEach((m) => {
     const el = document.createElement(m.type);
     el.src = m.src;
     if (m.type === 'video') {
@@ -851,11 +858,11 @@ function renderMedia(direction = 1, instant = false) {
   });
 
   // делаем видео кликабельными
-  track.querySelectorAll('video').forEach(v => {
+  track.querySelectorAll('video').forEach((v) => {
     v.style.pointerEvents = 'auto';
   });
 
-  const updateTransform = (anim = true) => {
+  function updateTransform(anim = true) {
     track.style.transition = anim ? 'transform 0.6s ease' : 'none';
     track.style.transform = `translateX(${-index * 100}%)`;
 
@@ -868,9 +875,9 @@ function renderMedia(direction = 1, instant = false) {
     thumbsEl.children[index]?.scrollIntoView({
       behavior: 'smooth',
       inline: 'center',
-      block: 'nearest'
+      block: 'nearest',
     });
-  };
+  }
 
   // стрелки
   mPrev.onclick = () => {
@@ -884,97 +891,11 @@ function renderMedia(direction = 1, instant = false) {
 
   // свайп
   if (matchMedia('(pointer:coarse)').matches) {
-    let startX = 0, dx = 0, dragging = false;
-
-    viewportEl.addEventListener('touchstart', e => {
-      dragging = true;
-      startX = e.touches[0].clientX;
-      track.style.transition = 'none';
-      // временно отключаем клики по видео во время свайпа
-      track.querySelectorAll('video').forEach(v => v.style.pointerEvents = 'none');
-    }, { passive: true });
-
-    viewportEl.addEventListener('touchmove', e => {
-      if (!dragging) return;
-      dx = e.touches[0].clientX - startX;
-      track.style.transform = `translateX(calc(${-index * 100}% + ${dx}px))`;
-    }, { passive: true });
-
-    viewportEl.addEventListener('touchend', () => {
+    let startX = 0,
+      dx = 0,
       dragging = false;
-      track.querySelectorAll('video').forEach(v => v.style.pointerEvents = 'auto');
-      if (Math.abs(dx) > 40) {
-        index = dx < 0
-          ? (index + 1) % current.media.length
-          : (index - 1 + current.media.length) % current.media.length;
-      }
-      updateTransform();
-    }, { passive: true });
-  }
 
-  updateTransform(false);
-}
-
-
-const updateTransform = (anim = true) => {
-  track.style.transition = anim ? 'transform 0.6s ease' : 'none';
-  track.style.transform = `translateX(${-index * 100}%)`;
-
-  // обновляем активное превью
-  [...thumbsEl.children].forEach((b, i) =>
-    b.classList.toggle('is-active', i === index)
-  );
-
-  // автопрокрутка активного превью в зону видимости
-  thumbsEl.children[index]?.scrollIntoView({
-    behavior: 'smooth',
-    inline: 'center',
-    block: 'nearest'
-  });
-};
-
-
-
-
-  // управление стрелками
-  mPrev.onclick = () => {
-    index = (index - 1 + current.media.length) % current.media.length;
-    updateTransform();
-  };
-  mNext.onclick = () => {
-    index = (index + 1) % current.media.length;
-    updateTransform();
-  };
-
-  // свайп
-  if (matchMedia('(pointer:coarse)').matches) {
-    let startX = 0, dx = 0, dragging = false;
-    viewportEl.addEventListener('touchstart', e => {
-      dragging = true;
-      startX = e.touches[0].clientX;
-      track.style.transition = 'none';
-    }, { passive: true });
-
-    viewportEl.addEventListener('touchmove', e => {
-      if (!dragging) return;
-      dx = e.touches[0].clientX - startX;
-      track.style.transform = `translateX(calc(${-index * 100}% + ${dx}px))`;
-    }, { passive: true });
-
-    viewportEl.addEventListener('touchend', () => {
-      dragging = false;
-      if (Math.abs(dx) > 40) {
-        index = dx < 0
-          ? (index + 1) % current.media.length
-          : (index - 1 + current.media.length) % current.media.length;
-      }
-      updateTransform();
-    }, { passive: true });
-  }
-
-  updateTransform(false);
-}
-
+    viewportEl.addEventLi
 
 
 function renderThumbsDots(){
