@@ -203,23 +203,66 @@ h2{font-size:16px;letter-spacing:.08em;text-transform:uppercase;margin:4 0 10px;
   height: 100%;
 }
 
-/* само изображение / видео */
+/* базовые стили */
 .viewport img,
 .viewport video {
-  display: block;
-  height: 100%;
-  width: auto;
-  object-fit: contain;
+  position: absolute;
+  inset: 0;
+  margin: auto;
   max-width: 100%;
-  transition: opacity 0.35s ease, transform 0.35s ease;
+  max-height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  transform: translateX(0);
+  transition: none;
+  z-index: 1;
 }
 
-/* лёгкое появление при смене */
-.viewport img.entering,
-.viewport video.entering {
-  opacity: 0;
-  transform: scale(0.97);
+/* активный кадр (на экране) */
+.viewport .media-active {
+  opacity: 1;
+  z-index: 2;
+  transition: opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease;
+  filter: brightness(1);
 }
+
+/* уходящий кадр */
+.viewport .media-leave-left {
+  opacity: 0;
+  transform: translateX(-8%) scale(0.98);
+  filter: brightness(0.4);
+  transition: opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease;
+}
+
+.viewport .media-leave-right {
+  opacity: 0;
+  transform: translateX(8%) scale(0.98);
+  filter: brightness(0.4);
+  transition: opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease;
+}
+
+/* приходящий кадр */
+.viewport .media-enter-left {
+  opacity: 0;
+  transform: translateX(-8%) scale(1.02);
+  filter: brightness(0.4);
+}
+
+.viewport .media-enter-right {
+  opacity: 0;
+  transform: translateX(8%) scale(1.02);
+  filter: brightness(0.4);
+}
+
+/* активируем появление */
+.viewport .media-enter-left.active,
+.viewport .media-enter-right.active {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  filter: brightness(1);
+  transition: opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease;
+}
+
 
 /* навигация */
 .m-nav {
@@ -825,17 +868,51 @@ function cleanupViewport(){
   if(v){try{v.pause();v.src='';v.load();}catch(e){}}
   viewportEl.innerHTML='';
 }
-function renderMedia(){
-  cleanupViewport();
-  if(!current) return;
-  const it=current.media[index]; if(!it) return;
-  let el;
-  if(it.type==='img'){el=document.createElement('img'); el.src=it.src; el.alt=current.title?.[LANG]||'';}
-  else{el=document.createElement('video'); el.src=it.src; el.controls=true; el.playsInline=true; el.preload='metadata'; el.controlsList='nodownload';}
+function renderMedia(direction = 1) {
+  const old = viewportEl.querySelector('img.media-active, video.media-active');
+  if (old) {
+    old.classList.remove('media-active');
+    old.classList.add(direction > 0 ? 'media-leave-left' : 'media-leave-right');
+    setTimeout(() => old.remove(), 600);
+  }
+
+  const it = current.media[index];
+  if (!it) return;
+  const el = document.createElement(it.type);
+  el.src = it.src;
+  if (it.type === 'video') {
+    el.controls = true;
+    el.playsInline = true;
+    el.preload = 'metadata';
+    el.controlsList = 'nodownload';
+  }
+
+  el.classList.add(direction > 0 ? 'media-enter-right' : 'media-enter-left');
   viewportEl.append(el);
 
-  [...thumbsEl.children].forEach((b,i)=>b.classList.toggle('is-active',i===index));
-  const t=thumbsEl.children[index]; if(t) t.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+  requestAnimationFrame(() => {
+    el.classList.add('active', 'media-active');
+  });
+
+  [...thumbsEl.children].forEach((b, i) =>
+    b.classList.toggle('is-active', i === index)
+  );
+  const t = thumbsEl.children[index];
+  if (t) t.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+}
+
+/* Обнови вызовы стрелок, чтобы передавать направление */
+mPrev.onclick = () => {
+  if (!current) return;
+  index = (index - 1 + current.media.length) % current.media.length;
+  renderMedia(-1);
+};
+mNext.onclick = () => {
+  if (!current) return;
+  index = (index + 1) % current.media.length;
+  renderMedia(1);
+};
+
 }
 function renderThumbsDots(){
   thumbsEl.innerHTML='';
