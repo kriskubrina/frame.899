@@ -57,7 +57,6 @@ nav a{font-weight:500;line-height:1.1;margin:0 10px}
   top: 0;
   right: -100%;
   width: 300px;
-  height: 150%;
   background: var(--glass-bg);
   backdrop-filter: blur(14px) saturate(160%);
   border-left: 1px solid var(--glass-brd);
@@ -378,6 +377,39 @@ h2{font-size:16px;letter-spacing:.08em;text-transform:uppercase;margin:4 0 10px;
 /* ABOUT + CONTACTS */
 .about{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .contacts-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+/* === ГЛОБАЛЬНЫЙ FIX ПОЛНОЭКРАННЫХ ЭЛЕМЕНТОВ (универсально для iOS/Android/Desktop) === */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.fullscreen,
+.modal,
+.burger-menu-panel {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+  min-height: -webkit-fill-available;
+  overflow: auto;
+  box-sizing: border-box;
+  background: var(--glass-bg);
+  backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid var(--glass-brd);
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* чтобы страница не скроллилась под модалкой */
+body.show-modal {
+  overflow: hidden;
+}
+
+
 
 @media (max-width:900px){
   header nav, header .lang { display: none; }
@@ -462,34 +494,14 @@ h2{font-size:16px;letter-spacing:.08em;text-transform:uppercase;margin:4 0 10px;
   z-index: 100;
 }
 
+
 @media (max-width: 900px) {
   .to-top-btn {
     display: flex;
   }
-  /* === SAFARI FULLSCREEN FIX FOR NEW IPHONES === */
+  
 
-/* Глобально — чтобы браузер не обрезал фиксированные элементы */
-html, body {
-  height: 100%;
-  min-height: 100dvh;
-  background-color: var(--bg);
-}
 
-/* Модалка во весь экран, даже под Dynamic Island */
-.modal {
-  height: calc(100dvh + env(safe-area-inset-top) + env(safe-area-inset-bottom));
-  margin-top: calc(-1 * env(safe-area-inset-top));
-  margin-bottom: calc(-1 * env(safe-area-inset-bottom));
-  overflow: visible;
-}
-
-/* Бургер-панель тоже тянем за пределы safe area */
-.burger-menu-panel {
-  height: calc(100dvh + env(safe-area-inset-top) + env(safe-area-inset-bottom));
-  margin-top: calc(-1 * env(safe-area-inset-top));
-  margin-bottom: calc(-1 * env(safe-area-inset-bottom));
-  overflow: visible;
-}
 
 }
 </style>
@@ -986,21 +998,31 @@ function wrapText(raw){
   }
   return paras.map(p=>`<p>${widont(p)}</p>`).join('');
 }
-function openModal(id){
-  current=PROJECTS[id]; index=0;
-  overlayEl.querySelector('.m-meta #m-title').textContent=current.title[LANG];
-  overlayEl.querySelector('.m-meta .m-sub').textContent=current.sub[LANG];
 
+function openModal(id) {
+  document.body.classList.add('show-modal');
+  current = PROJECTS[id];
+  index = 0;
+  overlayEl.querySelector('.m-meta #m-title').textContent = current.title[LANG];
+  overlayEl.querySelector('.m-meta .m-sub').textContent = current.sub[LANG];
   const scrollWrapper = overlayEl.querySelector('.m-scroll-wrapper');
   scrollWrapper.innerHTML = wrapText(current.desc[LANG]) + wrapText(current.stmt[LANG]);
+  renderThumbsDots();
+  renderMedia();
+  overlayEl.classList.add('show');
+  overlayEl.setAttribute('aria-hidden', 'false');
+}
 
-  renderThumbsDots(); renderMedia();
-  overlayEl.classList.add('show'); overlayEl.setAttribute('aria-hidden','false');
+function closeModal() {
+  document.body.classList.remove('show-modal');
+  overlayEl.classList.remove('show');
+  overlayEl.setAttribute('aria-hidden', 'true');
+  cleanupViewport();
+  thumbsEl.innerHTML = '';
+  current = null;
 }
-function closeModal(){
-  overlayEl.classList.remove('show'); overlayEl.setAttribute('aria-hidden','true');
-  cleanupViewport(); thumbsEl.innerHTML=''; current=null;
-}
+
+
 mPrev.onclick=()=>{ if(!current) return; index=(index-1+current.media.length)%current.media.length; renderMedia(); };
 mNext.onclick=()=>{ if(!current) return; index=(index+1)%current.media.length; renderMedia(); };
 mClose.onclick=closeModal;
@@ -1061,5 +1083,18 @@ buildGrids();
     });
   });
 </script>
+  <script>
+/* Универсальный пересчёт viewport для всех браузеров */
+function setViewportHeight() {
+  const vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
+/* первичная установка и обновление при изменении размера */
+setViewportHeight();
+window.addEventListener('resize', setViewportHeight);
+window.addEventListener('orientationchange', setViewportHeight);
+</script>
+
 </body>
 </html>
