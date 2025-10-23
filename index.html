@@ -393,7 +393,6 @@ html, body {
   position: fixed;
   inset: 0;
   width: 100%;
-  height: 100dvh;
   min-height: -webkit-fill-available;
   overflow: auto;
   box-sizing: border-box;
@@ -429,7 +428,6 @@ body.show-modal {
   .modal {
     grid-template-columns: 1fr;
     width: 100vw;
-    height: 100dvh;
     margin: 0;
     border-radius: 0;
     display: flex;
@@ -509,7 +507,6 @@ body.show-modal {
 .modal {
   position: fixed;
   inset: 0;
-  height: 100vh; /* физический viewport */
   min-height: 100%;
   padding-top: constant(safe-area-inset-top);
   padding-bottom: constant(safe-area-inset-bottom);
@@ -517,6 +514,30 @@ body.show-modal {
   padding-bottom: env(safe-area-inset-bottom);
   transform: translateZ(0); /* принудительный пересчёт рендеринга */
   will-change: transform;
+}
+/* === FINAL SAFARI DYNAMIC ISLAND FIX === */
+@supports (-webkit-touch-callout: none) {
+  .modal,
+  .burger-menu-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    /* заставляем Safari игнорировать визуальный viewport */
+    height: -webkit-fill-available;
+    min-height: -webkit-fill-available;
+
+    /* защищаем контент от вырезов и панелей */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+
+    /* заставляем WebKit пересчитать слой по физическому экрану */
+    transform: translate3d(0,0,0);
+    will-change: transform;
+    contain: paint;
+  }
 }
 </style>
 </head>
