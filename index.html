@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>frame.899 — cyprus art collective</title>
 <meta name="description" content="frame.899 — poetic multimedia installations from Cyprus"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -57,6 +57,7 @@ nav a{font-weight:500;line-height:1.1;margin:0 10px}
   top: 0;
   right: -100%;
   width: 300px;
+  height: 150%;
   background: var(--glass-bg);
   backdrop-filter: blur(14px) saturate(160%);
   border-left: 1px solid var(--glass-brd);
@@ -377,38 +378,6 @@ h2{font-size:16px;letter-spacing:.08em;text-transform:uppercase;margin:4 0 10px;
 /* ABOUT + CONTACTS */
 .about{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .contacts-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-/* === ГЛОБАЛЬНЫЙ FIX ПОЛНОЭКРАННЫХ ЭЛЕМЕНТОВ (универсально для iOS/Android/Desktop) === */
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  min-height: 100dvh;
-  background: var(--bg);
-  color: var(--fg);
-}
-
-.fullscreen,
-.modal,
-.burger-menu-panel {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  min-height: -webkit-fill-available;
-  overflow: auto;
-  box-sizing: border-box;
-  background: var(--glass-bg);
-  backdrop-filter: blur(14px) saturate(160%);
-  border: 1px solid var(--glass-brd);
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-/* чтобы страница не скроллилась под модалкой */
-body.show-modal {
-  overflow: hidden;
-}
-
-
 
 @media (max-width:900px){
   header nav, header .lang { display: none; }
@@ -428,6 +397,7 @@ body.show-modal {
   .modal {
     grid-template-columns: 1fr;
     width: 100vw;
+    height: 100dvh;
     margin: 0;
     border-radius: 0;
     display: flex;
@@ -492,51 +462,9 @@ body.show-modal {
   z-index: 100;
 }
 
-
 @media (max-width: 900px) {
   .to-top-btn {
     display: flex;
-  }
-  
-
-
-
-}
-/* Safari Dynamic Island fix for fixed elements */
-.burger-menu-panel,
-.modal {
-  position: fixed;
-  inset: 0;
-  min-height: 100%;
-  padding-top: constant(safe-area-inset-top);
-  padding-bottom: constant(safe-area-inset-bottom);
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  transform: translateZ(0); /* принудительный пересчёт рендеринга */
-  will-change: transform;
-}
-/* === FINAL SAFARI DYNAMIC ISLAND FIX === */
-@supports (-webkit-touch-callout: none) {
-  .modal,
-  .burger-menu-panel {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    /* заставляем Safari игнорировать визуальный viewport */
-    height: -webkit-fill-available;
-    min-height: -webkit-fill-available;
-
-    /* защищаем контент от вырезов и панелей */
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
-
-    /* заставляем WebKit пересчитать слой по физическому экрану */
-    transform: translate3d(0,0,0);
-    will-change: transform;
-    contain: paint;
   }
 }
 </style>
@@ -1033,31 +961,21 @@ function wrapText(raw){
   }
   return paras.map(p=>`<p>${widont(p)}</p>`).join('');
 }
+function openModal(id){
+  current=PROJECTS[id]; index=0;
+  overlayEl.querySelector('.m-meta #m-title').textContent=current.title[LANG];
+  overlayEl.querySelector('.m-meta .m-sub').textContent=current.sub[LANG];
 
-function openModal(id) {
-  document.body.classList.add('show-modal');
-  current = PROJECTS[id];
-  index = 0;
-  overlayEl.querySelector('.m-meta #m-title').textContent = current.title[LANG];
-  overlayEl.querySelector('.m-meta .m-sub').textContent = current.sub[LANG];
   const scrollWrapper = overlayEl.querySelector('.m-scroll-wrapper');
   scrollWrapper.innerHTML = wrapText(current.desc[LANG]) + wrapText(current.stmt[LANG]);
-  renderThumbsDots();
-  renderMedia();
-  overlayEl.classList.add('show');
-  overlayEl.setAttribute('aria-hidden', 'false');
+
+  renderThumbsDots(); renderMedia();
+  overlayEl.classList.add('show'); overlayEl.setAttribute('aria-hidden','false');
 }
-
-function closeModal() {
-  document.body.classList.remove('show-modal');
-  overlayEl.classList.remove('show');
-  overlayEl.setAttribute('aria-hidden', 'true');
-  cleanupViewport();
-  thumbsEl.innerHTML = '';
-  current = null;
+function closeModal(){
+  overlayEl.classList.remove('show'); overlayEl.setAttribute('aria-hidden','true');
+  cleanupViewport(); thumbsEl.innerHTML=''; current=null;
 }
-
-
 mPrev.onclick=()=>{ if(!current) return; index=(index-1+current.media.length)%current.media.length; renderMedia(); };
 mNext.onclick=()=>{ if(!current) return; index=(index+1)%current.media.length; renderMedia(); };
 mClose.onclick=closeModal;
@@ -1118,18 +1036,5 @@ buildGrids();
     });
   });
 </script>
-  <script>
-/* Универсальный пересчёт viewport для всех браузеров */
-function setViewportHeight() {
-  const vh = window.innerHeight * 0.01;
-  document.documentElement.style.setProperty('--vh', `${vh}px`);
-}
-
-/* первичная установка и обновление при изменении размера */
-setViewportHeight();
-window.addEventListener('resize', setViewportHeight);
-window.addEventListener('orientationchange', setViewportHeight);
-</script>
-
 </body>
 </html>
