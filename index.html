@@ -111,17 +111,7 @@ h1{font-size:44px;line-height:1.18;margin:.4rem 0 18px 0;font-weight:700}
 .hnav{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;pointer-events:none;padding:0 var(--pad)}
 .iconbtn{pointer-events:auto;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.2);width:var(--icon);height:var(--icon);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .icon{width:24px;height:24px;stroke:#eee;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
-.hero-dots{display:flex;gap:8px;justify-content:center;align-items:center;margin:12px 0 0}
-.hero-dots button,.m-dots button{width:8px;height:8px;border-radius:50%;border:0;background:#3a3a3a;cursor:pointer}
-.hero-dots .active,.m-dots .active{background:#e5e5e5}
-.hero-dots {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  align-items: center;
-  width: fit-content;
-  margin: 12px auto 0;
-}
+
 
 
 /* GRID */
@@ -146,7 +136,7 @@ h2{font-size:16px;letter-spacing:.08em;text-transform:uppercase;margin:4 0 10px;
 .modal {
   position:relative;
   width:min(95vw,1400px);
-  height:100vh; /* ← раньше было min(95vh,900px) */
+ height:min(95vh,900px);
   margin:0 auto; /* ← убрали 2.5vh */
   border-radius:18px;
   border:1px solid var(--glass-brd);
@@ -408,7 +398,7 @@ h2{font-size:16px;letter-spacing:.08em;text-transform:uppercase;margin:4 0 10px;
     display: flex;
     flex-direction: column;
     width: 100vw;
-    height: 100dvh;
+    height: min(95vh, 900px);
     margin: 0;
     border-radius: 18px;
     overflow: hidden;
@@ -479,7 +469,20 @@ h2{font-size:16px;letter-spacing:.08em;text-transform:uppercase;margin:4 0 10px;
 @media (max-width:900px){
   .to-top-btn { display: flex; }
 }
+.m-media::before {
+  pointer-events: none; /* перестаёт блокировать клики */
+}
 
+.viewport-track video {
+  pointer-events: auto;
+  z-index: 5;
+}
+
+.viewport-track img,
+.viewport-track video {
+  background: #000;
+  object-fit: contain;
+}
 </style>
 </head>
 <body>
@@ -542,7 +545,7 @@ h2{font-size:16px;letter-spacing:.08em;text-transform:uppercase;margin:4 0 10px;
           </button>
         </div>
       </div>
-      <div class="hero-dots" id="hdots" aria-label="hero pagination"></div>
+     
     </div>
 
     <!-- PROJECTS -->
