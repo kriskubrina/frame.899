@@ -115,8 +115,14 @@ h1{font-size:44px;line-height:1.18;margin:.4rem 0 18px 0;font-weight:700}
 .hero-dots button,.m-dots button{width:8px;height:8px;border-radius:50%;border:0;background:#3a3a3a;cursor:pointer}
 .hero-dots .active,.m-dots .active{background:#e5e5e5}
 .hero-dots {
-  isolation: isolate;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  width: fit-content;
+  margin: 12px auto 0;
 }
+
 
 /* GRID */
 section{padding:28px 0;border-top:0px solid var(--rule)}
@@ -137,11 +143,11 @@ h2{font-size:16px;letter-spacing:.08em;text-transform:uppercase;margin:4 0 10px;
 }
 #overlay.show{ display:block }
 
-.modal{
+.modal {
   position:relative;
   width:min(95vw,1400px);
-  height:min(95vh,900px);
-  margin:2.5vh auto;
+  height:100vh; /* ← раньше было min(95vh,900px) */
+  margin:0 auto; /* ← убрали 2.5vh */
   border-radius:18px;
   border:1px solid var(--glass-brd);
   overflow:hidden;
@@ -149,6 +155,7 @@ h2{font-size:16px;letter-spacing:.08em;text-transform:uppercase;margin:4 0 10px;
   display:grid;
   grid-template-columns:minmax(520px,1.35fr) minmax(360px,1fr);
 }
+
 .m-media .m-title-container { display: none; }
 
 .modal::before{
@@ -847,7 +854,7 @@ function cleanupViewport() {
 }
 
 function renderMedia(direction = 1, instant = false) {
-  viewportEl.innerHTML = '';
+  while (viewportEl.firstChild) viewportEl.removeChild(viewportEl.firstChild);
   const track = document.createElement('div');
   track.className = 'viewport-track';
   viewportEl.append(track);
@@ -857,9 +864,12 @@ function renderMedia(direction = 1, instant = false) {
     const el = document.createElement(m.type);
     el.src = m.src;
     if (m.type === 'video') {
-      el.controls = true;
-      el.playsInline = true;
-    }
+  el.controls = true;
+  el.playsInline = true;
+  el.setAttribute('controlslist', 'nofullscreen nodownload noremoteplayback');
+  el.setAttribute('webkit-playsinline', 'true');
+}
+
     track.append(el);
   });
 
