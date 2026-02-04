@@ -500,10 +500,6 @@ h2{font-size:16px;letter-spacing:.08em;text-transform:uppercase;margin:4 0 10px;
     <a href="#about" data-i18n="nav.about">About</a>
     <a href="#contacts" data-i18n="nav.contacts">Contacts</a>
   </nav>
-  <div class="lang-switch-mobile">
-    <button id="enBtnMobile" class="is-active">EN</button>
-    <button id="ruBtnMobile">RU</button>
-  </div>
 </div>
 <div id="liquid-ether-container" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;"></div>
 <div class="wrap">
@@ -520,10 +516,6 @@ h2{font-size:16px;letter-spacing:.08em;text-transform:uppercase;margin:4 0 10px;
       <a href="#about" data-i18n="nav.about">About</a>
       <a href="#contacts" data-i18n="nav.contacts">Contacts</a>
     </nav>
-    <div class="lang">
-      <button id="enBtn" class="is-active">EN</button>
-      <button id="ruBtn">RU</button>
-    </div>
     <button id="burger-btn" class="burger-btn">
       <svg class="icon" viewBox="0 0 24 24">
         <path d="M3 12h18M3 6h18M3 18h18"/>
@@ -592,9 +584,9 @@ h2{font-size:16px;letter-spacing:.08em;text-transform:uppercase;margin:4 0 10px;
       <div class="contacts-grid">
         <div>
           <p class="muted" data-i18n="contacts.loc">Base: Cyprus, Limassol</p>
-          <p>Email: <a href="mailto:hello@frame899.com">hello@frame899.com</a></p>
-          <p>Instagram: <a href="https://instagram.com/" target="_blank" rel="noopener">instagram.com/<span class="muted">[handle]</span></a></p>
-          <p>TikTok: <a href="https://tiktok.com/@" target="_blank" rel="noopener">tiktok.com/@<span class="muted">[handle]</span></a></p>
+          <p>Email: <a href="mailto:frame899@gmail.com">frame899@gmail.com</a></p>
+          <p>Instagram: <a href="https://instagram.com/frame899" target="_blank" rel="noopener">@frame899</a></p>
+          <p>TikTok: <a href="https://tiktok.com/@frame899" target="_blank" rel="noopener">@frame899</a></p>
         </div>
         <div><p class="muted" data-i18n="contacts.press">Press / deck — on request.</p></div>
       </div>
@@ -645,11 +637,8 @@ ru:{kicker:"CYPRUS ART COLLECTIVE",h1:"Арт, эксперименты, мор�
 "about.ivan":"CG-артист и архитектор. Пространственная визуализация, читаемость сцены, интеграция медиа в архитектуру. Фокус — интерактив и световые инсталляции.",
 "about.note":"Часть крупных проектов выполнена в составе предыдущих команд; медиа не публикуются из-за прав ИС.",
 "contacts.loc":"База: Кипр, Лимассол","contacts.press":"Пресс / дека — по запросу."}};
-let LANG=(new URL(location.href).searchParams.get('lang'))||localStorage.getItem('lang')||'en';
-function applyI18n(){document.documentElement.lang=LANG;document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');if(I18N[LANG][k])el.textContent=I18N[LANG][k];});enBtn.classList.toggle('is-active',LANG==='en');ruBtn.classList.toggle('is-active',LANG==='ru');}
-const enBtn=document.getElementById('enBtn'),ruBtn=document.getElementById('ruBtn');
-enBtn.onclick=()=>{LANG='en';localStorage.setItem('lang','en');applyI18n();rebuildText();};
-ruBtn.onclick=()=>{LANG='ru';localStorage.setItem('lang','ru');applyI18n();rebuildText();};
+let LANG='en';
+function applyI18n(){document.documentElement.lang=LANG;document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');if(I18N[LANG][k])el.textContent=I18N[LANG][k];});}
 applyI18n();
 
 /* ========= DATA ========= */
@@ -783,9 +772,6 @@ const burgerBtn = document.getElementById('burger-btn');
 const burgerCloseBtn = document.getElementById('burger-close-btn');
 const burgerMenuPanel = document.getElementById('burger-menu-panel');
 const burgerNavLinks = document.querySelectorAll('.burger-nav a');
-const enBtnMobile = document.getElementById('enBtnMobile');
-const ruBtnMobile = document.getElementById('ruBtnMobile');
-
 function toggleBurgerMenu() {
   burgerMenuPanel.classList.toggle('show');
 }
@@ -800,25 +786,6 @@ burgerNavLinks.forEach(link => {
     }
   });
 });
-
-function setLanguage(lang) {
-  LANG = lang;
-  localStorage.setItem('lang', lang);
-  applyI18n();
-  rebuildText();
-  if (burgerMenuPanel.classList.contains('show')) {
-    toggleBurgerMenu();
-  }
-  enBtnMobile.classList.toggle('is-active', lang === 'en');
-  ruBtnMobile.classList.toggle('is-active', lang === 'ru');
-}
-
-enBtnMobile.onclick = () => setLanguage('en');
-ruBtnMobile.onclick = () => setLanguage('ru');
-
-// Initial state for mobile language buttons
-enBtnMobile.classList.toggle('is-active', LANG === 'en');
-ruBtnMobile.classList.toggle('is-active', LANG === 'ru');
 
 
 /* ========= GRIDS ========= */
@@ -1018,7 +985,17 @@ function openModal(id){
   overlayEl.querySelector('.m-meta .m-sub').textContent=current.sub[LANG];
 
   const scrollWrapper = overlayEl.querySelector('.m-scroll-wrapper');
-  scrollWrapper.innerHTML = wrapText(current.desc[LANG]) + wrapText(current.stmt[LANG]);
+  let html = wrapText(current.desc[LANG]);
+  if (current.stmt[LANG]) {
+    const stmt = current.stmt[LANG];
+    // If stmt contains HTML tags, append it directly wrapped in a paragraph to avoid breaking it with widont
+    if (stmt.includes('<')) {
+      html += `<p class="m-stmt">${stmt}</p>`;
+    } else {
+      html += wrapText(stmt);
+    }
+  }
+  scrollWrapper.innerHTML = html;
 
   renderThumbsDots(); renderMedia();
   overlayEl.classList.add('show'); overlayEl.setAttribute('aria-hidden','false');
