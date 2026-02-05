@@ -1032,16 +1032,29 @@ function renderMedia(){
     track.className = 'viewport-track';
     viewportEl.append(track);
     const items = current.media;
-    // Construct slides with clones at both ends to support infinite looping
+    // Determine if the user is on a narrow/mobile device.  On mobile we display a simple slider
+    // without clones and each slide fills the entire width of the viewport.  On desktop we
+    // build a "drum" with clones at both ends so that the neighbouring slides peek into view.
+    const isMobile = window.matchMedia('(max-width: 900px)').matches;
     let slides = [];
     if(items.length > 1){
-        // For multiple media items, clone the last and first items to both ends to enable smooth looping
-        slides.push(items[items.length - 1]);
-        slides = slides.concat(items);
-        slides.push(items[0]);
+        if(isMobile){
+            // On mobile just use the items as‑is; no clones
+            slides = items.slice();
+        } else {
+            // For desktop, clone the last and first items to both ends to enable smooth looping
+            slides.push(items[items.length - 1]);
+            slides = slides.concat(items);
+            slides.push(items[0]);
+        }
     } else if(items.length === 1){
-        // If there's only one media item, duplicate it so that the "drum" effect still shows neighbours
-        slides = [items[0], items[0], items[0]];
+        if(isMobile){
+            // On mobile a single media simply shows once
+            slides = [items[0]];
+        } else {
+            // For desktop with a single media, duplicate it so that the "drum" effect still shows neighbours
+            slides = [items[0], items[0], items[0]];
+        }
     } else {
         // No media items: leave slides empty
         slides = [];
@@ -1062,16 +1075,22 @@ function renderMedia(){
     });
     // Enable pointer events on videos (so users can control playback)
     track.querySelectorAll('video').forEach((v) => { v.style.pointerEvents = 'auto'; });
-    // The offsetIndex determines which slide is currently centered; account for the clone at the beginning
-    // The offsetIndex determines which slide is currently centered; account for the clone at the beginning.
-    // For single media projects (items.length===1), we set offsetIndex to 1 so that the central duplicate is shown.
+    // The offsetIndex determines which slide is currently centred within the track.  Its initial value
+    // depends on whether the slider is mobile (no clones) or desktop (clones at both ends).  On
+    // desktop with multiple media we offset by 1 to account for the prepended clone; for a single
+    // media we offset by 1 so the duplicate sits in the centre; on mobile we use the raw index.
     let offsetIndex;
-    if(items.length > 1){
-        offsetIndex = index + 1;
-    } else if(items.length === 1){
-        offsetIndex = 1;
+    if(isMobile){
+        // Mobile: index corresponds directly to the current slide
+        offsetIndex = index;
     } else {
-        offsetIndex = 0;
+        if(items.length > 1){
+            offsetIndex = index + 1;
+        } else if(items.length === 1){
+            offsetIndex = 1;
+        } else {
+            offsetIndex = 0;
+        }
     }
     // Arrays to store individual slide widths and cumulative offsets
     let widths = [];
@@ -1089,30 +1108,39 @@ function renderMedia(){
     // Navigate to previous slide
     const goPrev = () => {
         if(items.length <= 1) return;
+        // Update the logical index depending on mobile vs desktop
         index = (index - 1 + items.length) % items.length;
-        offsetIndex = index + 1;
+        if(isMobile){
+            offsetIndex = index;
+        } else {
+            offsetIndex = index + 1;
+        }
         updateTransform();
     };
     // Navigate to next slide
     const goNext = () => {
         if(items.length <= 1) return;
         index = (index + 1) % items.length;
-        offsetIndex = index + 1;
+        if(isMobile){
+            offsetIndex = index;
+        } else {
+            offsetIndex = index + 1;
+        }
         updateTransform();
     };
     // Assign navigation handlers
     mPrev.onclick = goPrev;
     mNext.onclick = goNext;
-    // Ensure we snap correctly when reaching clone boundaries
-    track.addEventListener('transitionend', () => {
-        if (items.length > 1) {
+    // Ensure we snap correctly when reaching clone boundaries on desktop.  On mobile there are
+    // no clones, so this listener is unnecessary.
+    if(!isMobile && items.length > 1){
+        track.addEventListener('transitionend', () => {
             const total = items.length;
             if (offsetIndex === 0) {
                 // Jump from cloned last to real last
                 offsetIndex = total;
                 // Immediately jump without animation
                 track.style.transition = 'none';
-                // Use offsets array to compute new position
                 const offset = offsets[offsetIndex] || 0;
                 track.style.transform = `translateX(${-offset}px)`;
             }
@@ -1123,8 +1151,8 @@ function renderMedia(){
                 const offset = offsets[offsetIndex] || 0;
                 track.style.transform = `translateX(${-offset}px)`;
             }
-        }
-    });
+        });
+    }
     // Touch interaction for swipe on touch devices
     if (matchMedia('(pointer:coarse)').matches) {
         let startX = 0;
@@ -1208,26 +1236,41 @@ function renderMedia(){
         let sum = 0;
         // Determine available width of the viewport (media area)
         const viewportWidth = viewportEl.getBoundingClientRect().width || 0;
-        // Assign widths to slides based on their aspect ratios; horizontal media take more width, vertical less.
+        // Determine the height of the media column to compute slide widths on desktop
+        const mMediaElRef = overlayEl.querySelector('.m-media');
+        const mediaHeight = mMediaElRef ? mMediaElRef.clientHeight : (viewportEl.getBoundingClientRect().height || 0);
+        // Assign widths to slides.  On mobile, each slide fills the viewport width.  On desktop,
+        // compute width based on the intrinsic aspect ratio of the media and the fixed media
+        // height.  We cap the width at 85% of the viewport width to avoid excessively wide
+        // slides when a video/image has a very wide aspect ratio.
         wrappers.forEach((wrapper) => {
             const media = wrapper.querySelector('img, video');
-            // Default factor if no media is present
-            let factor = 0.8;
-            if (media) {
+            let wpx;
+            if(isMobile){
+                // Mobile: each slide occupies full viewport width
+                wpx = viewportWidth;
+            } else {
+                // Desktop: compute width from aspect ratio and mediaHeight
                 let ratio = 1;
-                if (media.tagName === 'VIDEO') {
-                    const vw = media.videoWidth;
-                    const vh = media.videoHeight;
-                    ratio = vh ? vw / vh : 1;
-                } else {
-                    const nw = media.naturalWidth;
-                    const nh = media.naturalHeight;
-                    ratio = nh ? nw / nh : 1;
+                if (media) {
+                    if (media.tagName === 'VIDEO') {
+                        const vw = media.videoWidth;
+                        const vh = media.videoHeight;
+                        ratio = vh ? vw / vh : 1;
+                    } else {
+                        const nw = media.naturalWidth;
+                        const nh = media.naturalHeight;
+                        ratio = nh ? nw / nh : 1;
+                    }
                 }
-                // If vertical (ratio < 1), allocate less width; else allocate more
-                factor = ratio < 1 ? 0.55 : 0.8;
+                wpx = mediaHeight * ratio;
+                // Cap width to 85% of viewport to prevent extremely wide slides
+                const maxWidth = viewportWidth * 0.85;
+                if(wpx > maxWidth) wpx = maxWidth;
+                // Ensure minimum width to avoid zero width
+                const minWidth = viewportWidth * 0.4;
+                if(wpx < minWidth) wpx = minWidth;
             }
-            const wpx = viewportWidth * factor;
             widths.push(wpx);
             offsets.push(sum);
             sum += wpx;
