@@ -1250,7 +1250,10 @@ function renderMedia(){
                 // Mobile: each slide occupies full viewport width
                 wpx = viewportWidth;
             } else {
-                // Desktop: compute width from aspect ratio and mediaHeight
+                // Desktop: determine the aspect ratio of the media.  We map the ratio to a fixed
+                // width factor so that spacing between slides remains consistent across different
+                // orientations.  Portrait (ratio < 1) gets a narrower width, landscape gets a
+                // wider width.
                 let ratio = 1;
                 if (media) {
                     if (media.tagName === 'VIDEO') {
@@ -1263,13 +1266,12 @@ function renderMedia(){
                         ratio = nh ? nw / nh : 1;
                     }
                 }
-                wpx = mediaHeight * ratio;
-                // Cap width to 85% of viewport to prevent extremely wide slides
-                const maxWidth = viewportWidth * 0.85;
-                if(wpx > maxWidth) wpx = maxWidth;
-                // Ensure minimum width to avoid zero width
-                const minWidth = viewportWidth * 0.4;
-                if(wpx < minWidth) wpx = minWidth;
+                // Choose width factor based on orientation.  Portrait media receive a smaller
+                // width to reduce large gaps; landscape media receive a larger width.
+                const verticalFactor = 0.6;
+                const horizontalFactor = 0.85;
+                const factor = ratio < 1 ? verticalFactor : horizontalFactor;
+                wpx = viewportWidth * factor;
             }
             widths.push(wpx);
             offsets.push(sum);
