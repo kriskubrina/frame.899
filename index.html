@@ -28,6 +28,8 @@
         --icon: 40px;
         --icon-m: 36px;
         --pad: 20px;
+        /* Padding on the sides of the modal carousel viewport. This controls how much of previous/next media is visible. */
+        --carousel-pad: 10%;
     }
 
     *{ box-sizing: border-box; }
@@ -390,8 +392,8 @@
     #overlay.show{ display: block; }
     .modal{
         position: relative;
-        /* Narrow the modal width to reduce the empty "ears" on the sides */
-        width: min(85vw,1000px);
+        /* Align the modal width exactly with the main page content.  The content area (.wrap) uses a max width of `var(--max)` plus horizontal padding (var(--pad)) on both sides.  Use the same combined width here so the modal lines up with the page columns.  Constrain to the viewport width on small screens. */
+        width: min(calc(var(--max) + (var(--pad) * 2)), 95vw);
         height: min(95vh,900px);
         margin: 2.5vh auto;
         border-radius: 0;
@@ -505,17 +507,20 @@
         position: relative;
         z-index: 1;
         display: flex;
-        /* Center media items both horizontally and vertically within the viewport */
+        /* Align media items to the start so we can control their positioning via transforms */
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         width: 100%;
         height: 100%;
+        /* Add side padding to reveal portions of adjacent slides */
+        padding-left: var(--carousel-pad);
+        padding-right: var(--carousel-pad);
         overflow: hidden;
     }
     .viewport-track{
+        /* Use flexbox for the carousel track. The width of each slide will be set via JavaScript. */
         display: flex;
         transition: transform 0.6s ease;
-        width: 100%;
         height: 100%;
     }
     .viewport-track img, .viewport-track video{
@@ -526,6 +531,9 @@
         object-position: center;
         pointer-events: none;
     }
+
+    /* Hide the thumbnails container entirely; we no longer use it for navigation */
+    #thumbs{ display: none; }
 
     /* navigation inside modal */
     .m-nav{
@@ -996,27 +1004,147 @@ function cleanupViewport() {
     if(v){ try { v.pause(); v.src=''; v.load(); } catch(e) {} }
     viewportEl.innerHTML='';
 }
-function renderMedia(direction=1,instant=false){
-    viewportEl.innerHTML='';
-    const track=document.createElement('div');
-    track.className='viewport-track';
+function renderMedia(){
+    // Clear existing media from the viewport
+    viewportEl.innerHTML = '';
+    // Create a new track container
+    const track = document.createElement('div');
+    track.className = 'viewport-track';
     viewportEl.append(track);
-    current.media.forEach((m)=>{
-        const el=document.createElement(m.type);
-        el.src=m.src;
-        if(m.type==='video'){ el.controls=true; el.playsInline=true; }
+    const items = current.media;
+    // Construct slides with clones at both ends to support infinite looping
+    let slides = [];
+    if(items.length > 1){
+        slides.push(items[items.length - 1]);
+        slides = slides.concat(items);
+        slides.push(items[0]);
+    } else {
+        slides = items.slice();
+    }
+    // Populate DOM elements for each slide
+    slides.forEach((m) => {
+        const el = document.createElement(m.type);
+        el.src = m.src;
+        if(m.type === 'video'){
+            el.controls = true;
+            el.playsInline = true;
+        }
         track.append(el);
     });
-    track.querySelectorAll('video').forEach((v)=>{ v.style.pointerEvents='auto'; });
-    function updateTransform(anim=true){
-        track.style.transition=anim ? 'transform 0.6s ease' : 'none';
-        track.style.transform=`translateX(${-index*100}%)`;
-        // No thumbnails: nothing to update for active state
+    // Enable pointer events on videos (so users can control playback)
+    track.querySelectorAll('video').forEach((v) => { v.style.pointerEvents = 'auto'; });
+    // The offsetIndex determines which slide is currently centered; account for the clone at the beginning
+    let offsetIndex = (items.length > 1) ? index + 1 : index;
+    // Helper to compute content width in pixels (viewport width minus side paddings)
+    const computeContentWidth = () => {
+        const vw = viewportEl.getBoundingClientRect().width;
+        const padVal = getComputedStyle(document.documentElement).getPropertyValue('--carousel-pad').trim();
+        let padPercent = 0;
+        if(padVal.endsWith('%')){
+            padPercent = parseFloat(padVal) / 100;
+        } else if(padVal.endsWith('vw')){
+            padPercent = parseFloat(padVal) / 100;
+        }
+        // content width is viewport width minus both paddings
+        return vw * (1 - 2 * padPercent);
+    };
+    // Set slide widths and track width based on current viewport
+    const setWidths = () => {
+        const contentW = computeContentWidth();
+        const children = track.children;
+        for(let i = 0; i < children.length; i++){
+            const slide = children[i];
+            slide.style.width = contentW + 'px';
+            slide.style.flex = '0 0 auto';
+        }
+        track.style.width = (slides.length * contentW) + 'px';
+    };
+    // Update the track translation to focus on the current slide
+    const updateTransform = (animate = true) => {
+        const contentW = computeContentWidth();
+        track.style.transition = animate ? 'transform 0.6s ease' : 'none';
+        track.style.transform = `translateX(${-offsetIndex * contentW}px)`;
+    };
+    // Navigate to previous slide
+    const goPrev = () => {
+        if(items.length <= 1) return;
+        index = (index - 1 + items.length) % items.length;
+        offsetIndex = index + 1;
+        updateTransform();
+    };
+    // Navigate to next slide
+    const goNext = () => {
+        if(items.length <= 1) return;
+        index = (index + 1) % items.length;
+        offsetIndex = index + 1;
+        updateTransform();
+    };
+    // Assign navigation handlers
+    mPrev.onclick = goPrev;
+    mNext.onclick = goNext;
+    // Ensure we snap correctly when reaching clone boundaries
+    track.addEventListener('transitionend', () => {
+        if(items.length > 1){
+            const total = items.length;
+            if(offsetIndex === 0){
+                // Jump from cloned last to real last
+                offsetIndex = total;
+                track.style.transition = 'none';
+                const contentW = computeContentWidth();
+                track.style.transform = `translateX(${-offsetIndex * contentW}px)`;
+            }
+            if(offsetIndex === total + 1){
+                // Jump from cloned first to real first
+                offsetIndex = 1;
+                track.style.transition = 'none';
+                const contentW = computeContentWidth();
+                track.style.transform = `translateX(${-offsetIndex * contentW}px)`;
+            }
+        }
+    });
+    // Touch interaction for swipe on touch devices
+    if(matchMedia('(pointer:coarse)').matches){
+        let startX = 0;
+        let dx = 0;
+        let dragging = false;
+        const handleTouchStart = (e) => {
+            dragging = true;
+            startX = e.touches[0].clientX;
+            dx = 0;
+            track.style.transition = 'none';
+            // Disable pointer events on video during drag to prevent interference
+            track.querySelectorAll('video').forEach((v) => { v.style.pointerEvents = 'none'; });
+        };
+        const handleTouchMove = (e) => {
+            if(!dragging) return;
+            dx = e.touches[0].clientX - startX;
+            const contentW = computeContentWidth();
+            const base = -offsetIndex * contentW;
+            track.style.transform = `translateX(${base + dx}px)`;
+        };
+        const handleTouchEnd = () => {
+            dragging = false;
+            // Restore pointer events on videos after drag
+            track.querySelectorAll('video').forEach((v) => { v.style.pointerEvents = 'auto'; });
+            if(Math.abs(dx) > 40){
+                if(dx < 0){
+                    index = (index + 1) % items.length;
+                } else {
+                    index = (index - 1 + items.length) % items.length;
+                }
+                offsetIndex = index + 1;
+            }
+            updateTransform();
+        };
+        viewportEl.addEventListener('touchstart', handleTouchStart, { passive: true });
+        viewportEl.addEventListener('touchmove', handleTouchMove, { passive: true });
+        viewportEl.addEventListener('touchend', handleTouchEnd, { passive: true });
     }
-    mPrev.onclick=()=>{ index=(index-1+current.media.length)%current.media.length; updateTransform(); };
-    mNext.onclick=()=>{ index=(index+1)%current.media.length; updateTransform(); };
-    if(matchMedia('(pointer:coarse)').matches){ let startX=0, dx=0, dragging=false; viewportEl.addEventListener('touchstart',(e)=>{ dragging=true; startX=e.touches[0].clientX; dx=0; track.style.transition='none'; track.querySelectorAll('video').forEach((v)=>{ v.style.pointerEvents='none'; }); },{passive:true}); viewportEl.addEventListener('touchmove',(e)=>{ if(!dragging) return; dx=e.touches[0].clientX-startX; track.style.transform=`translateX(calc(${-index*100}% + ${dx}px))`; },{passive:true}); viewportEl.addEventListener('touchend',()=>{ dragging=false; track.querySelectorAll('video').forEach((v)=>{ v.style.pointerEvents='auto'; }); if(Math.abs(dx)>40){ index=dx<0 ? (index+1)%current.media.length : (index-1+current.media.length)%current.media.length; } updateTransform(); },{passive:true}); }
-    updateTransform(false);
+    // After the DOM updates, set widths and position the track
+    requestAnimationFrame(() => {
+        setWidths();
+        updateTransform(false);
+    });
 }
 function renderThumbsDots(){
     thumbsEl.innerHTML='';
@@ -1060,14 +1188,15 @@ function showScrollHint(){
     if(!track || !current || current.media.length < 2) return;
     // Save original transition to restore later
     const originalTransition = track.style.transition;
-    // Start from zero position to avoid any existing offset
+    // Temporarily remove transition and reset transform
     track.style.transition = 'none';
     track.style.transform = 'translateX(0)';
     // Use the next animation frame to apply the hint so the change takes effect
     requestAnimationFrame(() => {
-        // Apply a temporary transform to show part of the next slide
+        // Apply a temporary transform to show part of the next slide. Shift by 20% of the viewport width.
+        const vw = viewportEl.getBoundingClientRect().width;
         track.style.transition = 'transform 0.6s ease';
-        track.style.transform = 'translateX(-20%)';
+        track.style.transform = `translateX(${-0.2 * vw}px)`;
         // Return to zero after the hint
         setTimeout(() => {
             track.style.transform = 'translateX(0)';
@@ -1094,18 +1223,18 @@ function openModal(id){
         }
     }
     scrollWrapper.innerHTML=html;
+    // Make overlay visible before building media so widths are computed correctly
+    overlayEl.classList.add('show');
+    overlayEl.setAttribute('aria-hidden','false');
     // Build media and then show hint that more slides are available
     renderMedia();
     showScrollHint();
-    overlayEl.classList.add('show'); overlayEl.setAttribute('aria-hidden','false');
 }
 function closeModal(){
     overlayEl.classList.remove('show'); overlayEl.setAttribute('aria-hidden','true');
     cleanupViewport();
     current=null;
 }
-mPrev.onclick=()=>{ if(!current) return; index=(index-1+current.media.length)%current.media.length; renderMedia(); };
-mNext.onclick=()=>{ if(!current) return; index=(index+1)%current.media.length; renderMedia(); };
 mClose.onclick=closeModal;
 overlayEl.addEventListener('click',(e)=>{ if(e.target===overlayEl) closeModal(); });
 document.addEventListener('keydown',(e)=>{ if(!overlayEl.classList.contains('show')) return; if(e.key==='Escape') closeModal(); if(e.key==='ArrowLeft') mPrev.click(); if(e.key==='ArrowRight') mNext.click(); });
