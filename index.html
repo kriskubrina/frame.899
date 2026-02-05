@@ -532,8 +532,16 @@
     }
     .viewport-track .slide-wrapper img,
     .viewport-track .slide-wrapper video{
-        width: 100%;
+        /* Let media define its natural width based on its height to preserve aspect ratio. */
         height: 100%;
+        width: auto;
+        object-fit: contain;
+        object-position: center;
+        pointer-events: none;
+    }
+    .viewport-track .slide-wrapper img{
+        height: 100%;
+        width: auto;
         object-fit: contain;
         object-position: center;
         pointer-events: none;
@@ -1065,30 +1073,18 @@ function renderMedia(){
     } else {
         offsetIndex = 0;
     }
-    // Helper to compute content width in pixels (viewport width minus side paddings)
-    const computeContentWidth = () => {
-        // For a seamless carousel without gaps, use the full modal width for each slide.
-        const modalEl = overlayEl.querySelector('.modal');
-        const vw = modalEl ? modalEl.getBoundingClientRect().width : viewportEl.getBoundingClientRect().width;
-        return vw;
-    };
-    // Set slide widths and track width based on current viewport
-    const setWidths = () => {
-        const contentW = computeContentWidth();
-        const children = track.children;
-        for(let i = 0; i < children.length; i++){
-            const wrapper = children[i];
-            // Each wrapper should take exactly contentW pixels in width
-            wrapper.style.width = contentW + 'px';
-            wrapper.style.flex = '0 0 auto';
-        }
-        track.style.width = (slides.length * contentW) + 'px';
-    };
-    // Update the track translation to focus on the current slide
+    // Arrays to store individual slide widths and cumulative offsets
+    let widths = [];
+    let offsets = [];
+    /**
+     * Translate the track so that the slide at the current offsetIndex is left‑aligned
+     * within the viewport.  Uses the precomputed offsets array.
+     */
     const updateTransform = (animate = true) => {
-        const contentW = computeContentWidth();
+        // Guard against undefined offsets (e.g., if widths haven't been computed yet)
+        const offset = offsets[offsetIndex] || 0;
         track.style.transition = animate ? 'transform 0.6s ease' : 'none';
-        track.style.transform = `translateX(${-offsetIndex * contentW}px)`;
+        track.style.transform = `translateX(${-offset}px)`;
     };
     // Navigate to previous slide
     const goPrev = () => {
@@ -1109,25 +1105,28 @@ function renderMedia(){
     mNext.onclick = goNext;
     // Ensure we snap correctly when reaching clone boundaries
     track.addEventListener('transitionend', () => {
-        if(items.length > 1){
+        if (items.length > 1) {
             const total = items.length;
-            const contentW = computeContentWidth();
-            if(offsetIndex === 0){
+            if (offsetIndex === 0) {
                 // Jump from cloned last to real last
                 offsetIndex = total;
+                // Immediately jump without animation
                 track.style.transition = 'none';
-                track.style.transform = `translateX(${-offsetIndex * contentW}px)`;
+                // Use offsets array to compute new position
+                const offset = offsets[offsetIndex] || 0;
+                track.style.transform = `translateX(${-offset}px)`;
             }
-            if(offsetIndex === total + 1){
+            if (offsetIndex === total + 1) {
                 // Jump from cloned first to real first
                 offsetIndex = 1;
                 track.style.transition = 'none';
-                track.style.transform = `translateX(${-offsetIndex * contentW}px)`;
+                const offset = offsets[offsetIndex] || 0;
+                track.style.transform = `translateX(${-offset}px)`;
             }
         }
     });
     // Touch interaction for swipe on touch devices
-    if(matchMedia('(pointer:coarse)').matches){
+    if (matchMedia('(pointer:coarse)').matches) {
         let startX = 0;
         let dx = 0;
         let dragging = false;
@@ -1140,25 +1139,28 @@ function renderMedia(){
             track.querySelectorAll('video').forEach((v) => { v.style.pointerEvents = 'none'; });
         };
         const handleTouchMove = (e) => {
-            if(!dragging) return;
+            if (!dragging) return;
             dx = e.touches[0].clientX - startX;
-            const contentW = computeContentWidth();
-            const base = -offsetIndex * contentW;
+            // base offset for current slide
+            const base = -(offsets[offsetIndex] || 0);
             track.style.transform = `translateX(${base + dx}px)`;
         };
         const handleTouchEnd = () => {
             dragging = false;
             // Restore pointer events on videos after drag
             track.querySelectorAll('video').forEach((v) => { v.style.pointerEvents = 'auto'; });
-            // Determine slide change threshold relative to slide width
-            const threshold = computeContentWidth() * 0.15;
-            if(Math.abs(dx) > threshold && items.length > 1){
-                if(dx < 0){
-                    index = (index + 1) % items.length;
-                } else {
-                    index = (index - 1 + items.length) % items.length;
+            if (items.length > 1) {
+                // Determine threshold relative to width of the current slide
+                const currentWidth = widths[offsetIndex] || 0;
+                const threshold = currentWidth * 0.15;
+                if (Math.abs(dx) > threshold) {
+                    if (dx < 0) {
+                        index = (index + 1) % items.length;
+                    } else {
+                        index = (index - 1 + items.length) % items.length;
+                    }
+                    offsetIndex = index + 1;
                 }
-                offsetIndex = index + 1;
             }
             updateTransform();
         };
@@ -1166,18 +1168,76 @@ function renderMedia(){
         viewportEl.addEventListener('touchmove', handleTouchMove, { passive: true });
         viewportEl.addEventListener('touchend', handleTouchEnd, { passive: true });
     }
-    // After the DOM updates, set widths and position the track.  Use two-phase scheduling
-    // (requestAnimationFrame followed by a timeout) to ensure that the overlay has been
-    // rendered and the viewport has a non-zero width.  Without this, getBoundingClientRect()
-    // may return 0 in some cases, causing slides to use incorrect widths.
-    requestAnimationFrame(() => {
-        // Delay slightly to ensure layout values are computed.  A 50ms timeout gives
-        // the browser time to render the modal and measure its dimensions.
-        setTimeout(() => {
-            setWidths();
-            updateTransform(false);
-        }, 50);
-    });
+    // Wait for all images and videos to load, then compute widths based on their aspect ratios
+    const waitForMedia = (el) => {
+        return new Promise((resolve) => {
+            if(!el) return resolve();
+            if (el.tagName === 'VIDEO') {
+                // Some browsers fire loadedmetadata synchronously if src is already loaded
+                if (el.readyState >= 1) {
+                    resolve();
+                } else {
+                    el.addEventListener('loadedmetadata', () => {
+                        resolve();
+                    }, { once: true });
+                }
+            } else {
+                // IMG
+                if (el.complete && el.naturalWidth) {
+                    resolve();
+                } else {
+                    el.addEventListener('load', () => {
+                        resolve();
+                    }, { once: true });
+                }
+            }
+        });
+    };
+    // Measure slide widths after all media loaded and the modal has laid out
+    (async () => {
+        const wrappers = Array.from(track.children);
+        // Wait for all media elements to load their intrinsic sizes
+        await Promise.all(wrappers.map(w => {
+            const media = w.querySelector('img, video');
+            return waitForMedia(media);
+        }));
+        // Wait for at least one animation frame to ensure modal layout is applied
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        widths = [];
+        offsets = [];
+        let sum = 0;
+        // Determine available width of the viewport (media area)
+        const viewportWidth = viewportEl.getBoundingClientRect().width || 0;
+        // Assign widths to slides based on their aspect ratios; horizontal media take more width, vertical less.
+        wrappers.forEach((wrapper) => {
+            const media = wrapper.querySelector('img, video');
+            // Default factor if no media is present
+            let factor = 0.8;
+            if (media) {
+                let ratio = 1;
+                if (media.tagName === 'VIDEO') {
+                    const vw = media.videoWidth;
+                    const vh = media.videoHeight;
+                    ratio = vh ? vw / vh : 1;
+                } else {
+                    const nw = media.naturalWidth;
+                    const nh = media.naturalHeight;
+                    ratio = nh ? nw / nh : 1;
+                }
+                // If vertical (ratio < 1), allocate less width; else allocate more
+                factor = ratio < 1 ? 0.55 : 0.8;
+            }
+            const wpx = viewportWidth * factor;
+            widths.push(wpx);
+            offsets.push(sum);
+            sum += wpx;
+            wrapper.style.width = `${wpx}px`;
+            wrapper.style.flex = '0 0 auto';
+        });
+        track.style.width = `${sum}px`;
+        // After computing widths, position the track without animation
+        updateTransform(false);
+    })();
 }
 function renderThumbsDots(){
     thumbsEl.innerHTML='';
@@ -1259,6 +1319,13 @@ function openModal(id){
     // Make overlay visible before building media so widths are computed correctly
     overlayEl.classList.add('show');
     overlayEl.setAttribute('aria-hidden','false');
+    // Set a fixed height on the media column based on viewport height.  This ensures
+    // that the media container has a non‑zero height when computing slide widths.
+    const mMediaEl = overlayEl.querySelector('.m-media');
+    if (mMediaEl) {
+        const mediaHeight = Math.round(window.innerHeight * 0.5);
+        mMediaEl.style.height = mediaHeight + 'px';
+    }
     // Build media. The hint function is disabled because the carousel now shows portions of adjacent slides.
     renderMedia();
 }
