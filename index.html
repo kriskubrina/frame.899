@@ -1246,14 +1246,11 @@ function renderMedia(){
         wrappers.forEach((wrapper) => {
             const media = wrapper.querySelector('img, video');
             let wpx;
-            if(isMobile){
+            if (isMobile) {
                 // Mobile: each slide occupies full viewport width
                 wpx = viewportWidth;
             } else {
-                // Desktop: determine the aspect ratio of the media.  We map the ratio to a fixed
-                // width factor so that spacing between slides remains consistent across different
-                // orientations.  Portrait (ratio < 1) gets a narrower width, landscape gets a
-                // wider width.
+                // Desktop: determine the aspect ratio of the media
                 let ratio = 1;
                 if (media) {
                     if (media.tagName === 'VIDEO') {
@@ -1266,11 +1263,16 @@ function renderMedia(){
                         ratio = nh ? nw / nh : 1;
                     }
                 }
-                // Choose width factor based on orientation.  Portrait media receive a smaller
-                // width to reduce large gaps; landscape media receive a larger width.
-                const verticalFactor = 0.6;
-                const horizontalFactor = 0.85;
-                const factor = ratio < 1 ? verticalFactor : horizontalFactor;
+                // Clamp the ratio to a moderate range to avoid extreme width differences
+                const minRatio = 0.8;
+                const maxRatio = 1.25;
+                let clampedRatio = Math.max(minRatio, Math.min(maxRatio, ratio));
+                // Map the clamped ratio linearly to a width factor between factorMin and factorMax
+                const factorMin = 0.82;
+                const factorMax = 0.92;
+                // Normalise clampedRatio within [minRatio, maxRatio]
+                const t = (clampedRatio - minRatio) / (maxRatio - minRatio);
+                const factor = factorMin + (factorMax - factorMin) * t;
                 wpx = viewportWidth * factor;
             }
             widths.push(wpx);
