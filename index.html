@@ -402,7 +402,8 @@
         backdrop-filter: blur(14px) saturate(160%);
         pointer-events: none;
     }
-    .m-close, .m-nav .prev, .m-nav .next, .fs-btn{
+    /* The close and fullscreen buttons are absolutely positioned; nav buttons rely on their container */
+    .m-close, .fs-btn{
         position: absolute;
         background: rgba(0,0,0,0.45);
         border: none;
@@ -417,14 +418,33 @@
         transition: background 0.3s, box-shadow 0.3s;
         box-shadow: 0 0 8px rgba(0,0,0,0.5);
     }
+    /* Navigation buttons inside modal: positioned via flex container */
+    .m-nav .prev, .m-nav .next{
+        background: rgba(0,0,0,0.45);
+        border: none;
+        width: var(--icon);
+        height: var(--icon);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background 0.3s, box-shadow 0.3s;
+        box-shadow: 0 0 8px rgba(0,0,0,0.5);
+    }
 
     /* Position the close button at the top-right of the modal */
     .m-close{
         top: 10px;
         right: 10px;
         left: auto;
+        display: none; /* Hide the close button; modal closes on overlay click */
     }
-    .m-close:hover, .m-nav .prev:hover, .m-nav .next:hover, .fs-btn:hover{
+    .m-close:hover, .fs-btn:hover{
+        background: rgba(122,92,250,0.4);
+        box-shadow: 0 0 12px rgba(122,92,250,0.6);
+    }
+    .m-nav .prev:hover, .m-nav .next:hover{
         background: rgba(122,92,250,0.4);
         box-shadow: 0 0 12px rgba(122,92,250,0.6);
     }
@@ -434,7 +454,8 @@
         position: relative;
         z-index: 1;
         display: flex;
-        align-items: center;
+        /* Align media content to the top; allow horizontal centering */
+        align-items: flex-start;
         justify-content: center;
         overflow: hidden;
         background: transparent;
@@ -454,7 +475,8 @@
         position: relative;
         z-index: 1;
         display: flex;
-        align-items: center;
+        /* Align media items to the top of the container to avoid vertical centering */
+        align-items: flex-start;
         justify-content: center;
         width: 100%;
         height: 100%;
@@ -605,6 +627,23 @@
         .burger-menu-panel.show{ right: 0; }
         /* Show To Top button on mobile */
         .to-top-btn{ display: flex; }
+    }
+
+    /* Increase spacing for text inside the modal on desktop to add more breathing room */
+    @media (min-width: 901px){
+        .modal .m-meta{
+            padding: 28px 30px 24px;
+            gap: 16px;
+        }
+        .modal .m-meta > h3{
+            margin: 0 0 12px;
+        }
+        .modal .m-sub{
+            margin: 0 0 14px;
+        }
+        .modal .m-desc p + p{
+            margin-top: 14px;
+        }
     }
     /* Scroll to top button */
     .to-top-btn{
@@ -986,16 +1025,23 @@ function showScrollHint(){
     if(!track || !current || current.media.length < 2) return;
     // Save original transition to restore later
     const originalTransition = track.style.transition;
-    // Apply a temporary transform to show part of the next slide
-    track.style.transition = 'transform 0.6s ease';
-    track.style.transform = 'translateX(-20%)';
-    setTimeout(() => {
-        track.style.transform = 'translateX(0)';
-        // Restore original transition after hint animation
+    // Start from zero position to avoid any existing offset
+    track.style.transition = 'none';
+    track.style.transform = 'translateX(0)';
+    // Use the next animation frame to apply the hint so the change takes effect
+    requestAnimationFrame(() => {
+        // Apply a temporary transform to show part of the next slide
+        track.style.transition = 'transform 0.6s ease';
+        track.style.transform = 'translateX(-20%)';
+        // Return to zero after the hint
         setTimeout(() => {
-            track.style.transition = originalTransition || '';
+            track.style.transform = 'translateX(0)';
+            // Restore original transition after hint animation completes
+            setTimeout(() => {
+                track.style.transition = originalTransition || '';
+            }, 600);
         }, 600);
-    }, 600);
+    });
 }
 function wrapText(raw){ if(!raw) return ""; const paras=String(raw).trim().split(/\n\s*\n/); function widont(s){ s=s.replace(/\s*\n+\s*/g,' ').trim(); return s.replace(/\s+([^\s]+)\s+([^\s]+)$/, '\u00A0$1\u00A0$2'); } return paras.map(p=>`<p>${widont(p)}</p>`).join(''); }
 function openModal(id){
