@@ -17,8 +17,8 @@
         --fg: #f0f0f0;
         --muted: #a8a8a8;
         --rule: #1a1a1a;
-        /* New accent color: muted coral (#e2786d) */
-        --accent: #e2786d;
+        /* New accent color: violet (#7a5cfa) */
+        --accent: #7a5cfa;
         /* Glass backgrounds */
         --glass-bg: rgba(10,10,12,0.28);
         /* Previously thin border replaced by semi-transparent highlight to create a soft glow */
@@ -132,7 +132,7 @@
         position: absolute;
         inset: 0;
         border-radius: inherit;
-        box-shadow: 0 0 8px rgba(226,120,109,0.4);
+        box-shadow: 0 0 8px rgba(122,92,250,0.4);
         opacity: 0;
         transition: opacity 0.3s ease;
     }
@@ -287,8 +287,9 @@
         box-shadow: 0 0 8px rgba(0,0,0,0.5);
     }
     .iconbtn:hover{
-        background: rgba(226,120,109,0.4);
-        box-shadow: 0 0 12px rgba(226,120,109,0.6);
+        /* Use accent colour for hover state */
+        background: rgba(122,92,250,0.4);
+        box-shadow: 0 0 12px rgba(122,92,250,0.6);
     }
     .icon{
         width: 24px;
@@ -311,7 +312,8 @@
     }
     .hero-dots button.active, .m-dots button.active{
         background: var(--accent);
-        box-shadow: 0 0 6px rgba(226,120,109,0.8);
+        /* Softer glow in the accent colour */
+        box-shadow: 0 0 6px rgba(122,92,250,0.8);
     }
 
     /* GRID */
@@ -344,7 +346,8 @@
     }
     .card:hover{
         transform: translateY(-4px);
-        box-shadow: 0 8px 20px rgba(226,120,109,0.4);
+        /* Glow with new accent hue */
+        box-shadow: 0 8px 20px rgba(122,92,250,0.4);
     }
     .thumb{
         aspect-ratio: 16/10;
@@ -387,7 +390,9 @@
         background: var(--glass-bg);
         box-shadow: 0 0 40px rgba(0,0,0,0.6);
         display: grid;
-        grid-template-columns: minmax(520px,1.35fr) minmax(360px,1fr);
+        /* Two columns: text on the left (min width), media on the right (flexible) */
+        /* The first column provides enough room for titles and description, the second fills the remaining space */
+        grid-template-columns: minmax(360px,1fr) 1fr;
     }
     .modal::before{
         content: "";
@@ -398,6 +403,7 @@
         pointer-events: none;
     }
     .m-close, .m-nav .prev, .m-nav .next, .fs-btn{
+        position: absolute;
         background: rgba(0,0,0,0.45);
         border: none;
         width: var(--icon);
@@ -411,9 +417,16 @@
         transition: background 0.3s, box-shadow 0.3s;
         box-shadow: 0 0 8px rgba(0,0,0,0.5);
     }
+
+    /* Position the close button at the top-right of the modal */
+    .m-close{
+        top: 10px;
+        right: 10px;
+        left: auto;
+    }
     .m-close:hover, .m-nav .prev:hover, .m-nav .next:hover, .fs-btn:hover{
-        background: rgba(226,120,109,0.4);
-        box-shadow: 0 0 12px rgba(226,120,109,0.6);
+        background: rgba(122,92,250,0.4);
+        box-shadow: 0 0 12px rgba(122,92,250,0.6);
     }
 
     /* Left column of modal */
@@ -517,52 +530,7 @@
     }
 
     /* thumbnails */
-    .m-thumbs{
-        display: flex;
-        justify-content: flex-start;
-        align-items: stretch;
-        gap: 10px;
-        overflow-x: auto;
-        padding: 0 20px;
-        margin: 0;
-        scroll-padding: 0;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-    }
-    .m-thumbs::-webkit-scrollbar{ display: none; }
-    .m-thumbs img{
-        display: block;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    .m-thumbs button{
-        position: relative;
-        padding: 0;
-        line-height: 0;
-        appearance: none;
-        border: none;
-        border-radius: 6px;
-        overflow: hidden;
-        background: #111;
-        width: 78px;
-        height: 58px;
-        flex: 0 0 auto;
-        display: block;
-        box-sizing: border-box;
-        transition: box-shadow 0.25s ease;
-    }
-    .m-thumbs button::after{
-        content: "";
-        position: absolute;
-        inset: 0;
-        border-radius: inherit;
-        pointer-events: none;
-        box-shadow: none;
-    }
-    .m-thumbs button.is-active::after{
-        box-shadow: inset 0 0 18px rgba(226,120,109,0.55);
-    }
+    /* Thumbnails styles removed */
     /* dots inside modal */
     .m-dots{
         display: flex;
@@ -583,7 +551,7 @@
     }
     .m-dots button.active{
         background: var(--accent);
-        box-shadow: 0 0 6px rgba(226,120,109,0.8);
+        box-shadow: 0 0 6px rgba(122,92,250,0.8);
     }
 
     /* ABOUT + CONTACTS */
@@ -621,8 +589,7 @@
         .modal .m-media .m-nav{ order: 2; }
         .modal .m-meta{ order: 2; height: auto; flex-grow: 1; padding-top: 8px; display: flex; flex-direction: column; overflow: hidden; }
         .modal .m-meta > h3, .modal .m-meta > .m-sub{ padding: 0 6px; margin: 0 0 6px 0; }
-        .modal .m-thumbs{ order: 2; padding: 0 8px; margin-bottom: 0; background: transparent; flex-shrink: 0; }
-        .modal .m-thumbs button{ width: 50px; height: 43px; }
+        /* Thumbnails removed: no additional styling needed */
         .modal .m-scroll-wrapper{ order: 3; flex-grow: 1; overflow-y: auto; padding: 0 10px 0; }
         .modal .m-dots{ display: none; }
         /* Rounded corners for mobile modal and burger */
@@ -659,8 +626,8 @@
         box-shadow: 0 0 8px rgba(0,0,0,0.5);
     }
     .to-top-btn:hover{
-        background: rgba(226,120,109,0.4);
-        box-shadow: 0 0 12px rgba(226,120,109,0.6);
+        background: rgba(122,92,250,0.4);
+        box-shadow: 0 0 12px rgba(122,92,250,0.6);
     }
     </style>
 </head>
@@ -769,23 +736,23 @@
 <div id="overlay" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-title">
         <button class="m-close" aria-label="Close"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M6 18l12-12"/></svg></button>
-        <!-- LEFT: media -->
+        <!-- LEFT: text -->
+        <div class="m-meta">
+            <h3 id="m-title"></h3>
+            <p class="m-sub"></p>
+            <!-- Removed thumbnails: we rely on hint animation instead -->
+            <div class="m-scroll-wrapper">
+                <div class="m-desc"></div>
+                <div class="m-stmt"></div>
+            </div>
+        </div>
+        <!-- RIGHT: media -->
         <div class="m-media">
             <div class="m-title-container"></div>
             <div class="viewport" id="vp"></div>
             <div class="m-nav">
                 <button class="prev" aria-label="Previous"><svg class="icon" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
                 <button class="next" aria-label="Next"><svg class="icon" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
-            </div>
-        </div>
-        <!-- RIGHT: text + thumbs -->
-        <div class="m-meta">
-            <h3 id="m-title"></h3>
-            <p class="m-sub"></p>
-            <div class="m-thumbs" id="thumbs"></div>
-            <div class="m-scroll-wrapper">
-                <div class="m-desc"></div>
-                <div class="m-stmt"></div>
             </div>
         </div>
     </div>
@@ -970,8 +937,7 @@ function renderMedia(direction=1,instant=false){
     function updateTransform(anim=true){
         track.style.transition=anim ? 'transform 0.6s ease' : 'none';
         track.style.transform=`translateX(${-index*100}%)`;
-        [...thumbsEl.children].forEach((b,i)=> b.classList.toggle('is-active', i===index));
-        thumbsEl.children[index]?.scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
+        // No thumbnails: nothing to update for active state
     }
     mPrev.onclick=()=>{ index=(index-1+current.media.length)%current.media.length; updateTransform(); };
     mNext.onclick=()=>{ index=(index+1)%current.media.length; updateTransform(); };
@@ -1013,6 +979,24 @@ function renderThumbsDots(){
         thumbsEl.append(b);
     });
 }
+// Hint the user that the media slider is scrollable by briefly showing part of the next slide
+function showScrollHint(){
+    // Only apply if more than one media item and viewport exists
+    const track = viewportEl.querySelector('.viewport-track');
+    if(!track || !current || current.media.length < 2) return;
+    // Save original transition to restore later
+    const originalTransition = track.style.transition;
+    // Apply a temporary transform to show part of the next slide
+    track.style.transition = 'transform 0.6s ease';
+    track.style.transform = 'translateX(-20%)';
+    setTimeout(() => {
+        track.style.transform = 'translateX(0)';
+        // Restore original transition after hint animation
+        setTimeout(() => {
+            track.style.transition = originalTransition || '';
+        }, 600);
+    }, 600);
+}
 function wrapText(raw){ if(!raw) return ""; const paras=String(raw).trim().split(/\n\s*\n/); function widont(s){ s=s.replace(/\s*\n+\s*/g,' ').trim(); return s.replace(/\s+([^\s]+)\s+([^\s]+)$/, '\u00A0$1\u00A0$2'); } return paras.map(p=>`<p>${widont(p)}</p>`).join(''); }
 function openModal(id){
     current=PROJECTS[id]; index=0;
@@ -1029,12 +1013,15 @@ function openModal(id){
         }
     }
     scrollWrapper.innerHTML=html;
-    renderThumbsDots(); renderMedia();
+    // Build media and then show hint that more slides are available
+    renderMedia();
+    showScrollHint();
     overlayEl.classList.add('show'); overlayEl.setAttribute('aria-hidden','false');
 }
 function closeModal(){
     overlayEl.classList.remove('show'); overlayEl.setAttribute('aria-hidden','true');
-    cleanupViewport(); thumbsEl.innerHTML=''; current=null;
+    cleanupViewport();
+    current=null;
 }
 mPrev.onclick=()=>{ if(!current) return; index=(index-1+current.media.length)%current.media.length; renderMedia(); };
 mNext.onclick=()=>{ if(!current) return; index=(index+1)%current.media.length; renderMedia(); };
