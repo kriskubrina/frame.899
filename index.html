@@ -1263,14 +1263,15 @@ function renderMedia(){
                         ratio = nh ? nw / nh : 1;
                     }
                 }
-                // Clamp the ratio to a moderate range to avoid extreme width differences
-                const minRatio = 0.8;
-                const maxRatio = 1.25;
-                let clampedRatio = Math.max(minRatio, Math.min(maxRatio, ratio));
-                // Map the clamped ratio linearly to a width factor between factorMin and factorMax
-                const factorMin = 0.82;
-                const factorMax = 0.92;
-                // Normalise clampedRatio within [minRatio, maxRatio]
+                // Map the intrinsic aspect ratio to a width factor.  A wide ratio gets a larger
+                // width and a tall ratio gets a slightly smaller width, but the range of
+                // difference is limited to keep gaps small.  We clamp the ratio to a
+                // reasonable range and then interpolate it to a factor between 0.88 and 0.96
+                const minRatio = 0.5;
+                const maxRatio = 2.0;
+                const clampedRatio = Math.max(minRatio, Math.min(maxRatio, ratio));
+                const factorMin = 0.88;
+                const factorMax = 0.96;
                 const t = (clampedRatio - minRatio) / (maxRatio - minRatio);
                 const factor = factorMin + (factorMax - factorMin) * t;
                 wpx = viewportWidth * factor;
