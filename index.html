@@ -17,8 +17,8 @@
         --fg: #f0f0f0;
         --muted: #a8a8a8;
         --rule: #1a1a1a;
-        /* New accent color: violet (#7a5cfa) */
-        --accent: #7a5cfa;
+        /* New accent color: muted coral (#e2786d) */
+        --accent: #e2786d;
         /* Glass backgrounds */
         --glass-bg: rgba(10,10,12,0.28);
         /* Previously thin border replaced by semi-transparent highlight to create a soft glow */
@@ -28,8 +28,6 @@
         --icon: 40px;
         --icon-m: 36px;
         --pad: 20px;
-        /* Padding on the sides of the modal carousel viewport. This controls how much of previous/next media is visible. */
-        --carousel-pad: 10%;
     }
 
     *{ box-sizing: border-box; }
@@ -134,7 +132,7 @@
         position: absolute;
         inset: 0;
         border-radius: inherit;
-        box-shadow: 0 0 8px rgba(122,92,250,0.4);
+        box-shadow: 0 0 8px rgba(226,120,109,0.4);
         opacity: 0;
         transition: opacity 0.3s ease;
     }
@@ -173,8 +171,6 @@
         backdrop-filter: blur(14px) saturate(160%);
         border-left: none;
         box-shadow: -4px 0 10px rgba(0, 0, 0, 0.4);
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0;
         z-index: 100;
         transition: right 0.6s ease;
         padding: 60px 20px;
@@ -184,9 +180,6 @@
         display: flex;
         flex-direction: column;
         gap: 16px;
-        /* Align mobile nav links to the left with a small inset */
-        align-items: flex-start;
-        padding-left: 8px;
     }
     .burger-nav a{
         font-size: 18px;
@@ -202,9 +195,6 @@
         flex-direction: row;
         gap: 16px;
         padding: 0px 4px;
-        /* Align language switch buttons to the left inside the burger panel */
-        align-items: flex-start;
-        padding-left: 8px;
     }
     .lang-switch-mobile button{
         background: transparent;
@@ -231,7 +221,7 @@
     .slider{
         position: relative;
         overflow: hidden;
-        border-radius: 0;
+        border-radius: 16px;
         /* Remove border, add soft shadow */
         border: none;
         background: #0d0d0f;
@@ -297,9 +287,8 @@
         box-shadow: 0 0 8px rgba(0,0,0,0.5);
     }
     .iconbtn:hover{
-        /* Use accent colour for hover state */
-        background: rgba(122,92,250,0.4);
-        box-shadow: 0 0 12px rgba(122,92,250,0.6);
+        background: rgba(226,120,109,0.4);
+        box-shadow: 0 0 12px rgba(226,120,109,0.6);
     }
     .icon{
         width: 24px;
@@ -322,8 +311,7 @@
     }
     .hero-dots button.active, .m-dots button.active{
         background: var(--accent);
-        /* Softer glow in the accent colour */
-        box-shadow: 0 0 6px rgba(122,92,250,0.8);
+        box-shadow: 0 0 6px rgba(226,120,109,0.8);
     }
 
     /* GRID */
@@ -346,7 +334,7 @@
     .card{
         /* Remove border, apply soft shadow */
         border: none;
-        border-radius: 0;
+        border-radius: 14px;
         overflow: hidden;
         background: var(--glass-bg);
         backdrop-filter: blur(8px) saturate(140%);
@@ -356,8 +344,7 @@
     }
     .card:hover{
         transform: translateY(-4px);
-        /* Glow with new accent hue */
-        box-shadow: 0 8px 20px rgba(122,92,250,0.4);
+        box-shadow: 0 8px 20px rgba(226,120,109,0.4);
     }
     .thumb{
         aspect-ratio: 16/10;
@@ -392,18 +379,15 @@
     #overlay.show{ display: block; }
     .modal{
         position: relative;
-        /* Align the modal width exactly with the main page content.  The content area (.wrap) uses a max width of `var(--max)` plus horizontal padding (var(--pad)) on both sides.  Use the same combined width here so the modal lines up with the page columns.  Constrain to the viewport width on small screens. */
-        width: min(calc(var(--max) + (var(--pad) * 2)), 95vw);
+        width: min(95vw,1400px);
         height: min(95vh,900px);
         margin: 2.5vh auto;
-        border-radius: 0;
+        border-radius: 18px;
         overflow: hidden;
-        /* Remove individual background; the frosted glass will be applied via the ::before pseudo-element */
-        background: transparent;
+        background: var(--glass-bg);
         box-shadow: 0 0 40px rgba(0,0,0,0.6);
-        /* Use flexbox for a vertical layout: media at the top, description at the bottom */
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: minmax(520px,1.35fr) minmax(360px,1fr);
     }
     .modal::before{
         content: "";
@@ -411,15 +395,9 @@
         inset: 0;
         z-index: 0;
         backdrop-filter: blur(14px) saturate(160%);
-        background: var(--glass-bg);
         pointer-events: none;
-        /* Remove the gradient fade effect on the glass; keep a consistent blur */
-        mask-image: none;
-        -webkit-mask-image: none;
     }
-    /* The close and fullscreen buttons are absolutely positioned; nav buttons rely on their container */
-    .m-close, .fs-btn{
-        position: absolute;
+    .m-close, .m-nav .prev, .m-nav .next, .fs-btn{
         background: rgba(0,0,0,0.45);
         border: none;
         width: var(--icon);
@@ -433,51 +411,9 @@
         transition: background 0.3s, box-shadow 0.3s;
         box-shadow: 0 0 8px rgba(0,0,0,0.5);
     }
-    /* Navigation buttons inside modal: positioned via flex container */
-    .m-nav .prev, .m-nav .next{
-        background: rgba(0,0,0,0.45);
-        border: none;
-        width: var(--icon);
-        height: var(--icon);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: background 0.3s, box-shadow 0.3s;
-        box-shadow: 0 0 8px rgba(0,0,0,0.5);
-    }
-
-    /* Position the close button at the top-right of the modal */
-    .m-close{
-        top: 10px;
-        right: 10px;
-        left: auto;
-        display: none; /* Hide the close button on desktop; show on mobile via media query */
-    }
-    .m-close:hover, .fs-btn:hover{
-        background: rgba(122,92,250,0.4);
-        box-shadow: 0 0 12px rgba(122,92,250,0.6);
-    }
-    .m-nav .prev:hover, .m-nav .next:hover{
-        background: rgba(122,92,250,0.4);
-        box-shadow: 0 0 12px rgba(122,92,250,0.6);
-    }
-
-    /* Position navigation arrows at the extreme left and right of the media area */
-    .m-nav .prev{
-        position: absolute;
-        left: var(--pad);
-        top: 50%;
-        transform: translateY(-50%);
-        pointer-events: auto;
-    }
-    .m-nav .next{
-        position: absolute;
-        right: var(--pad);
-        top: 50%;
-        transform: translateY(-50%);
-        pointer-events: auto;
+    .m-close:hover, .m-nav .prev:hover, .m-nav .next:hover, .fs-btn:hover{
+        background: rgba(226,120,109,0.4);
+        box-shadow: 0 0 12px rgba(226,120,109,0.6);
     }
 
     /* Left column of modal */
@@ -485,70 +421,45 @@
         position: relative;
         z-index: 1;
         display: flex;
-        /* Center media horizontally and vertically within its own area */
         align-items: center;
         justify-content: center;
         overflow: hidden;
         background: transparent;
-        /* Remove individual frosted backgrounds from the media column; use only the modal's global glass */
         backdrop-filter: none;
         border-right: none;
-        /* Occupy roughly half of the modal height; reduce from 60% to 50% */
-        flex: 0 0 50%;
-        width: 100%;
-        max-height: 50%;
-        order: 1;
     }
-    /* Remove the individual frosted overlay on the media column since the modal itself has a unified glass background */
     .m-media::before{
-        content: none;
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: var(--glass-bg);
+        backdrop-filter: blur(14px) saturate(160%);
+        opacity: 1;
+        z-index: 0;
     }
     .viewport{
         position: relative;
         z-index: 1;
         display: flex;
-        /* Align media items to the start so we can control their positioning via transforms */
         align-items: center;
-        justify-content: flex-start;
+        justify-content: center;
         width: 100%;
         height: 100%;
-        /* Remove side padding: we will center slides via JS translation rather than CSS padding */
-        padding-left: 0;
-        padding-right: 0;
         overflow: hidden;
     }
     .viewport-track{
-        /* Use flexbox for the carousel track. The width of each slide will be set via JavaScript. */
         display: flex;
         transition: transform 0.6s ease;
+        width: 100%;
         height: 100%;
     }
-    /* Each media item is wrapped in a slide container (see JS).  The wrapper defines the width; the media inside simply fills the wrapper. */
-    .viewport-track .slide-wrapper{
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .viewport-track img, .viewport-track video{
+        flex: 0 0 100%;
+        width: 100%;
         height: 100%;
-    }
-    .viewport-track .slide-wrapper img,
-    .viewport-track .slide-wrapper video{
-        /* Let media define its natural width based on its height to preserve aspect ratio. */
-        height: 100%;
-        width: auto;
         object-fit: contain;
-        object-position: center;
         pointer-events: none;
     }
-    .viewport-track .slide-wrapper img{
-        height: 100%;
-        width: auto;
-        object-fit: contain;
-        object-position: center;
-        pointer-events: none;
-    }
-
-    /* Hide the thumbnails container entirely; we no longer use it for navigation */
-    #thumbs{ display: none; }
 
     /* navigation inside modal */
     .m-nav{
@@ -557,10 +468,9 @@
         left: 0;
         right: 0;
         transform: translateY(-50%);
-        width: 100%;
-        /* Allow pointer events so that its children (nav buttons) are clickable. */
-        pointer-events: auto;
-        /* Ensure the navigation container sits above the media content */
+        display: flex;
+        justify-content: space-between;
+        padding: 0 var(--pad);
         z-index: 2;
     }
     .fs-btn{
@@ -572,15 +482,12 @@
     /* Right column */
     .m-meta{
         position: relative;
+        padding: 20px 20px 14px;
         display: flex;
         flex-direction: column;
         gap: 10px;
         z-index: 1;
         overflow: hidden;
-        /* Occupy the remaining space under the media */
-        flex: 1 1 auto;
-        padding: 36px 36px 24px;
-        order: 2;
     }
     .m-meta .m-scroll-wrapper{
         flex-grow: 1;
@@ -610,7 +517,52 @@
     }
 
     /* thumbnails */
-    /* Thumbnails styles removed */
+    .m-thumbs{
+        display: flex;
+        justify-content: flex-start;
+        align-items: stretch;
+        gap: 10px;
+        overflow-x: auto;
+        padding: 0 20px;
+        margin: 0;
+        scroll-padding: 0;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    .m-thumbs::-webkit-scrollbar{ display: none; }
+    .m-thumbs img{
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .m-thumbs button{
+        position: relative;
+        padding: 0;
+        line-height: 0;
+        appearance: none;
+        border: none;
+        border-radius: 6px;
+        overflow: hidden;
+        background: #111;
+        width: 78px;
+        height: 58px;
+        flex: 0 0 auto;
+        display: block;
+        box-sizing: border-box;
+        transition: box-shadow 0.25s ease;
+    }
+    .m-thumbs button::after{
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        pointer-events: none;
+        box-shadow: none;
+    }
+    .m-thumbs button.is-active::after{
+        box-shadow: inset 0 0 18px rgba(226,120,109,0.55);
+    }
     /* dots inside modal */
     .m-dots{
         display: flex;
@@ -631,7 +583,7 @@
     }
     .m-dots button.active{
         background: var(--accent);
-        box-shadow: 0 0 6px rgba(122,92,250,0.8);
+        box-shadow: 0 0 6px rgba(226,120,109,0.8);
     }
 
     /* ABOUT + CONTACTS */
@@ -655,6 +607,7 @@
         h1{ font-size: 38px; }
         .hero{ padding-top: 36px; }
         .modal{
+            grid-template-columns: 1fr;
             width: 100vw;
             height: 100dvh;
             margin: 0;
@@ -662,40 +615,21 @@
             display: flex;
             flex-direction: column;
         }
-        /* Align media and nav on mobile similarly to desktop */
-        .modal .m-media{
-            order: 1;
-            /* On mobile, let the media occupy half of the modal height for a balanced layout */
-            flex: 0 0 50%;
-            width: 100%;
-            max-height: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-        .modal .m-meta{
-            order: 2;
-            flex: 1 1 auto;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            padding: 24px 20px;
-        }
-        .modal .m-scroll-wrapper{
-            flex-grow: 1;
-            overflow-y: auto;
-            padding: 0 10px;
-        }
-        /* Hide dots on mobile */
+        .modal .viewport{ align-items: start; }
+        .modal .m-media{ order: 1; position: relative; height: auto; flex-shrink: 0; display: flex; flex-direction: column; }
+        .modal .m-media .viewport{ order: 1; }
+        .modal .m-media .m-nav{ order: 2; }
+        .modal .m-meta{ order: 2; height: auto; flex-grow: 1; padding-top: 8px; display: flex; flex-direction: column; overflow: hidden; }
+        .modal .m-meta > h3, .modal .m-meta > .m-sub{ padding: 0 6px; margin: 0 0 6px 0; }
+        .modal .m-thumbs{ order: 2; padding: 0 8px; margin-bottom: 0; background: transparent; flex-shrink: 0; }
+        .modal .m-thumbs button{ width: 50px; height: 43px; }
+        .modal .m-scroll-wrapper{ order: 3; flex-grow: 1; overflow-y: auto; padding: 0 10px 0; }
         .modal .m-dots{ display: none; }
-        /* Show the close button on mobile */
-        .m-close{ display: flex; }
-        /* Remove rounded corners for mobile modal and burger */
-        .modal{ border-radius: 0; overflow: hidden; }
+        /* Rounded corners for mobile modal and burger */
+        .modal{ border-radius: 18px; overflow: hidden; }
         .burger-menu-panel{
-            border-top-left-radius: 0;
-            border-bottom-left-radius: 0;
+            border-top-left-radius: 18px;
+            border-bottom-left-radius: 18px;
             right: -100%;
             height: 100dvh;
             overflow: hidden;
@@ -705,7 +639,6 @@
         /* Show To Top button on mobile */
         .to-top-btn{ display: flex; }
     }
-
     /* Scroll to top button */
     .to-top-btn{
         display: none;
@@ -724,12 +657,10 @@
         cursor: pointer;
         transition: background 0.3s, box-shadow 0.3s;
         box-shadow: 0 0 8px rgba(0,0,0,0.5);
-        /* Bring the individual buttons above the track so they capture clicks */
-        z-index: 3;
     }
     .to-top-btn:hover{
-        background: rgba(122,92,250,0.4);
-        box-shadow: 0 0 12px rgba(122,92,250,0.6);
+        background: rgba(226,120,109,0.4);
+        box-shadow: 0 0 12px rgba(226,120,109,0.6);
     }
     </style>
 </head>
@@ -838,23 +769,23 @@
 <div id="overlay" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-title">
         <button class="m-close" aria-label="Close"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M6 18l12-12"/></svg></button>
-        <!-- LEFT: text -->
-        <div class="m-meta">
-            <h3 id="m-title"></h3>
-            <p class="m-sub"></p>
-            <!-- Removed thumbnails: we rely on hint animation instead -->
-            <div class="m-scroll-wrapper">
-                <div class="m-desc"></div>
-                <div class="m-stmt"></div>
-            </div>
-        </div>
-        <!-- RIGHT: media -->
+        <!-- LEFT: media -->
         <div class="m-media">
             <div class="m-title-container"></div>
             <div class="viewport" id="vp"></div>
             <div class="m-nav">
                 <button class="prev" aria-label="Previous"><svg class="icon" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
                 <button class="next" aria-label="Next"><svg class="icon" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+            </div>
+        </div>
+        <!-- RIGHT: text + thumbs -->
+        <div class="m-meta">
+            <h3 id="m-title"></h3>
+            <p class="m-sub"></p>
+            <div class="m-thumbs" id="thumbs"></div>
+            <div class="m-scroll-wrapper">
+                <div class="m-desc"></div>
+                <div class="m-stmt"></div>
             </div>
         </div>
     </div>
@@ -1024,268 +955,28 @@ function cleanupViewport() {
     if(v){ try { v.pause(); v.src=''; v.load(); } catch(e) {} }
     viewportEl.innerHTML='';
 }
-function renderMedia(){
-    // Clear existing media from the viewport
-    viewportEl.innerHTML = '';
-    // Create a new track container
-    const track = document.createElement('div');
-    track.className = 'viewport-track';
+function renderMedia(direction=1,instant=false){
+    viewportEl.innerHTML='';
+    const track=document.createElement('div');
+    track.className='viewport-track';
     viewportEl.append(track);
-    const items = current.media;
-    // Determine if the user is on a narrow/mobile device.  On mobile we display a simple slider
-    // without clones and each slide fills the entire width of the viewport.  On desktop we
-    // build a "drum" with clones at both ends so that the neighbouring slides peek into view.
-    const isMobile = window.matchMedia('(max-width: 900px)').matches;
-    let slides = [];
-    if(items.length > 1){
-        if(isMobile){
-            // On mobile just use the items as‑is; no clones
-            slides = items.slice();
-        } else {
-            // For desktop, clone the last and first items to both ends to enable smooth looping
-            slides.push(items[items.length - 1]);
-            slides = slides.concat(items);
-            slides.push(items[0]);
-        }
-    } else if(items.length === 1){
-        if(isMobile){
-            // On mobile a single media simply shows once
-            slides = [items[0]];
-        } else {
-            // For desktop with a single media, duplicate it so that the "drum" effect still shows neighbours
-            slides = [items[0], items[0], items[0]];
-        }
-    } else {
-        // No media items: leave slides empty
-        slides = [];
-    }
-    // Populate DOM elements for each slide
-    slides.forEach((m) => {
-        // Create a wrapper so we can control the slide width via CSS and JS
-        const wrapper = document.createElement('div');
-        wrapper.className = 'slide-wrapper';
-        const el = document.createElement(m.type);
-        el.src = m.src;
-        if(m.type === 'video'){
-            el.controls = true;
-            el.playsInline = true;
-        }
-        wrapper.append(el);
-        track.append(wrapper);
+    current.media.forEach((m)=>{
+        const el=document.createElement(m.type);
+        el.src=m.src;
+        if(m.type==='video'){ el.controls=true; el.playsInline=true; }
+        track.append(el);
     });
-    // Enable pointer events on videos (so users can control playback)
-    track.querySelectorAll('video').forEach((v) => { v.style.pointerEvents = 'auto'; });
-    // The offsetIndex determines which slide is currently centred within the track.  Its initial value
-    // depends on whether the slider is mobile (no clones) or desktop (clones at both ends).  On
-    // desktop with multiple media we offset by 1 to account for the prepended clone; for a single
-    // media we offset by 1 so the duplicate sits in the centre; on mobile we use the raw index.
-    let offsetIndex;
-    if(isMobile){
-        // Mobile: index corresponds directly to the current slide
-        offsetIndex = index;
-    } else {
-        if(items.length > 1){
-            offsetIndex = index + 1;
-        } else if(items.length === 1){
-            offsetIndex = 1;
-        } else {
-            offsetIndex = 0;
-        }
+    track.querySelectorAll('video').forEach((v)=>{ v.style.pointerEvents='auto'; });
+    function updateTransform(anim=true){
+        track.style.transition=anim ? 'transform 0.6s ease' : 'none';
+        track.style.transform=`translateX(${-index*100}%)`;
+        [...thumbsEl.children].forEach((b,i)=> b.classList.toggle('is-active', i===index));
+        thumbsEl.children[index]?.scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
     }
-    // Arrays to store individual slide widths and cumulative offsets
-    let widths = [];
-    let offsets = [];
-    /**
-     * Translate the track so that the slide at the current offsetIndex is left‑aligned
-     * within the viewport.  Uses the precomputed offsets array.
-     */
-    const updateTransform = (animate = true) => {
-        // Guard against undefined offsets (e.g., if widths haven't been computed yet)
-        const offset = offsets[offsetIndex] || 0;
-        track.style.transition = animate ? 'transform 0.6s ease' : 'none';
-        track.style.transform = `translateX(${-offset}px)`;
-    };
-    // Navigate to previous slide
-    const goPrev = () => {
-        if(items.length <= 1) return;
-        // Update the logical index depending on mobile vs desktop
-        index = (index - 1 + items.length) % items.length;
-        if(isMobile){
-            offsetIndex = index;
-        } else {
-            offsetIndex = index + 1;
-        }
-        updateTransform();
-    };
-    // Navigate to next slide
-    const goNext = () => {
-        if(items.length <= 1) return;
-        index = (index + 1) % items.length;
-        if(isMobile){
-            offsetIndex = index;
-        } else {
-            offsetIndex = index + 1;
-        }
-        updateTransform();
-    };
-    // Assign navigation handlers
-    mPrev.onclick = goPrev;
-    mNext.onclick = goNext;
-    // Ensure we snap correctly when reaching clone boundaries on desktop.  On mobile there are
-    // no clones, so this listener is unnecessary.
-    if(!isMobile && items.length > 1){
-        track.addEventListener('transitionend', () => {
-            const total = items.length;
-            if (offsetIndex === 0) {
-                // Jump from cloned last to real last
-                offsetIndex = total;
-                // Immediately jump without animation
-                track.style.transition = 'none';
-                const offset = offsets[offsetIndex] || 0;
-                track.style.transform = `translateX(${-offset}px)`;
-            }
-            if (offsetIndex === total + 1) {
-                // Jump from cloned first to real first
-                offsetIndex = 1;
-                track.style.transition = 'none';
-                const offset = offsets[offsetIndex] || 0;
-                track.style.transform = `translateX(${-offset}px)`;
-            }
-        });
-    }
-    // Touch interaction for swipe on touch devices
-    if (matchMedia('(pointer:coarse)').matches) {
-        let startX = 0;
-        let dx = 0;
-        let dragging = false;
-        const handleTouchStart = (e) => {
-            dragging = true;
-            startX = e.touches[0].clientX;
-            dx = 0;
-            track.style.transition = 'none';
-            // Disable pointer events on video during drag to prevent interference
-            track.querySelectorAll('video').forEach((v) => { v.style.pointerEvents = 'none'; });
-        };
-        const handleTouchMove = (e) => {
-            if (!dragging) return;
-            dx = e.touches[0].clientX - startX;
-            // base offset for current slide
-            const base = -(offsets[offsetIndex] || 0);
-            track.style.transform = `translateX(${base + dx}px)`;
-        };
-        const handleTouchEnd = () => {
-            dragging = false;
-            // Restore pointer events on videos after drag
-            track.querySelectorAll('video').forEach((v) => { v.style.pointerEvents = 'auto'; });
-            if (items.length > 1) {
-                // Determine threshold relative to width of the current slide
-                const currentWidth = widths[offsetIndex] || 0;
-                const threshold = currentWidth * 0.15;
-                if (Math.abs(dx) > threshold) {
-                    if (dx < 0) {
-                        index = (index + 1) % items.length;
-                    } else {
-                        index = (index - 1 + items.length) % items.length;
-                    }
-                    offsetIndex = index + 1;
-                }
-            }
-            updateTransform();
-        };
-        viewportEl.addEventListener('touchstart', handleTouchStart, { passive: true });
-        viewportEl.addEventListener('touchmove', handleTouchMove, { passive: true });
-        viewportEl.addEventListener('touchend', handleTouchEnd, { passive: true });
-    }
-    // Wait for all images and videos to load, then compute widths based on their aspect ratios
-    const waitForMedia = (el) => {
-        return new Promise((resolve) => {
-            if(!el) return resolve();
-            if (el.tagName === 'VIDEO') {
-                // Some browsers fire loadedmetadata synchronously if src is already loaded
-                if (el.readyState >= 1) {
-                    resolve();
-                } else {
-                    el.addEventListener('loadedmetadata', () => {
-                        resolve();
-                    }, { once: true });
-                }
-            } else {
-                // IMG
-                if (el.complete && el.naturalWidth) {
-                    resolve();
-                } else {
-                    el.addEventListener('load', () => {
-                        resolve();
-                    }, { once: true });
-                }
-            }
-        });
-    };
-    // Measure slide widths after all media loaded and the modal has laid out
-    (async () => {
-        const wrappers = Array.from(track.children);
-        // Wait for all media elements to load their intrinsic sizes
-        await Promise.all(wrappers.map(w => {
-            const media = w.querySelector('img, video');
-            return waitForMedia(media);
-        }));
-        // Wait for at least one animation frame to ensure modal layout is applied
-        await new Promise(resolve => requestAnimationFrame(resolve));
-        widths = [];
-        offsets = [];
-        let sum = 0;
-        // Determine available width of the viewport (media area)
-        const viewportWidth = viewportEl.getBoundingClientRect().width || 0;
-        // Determine the height of the media column to compute slide widths on desktop
-        const mMediaElRef = overlayEl.querySelector('.m-media');
-        const mediaHeight = mMediaElRef ? mMediaElRef.clientHeight : (viewportEl.getBoundingClientRect().height || 0);
-        // Assign widths to slides.  On mobile, each slide fills the viewport width.  On desktop,
-        // compute width based on the intrinsic aspect ratio of the media and the fixed media
-        // height.  We cap the width at 85% of the viewport width to avoid excessively wide
-        // slides when a video/image has a very wide aspect ratio.
-        wrappers.forEach((wrapper) => {
-            const media = wrapper.querySelector('img, video');
-            let wpx;
-            if (isMobile) {
-                // Mobile: each slide occupies full viewport width
-                wpx = viewportWidth;
-            } else {
-                // Desktop: determine the aspect ratio of the media
-                let ratio = 1;
-                if (media) {
-                    if (media.tagName === 'VIDEO') {
-                        const vw = media.videoWidth;
-                        const vh = media.videoHeight;
-                        ratio = vh ? vw / vh : 1;
-                    } else {
-                        const nw = media.naturalWidth;
-                        const nh = media.naturalHeight;
-                        ratio = nh ? nw / nh : 1;
-                    }
-                }
-                // Map the intrinsic aspect ratio to a width factor.  A wide ratio gets a larger
-                // width and a tall ratio gets a slightly smaller width, but the range of
-                // difference is limited to keep gaps small.  We clamp the ratio to a
-                // reasonable range and then interpolate it to a factor between 0.88 and 0.96
-                const minRatio = 0.5;
-                const maxRatio = 2.0;
-                const clampedRatio = Math.max(minRatio, Math.min(maxRatio, ratio));
-                const factorMin = 0.88;
-                const factorMax = 0.96;
-                const t = (clampedRatio - minRatio) / (maxRatio - minRatio);
-                const factor = factorMin + (factorMax - factorMin) * t;
-                wpx = viewportWidth * factor;
-            }
-            widths.push(wpx);
-            offsets.push(sum);
-            sum += wpx;
-            wrapper.style.width = `${wpx}px`;
-            wrapper.style.flex = '0 0 auto';
-        });
-        track.style.width = `${sum}px`;
-        // After computing widths, position the track without animation
-        updateTransform(false);
-    })();
+    mPrev.onclick=()=>{ index=(index-1+current.media.length)%current.media.length; updateTransform(); };
+    mNext.onclick=()=>{ index=(index+1)%current.media.length; updateTransform(); };
+    if(matchMedia('(pointer:coarse)').matches){ let startX=0, dx=0, dragging=false; viewportEl.addEventListener('touchstart',(e)=>{ dragging=true; startX=e.touches[0].clientX; dx=0; track.style.transition='none'; track.querySelectorAll('video').forEach((v)=>{ v.style.pointerEvents='none'; }); },{passive:true}); viewportEl.addEventListener('touchmove',(e)=>{ if(!dragging) return; dx=e.touches[0].clientX-startX; track.style.transform=`translateX(calc(${-index*100}% + ${dx}px))`; },{passive:true}); viewportEl.addEventListener('touchend',()=>{ dragging=false; track.querySelectorAll('video').forEach((v)=>{ v.style.pointerEvents='auto'; }); if(Math.abs(dx)>40){ index=dx<0 ? (index+1)%current.media.length : (index-1+current.media.length)%current.media.length; } updateTransform(); },{passive:true}); }
+    updateTransform(false);
 }
 function renderThumbsDots(){
     thumbsEl.innerHTML='';
@@ -1322,32 +1013,6 @@ function renderThumbsDots(){
         thumbsEl.append(b);
     });
 }
-// Hint the user that the media slider is scrollable by briefly showing part of the next slide
-function showScrollHint(){
-    // Only apply if more than one media item and viewport exists
-    const track = viewportEl.querySelector('.viewport-track');
-    if(!track || !current || current.media.length < 2) return;
-    // Save original transition to restore later
-    const originalTransition = track.style.transition;
-    // Temporarily remove transition and reset transform
-    track.style.transition = 'none';
-    track.style.transform = 'translateX(0)';
-    // Use the next animation frame to apply the hint so the change takes effect
-    requestAnimationFrame(() => {
-        // Apply a temporary transform to show part of the next slide. Shift by 20% of the viewport width.
-        const vw = viewportEl.getBoundingClientRect().width;
-        track.style.transition = 'transform 0.6s ease';
-        track.style.transform = `translateX(${-0.2 * vw}px)`;
-        // Return to zero after the hint
-        setTimeout(() => {
-            track.style.transform = 'translateX(0)';
-            // Restore original transition after hint animation completes
-            setTimeout(() => {
-                track.style.transition = originalTransition || '';
-            }, 600);
-        }, 600);
-    });
-}
 function wrapText(raw){ if(!raw) return ""; const paras=String(raw).trim().split(/\n\s*\n/); function widont(s){ s=s.replace(/\s*\n+\s*/g,' ').trim(); return s.replace(/\s+([^\s]+)\s+([^\s]+)$/, '\u00A0$1\u00A0$2'); } return paras.map(p=>`<p>${widont(p)}</p>`).join(''); }
 function openModal(id){
     current=PROJECTS[id]; index=0;
@@ -1364,24 +1029,15 @@ function openModal(id){
         }
     }
     scrollWrapper.innerHTML=html;
-    // Make overlay visible before building media so widths are computed correctly
-    overlayEl.classList.add('show');
-    overlayEl.setAttribute('aria-hidden','false');
-    // Set a fixed height on the media column based on viewport height.  This ensures
-    // that the media container has a non‑zero height when computing slide widths.
-    const mMediaEl = overlayEl.querySelector('.m-media');
-    if (mMediaEl) {
-        const mediaHeight = Math.round(window.innerHeight * 0.5);
-        mMediaEl.style.height = mediaHeight + 'px';
-    }
-    // Build media. The hint function is disabled because the carousel now shows portions of adjacent slides.
-    renderMedia();
+    renderThumbsDots(); renderMedia();
+    overlayEl.classList.add('show'); overlayEl.setAttribute('aria-hidden','false');
 }
 function closeModal(){
     overlayEl.classList.remove('show'); overlayEl.setAttribute('aria-hidden','true');
-    cleanupViewport();
-    current=null;
+    cleanupViewport(); thumbsEl.innerHTML=''; current=null;
 }
+mPrev.onclick=()=>{ if(!current) return; index=(index-1+current.media.length)%current.media.length; renderMedia(); };
+mNext.onclick=()=>{ if(!current) return; index=(index+1)%current.media.length; renderMedia(); };
 mClose.onclick=closeModal;
 overlayEl.addEventListener('click',(e)=>{ if(e.target===overlayEl) closeModal(); });
 document.addEventListener('keydown',(e)=>{ if(!overlayEl.classList.contains('show')) return; if(e.key==='Escape') closeModal(); if(e.key==='ArrowLeft') mPrev.click(); if(e.key==='ArrowRight') mNext.click(); });
