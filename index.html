@@ -944,6 +944,26 @@ function buildMedia(){
     }
 }
 buildMedia();
+
+function preloadAllMediaMetadata() {
+    for (const k in PROJECTS) {
+        const p = PROJECTS[k];
+        p.media.forEach(m => {
+            if (m.type === 'img') {
+                const img = new Image();
+                img.src = m.src;
+                img.onload = () => { m.ratio = img.naturalWidth / img.naturalHeight; };
+            } else if (m.type === 'video') {
+                const v = document.createElement('video');
+                v.src = m.src;
+                v.preload = 'metadata';
+                v.onloadedmetadata = () => { m.ratio = v.videoWidth / v.videoHeight; };
+            }
+        });
+    }
+}
+preloadAllMediaMetadata();
+
 /* ========= HERO (order: flora → mycy → trace → tri → water) ========= */
 function buildHero(){
     const slidesEl=document.getElementById('slides');
@@ -1035,6 +1055,9 @@ function renderMedia(){
     const items = current.media;
     if (!items || items.length === 0) return;
 
+    const mMediaElRef = overlayEl.querySelector('.m-media');
+    const mediaHeight = mMediaElRef ? mMediaElRef.clientHeight : viewportEl.clientHeight;
+
     // Triple items for infinite effect
     let slides = [].concat(items, items, items);
 
@@ -1047,6 +1070,9 @@ function renderMedia(){
             el.controls = true;
             el.playsInline = true;
             el.style.pointerEvents = 'auto';
+        }
+        if (m.ratio) {
+            wrapper.style.width = `${mediaHeight * m.ratio}px`;
         }
         wrapper.append(el);
         track.append(wrapper);
@@ -1143,29 +1169,27 @@ function renderMedia(){
 
     (async () => {
         const wrappers = Array.from(track.children);
-        await Promise.all(wrappers.map(w => waitForMedia(w.querySelector('img, video'))));
-        await new Promise(resolve => requestAnimationFrame(resolve));
+        const needsWait = slides.some(m => !m.ratio);
+        if (needsWait) {
+            await Promise.all(wrappers.map(w => waitForMedia(w.querySelector('img, video'))));
+            await new Promise(resolve => requestAnimationFrame(resolve));
+        }
 
-        const viewportWidth = viewportEl.clientWidth;
-        const mMediaElRef = overlayEl.querySelector('.m-media');
-        const mediaHeight = mMediaElRef ? mMediaElRef.clientHeight : viewportEl.clientHeight;
-
-        wrappers.forEach((wrapper) => {
+        wrappers.forEach((wrapper, i) => {
+            const m = slides[i];
             const media = wrapper.querySelector('img, video');
-            let ratio = 1;
-            if (media) {
+            if (!m.ratio && media) {
+                let ratio = 1;
                 if (media.tagName === 'VIDEO') {
-                    const vw = media.videoWidth;
-                    const vh = media.videoHeight;
-                    ratio = vh ? vw / vh : 1;
+                    ratio = media.videoHeight ? media.videoWidth / media.videoHeight : 1;
                 } else {
-                    const nw = media.naturalWidth;
-                    const nh = media.naturalHeight;
-                    ratio = nh ? nw / nh : 1;
+                    ratio = media.naturalHeight ? media.naturalWidth / media.naturalHeight : 1;
                 }
+                m.ratio = ratio;
             }
-            const wpx = mediaHeight * ratio;
-            wrapper.style.width = `${wpx}px`;
+            if (m.ratio) {
+                wrapper.style.width = `${mediaHeight * m.ratio}px`;
+            }
         });
 
         await new Promise(resolve => requestAnimationFrame(resolve));
