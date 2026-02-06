@@ -520,6 +520,7 @@
     .viewport-track{
         /* Use flexbox for the carousel track. The width of each slide will be set via JavaScript. */
         display: flex;
+        gap: 5px;
         transition: transform 0.6s ease;
         height: 100%;
     }
@@ -529,6 +530,7 @@
         align-items: center;
         justify-content: center;
         height: 100%;
+        flex-shrink: 0;
     }
     .viewport-track .slide-wrapper img,
     .viewport-track .slide-wrapper video{
@@ -613,7 +615,7 @@
     /* Thumbnails styles removed */
     /* dots inside modal */
     .m-dots{
-        display: flex;
+        display: none;
         justify-content: flex-start;
         align-items: center;
         gap: 8px;
@@ -1025,43 +1027,18 @@ function cleanupViewport() {
     viewportEl.innerHTML='';
 }
 function renderMedia(){
-    // Clear existing media from the viewport
-    viewportEl.innerHTML = '';
-    // Create a new track container
+    cleanupViewport();
     const track = document.createElement('div');
     track.className = 'viewport-track';
     viewportEl.append(track);
+
     const items = current.media;
-    // Determine if the user is on a narrow/mobile device.  On mobile we display a simple slider
-    // without clones and each slide fills the entire width of the viewport.  On desktop we
-    // build a "drum" with clones at both ends so that the neighbouring slides peek into view.
-    const isMobile = window.matchMedia('(max-width: 900px)').matches;
-    let slides = [];
-    if(items.length > 1){
-        if(isMobile){
-            // On mobile just use the items as‑is; no clones
-            slides = items.slice();
-        } else {
-            // For desktop, clone the last and first items to both ends to enable smooth looping
-            slides.push(items[items.length - 1]);
-            slides = slides.concat(items);
-            slides.push(items[0]);
-        }
-    } else if(items.length === 1){
-        if(isMobile){
-            // On mobile a single media simply shows once
-            slides = [items[0]];
-        } else {
-            // For desktop with a single media, duplicate it so that the "drum" effect still shows neighbours
-            slides = [items[0], items[0], items[0]];
-        }
-    } else {
-        // No media items: leave slides empty
-        slides = [];
-    }
-    // Populate DOM elements for each slide
+    if (!items || items.length === 0) return;
+
+    // Triple items for infinite effect
+    let slides = [].concat(items, items, items);
+
     slides.forEach((m) => {
-        // Create a wrapper so we can control the slide width via CSS and JS
         const wrapper = document.createElement('div');
         wrapper.className = 'slide-wrapper';
         const el = document.createElement(m.type);
@@ -1069,221 +1046,129 @@ function renderMedia(){
         if(m.type === 'video'){
             el.controls = true;
             el.playsInline = true;
+            el.style.pointerEvents = 'auto';
         }
         wrapper.append(el);
         track.append(wrapper);
     });
-    // Enable pointer events on videos (so users can control playback)
-    track.querySelectorAll('video').forEach((v) => { v.style.pointerEvents = 'auto'; });
-    // The offsetIndex determines which slide is currently centred within the track.  Its initial value
-    // depends on whether the slider is mobile (no clones) or desktop (clones at both ends).  On
-    // desktop with multiple media we offset by 1 to account for the prepended clone; for a single
-    // media we offset by 1 so the duplicate sits in the centre; on mobile we use the raw index.
-    let offsetIndex;
-    if(isMobile){
-        // Mobile: index corresponds directly to the current slide
-        offsetIndex = index;
-    } else {
-        if(items.length > 1){
-            offsetIndex = index + 1;
-        } else if(items.length === 1){
-            offsetIndex = 1;
-        } else {
-            offsetIndex = 0;
-        }
-    }
-    // Arrays to store individual slide widths and cumulative offsets
-    let widths = [];
-    let offsets = [];
-    /**
-     * Translate the track so that the slide at the current offsetIndex is left‑aligned
-     * within the viewport.  Uses the precomputed offsets array.
-     */
+
+    const middleSetStartIndex = items.length;
+    let offsetIndex = middleSetStartIndex + index;
+
     const updateTransform = (animate = true) => {
-        // Guard against undefined offsets (e.g., if widths haven't been computed yet)
-        const offset = offsets[offsetIndex] || 0;
+        const wrappers = Array.from(track.children);
+        const target = wrappers[offsetIndex];
+        if (!target) return;
+
+        const viewportWidth = viewportEl.clientWidth;
+        const currentWidth = target.offsetWidth;
+        const offset = target.offsetLeft;
+        const centerOffset = (viewportWidth - currentWidth) / 2;
+
         track.style.transition = animate ? 'transform 0.6s ease' : 'none';
-        track.style.transform = `translateX(${-offset}px)`;
+        track.style.transform = `translateX(${-offset + centerOffset}px)`;
     };
-    // Navigate to previous slide
+
     const goPrev = () => {
-        if(items.length <= 1) return;
-        // Update the logical index depending on mobile vs desktop
+        if(items.length === 0) return;
         index = (index - 1 + items.length) % items.length;
-        if(isMobile){
-            offsetIndex = index;
-        } else {
-            offsetIndex = index + 1;
-        }
+        offsetIndex--;
         updateTransform();
     };
-    // Navigate to next slide
+
     const goNext = () => {
-        if(items.length <= 1) return;
+        if(items.length === 0) return;
         index = (index + 1) % items.length;
-        if(isMobile){
-            offsetIndex = index;
-        } else {
-            offsetIndex = index + 1;
-        }
+        offsetIndex++;
         updateTransform();
     };
-    // Assign navigation handlers
+
     mPrev.onclick = goPrev;
     mNext.onclick = goNext;
-    // Ensure we snap correctly when reaching clone boundaries on desktop.  On mobile there are
-    // no clones, so this listener is unnecessary.
-    if(!isMobile && items.length > 1){
-        track.addEventListener('transitionend', () => {
-            const total = items.length;
-            if (offsetIndex === 0) {
-                // Jump from cloned last to real last
-                offsetIndex = total;
-                // Immediately jump without animation
-                track.style.transition = 'none';
-                const offset = offsets[offsetIndex] || 0;
-                track.style.transform = `translateX(${-offset}px)`;
-            }
-            if (offsetIndex === total + 1) {
-                // Jump from cloned first to real first
-                offsetIndex = 1;
-                track.style.transition = 'none';
-                const offset = offsets[offsetIndex] || 0;
-                track.style.transform = `translateX(${-offset}px)`;
-            }
-        });
-    }
+
+    track.addEventListener('transitionend', () => {
+        if (offsetIndex < items.length) {
+            offsetIndex += items.length;
+            updateTransform(false);
+        } else if (offsetIndex >= items.length * 2) {
+            offsetIndex -= items.length;
+            updateTransform(false);
+        }
+    });
+
     // Touch interaction for swipe on touch devices
     if (matchMedia('(pointer:coarse)').matches) {
-        let startX = 0;
-        let dx = 0;
-        let dragging = false;
+        let startX = 0, dx = 0, dragging = false;
         const handleTouchStart = (e) => {
-            dragging = true;
-            startX = e.touches[0].clientX;
-            dx = 0;
+            dragging = true; startX = e.touches[0].clientX; dx = 0;
             track.style.transition = 'none';
-            // Disable pointer events on video during drag to prevent interference
             track.querySelectorAll('video').forEach((v) => { v.style.pointerEvents = 'none'; });
         };
         const handleTouchMove = (e) => {
             if (!dragging) return;
             dx = e.touches[0].clientX - startX;
-            // base offset for current slide
-            const base = -(offsets[offsetIndex] || 0);
+            const target = track.children[offsetIndex];
+            const viewportWidth = viewportEl.clientWidth;
+            const base = -target.offsetLeft + (viewportWidth - target.offsetWidth)/2;
             track.style.transform = `translateX(${base + dx}px)`;
         };
         const handleTouchEnd = () => {
             dragging = false;
-            // Restore pointer events on videos after drag
             track.querySelectorAll('video').forEach((v) => { v.style.pointerEvents = 'auto'; });
-            if (items.length > 1) {
-                // Determine threshold relative to width of the current slide
-                const currentWidth = widths[offsetIndex] || 0;
-                const threshold = currentWidth * 0.15;
-                if (Math.abs(dx) > threshold) {
-                    if (dx < 0) {
-                        index = (index + 1) % items.length;
-                    } else {
-                        index = (index - 1 + items.length) % items.length;
-                    }
-                    offsetIndex = index + 1;
-                }
+            const target = track.children[offsetIndex];
+            const threshold = target.offsetWidth * 0.15;
+            if (Math.abs(dx) > threshold) {
+                dx < 0 ? goNext() : goPrev();
+            } else {
+                updateTransform();
             }
-            updateTransform();
         };
-        viewportEl.addEventListener('touchstart', handleTouchStart, { passive: true });
-        viewportEl.addEventListener('touchmove', handleTouchMove, { passive: true });
-        viewportEl.addEventListener('touchend', handleTouchEnd, { passive: true });
+        track.addEventListener('touchstart', handleTouchStart, { passive: true });
+        track.addEventListener('touchmove', handleTouchMove, { passive: true });
+        track.addEventListener('touchend', handleTouchEnd, { passive: true });
     }
-    // Wait for all images and videos to load, then compute widths based on their aspect ratios
+
     const waitForMedia = (el) => {
         return new Promise((resolve) => {
             if(!el) return resolve();
             if (el.tagName === 'VIDEO') {
-                // Some browsers fire loadedmetadata synchronously if src is already loaded
-                if (el.readyState >= 1) {
-                    resolve();
-                } else {
-                    el.addEventListener('loadedmetadata', () => {
-                        resolve();
-                    }, { once: true });
-                }
+                if (el.readyState >= 1) resolve();
+                else el.addEventListener('loadedmetadata', () => resolve(), { once: true });
             } else {
-                // IMG
-                if (el.complete && el.naturalWidth) {
-                    resolve();
-                } else {
-                    el.addEventListener('load', () => {
-                        resolve();
-                    }, { once: true });
-                }
+                if (el.complete && el.naturalWidth) resolve();
+                else el.addEventListener('load', () => resolve(), { once: true });
             }
         });
     };
-    // Measure slide widths after all media loaded and the modal has laid out
+
     (async () => {
         const wrappers = Array.from(track.children);
-        // Wait for all media elements to load their intrinsic sizes
-        await Promise.all(wrappers.map(w => {
-            const media = w.querySelector('img, video');
-            return waitForMedia(media);
-        }));
-        // Wait for at least one animation frame to ensure modal layout is applied
+        await Promise.all(wrappers.map(w => waitForMedia(w.querySelector('img, video'))));
         await new Promise(resolve => requestAnimationFrame(resolve));
-        widths = [];
-        offsets = [];
-        let sum = 0;
-        // Determine available width of the viewport (media area)
-        const viewportWidth = viewportEl.getBoundingClientRect().width || 0;
-        // Determine the height of the media column to compute slide widths on desktop
+
+        const viewportWidth = viewportEl.clientWidth;
         const mMediaElRef = overlayEl.querySelector('.m-media');
-        const mediaHeight = mMediaElRef ? mMediaElRef.clientHeight : (viewportEl.getBoundingClientRect().height || 0);
-        // Assign widths to slides.  On mobile, each slide fills the viewport width.  On desktop,
-        // compute width based on the intrinsic aspect ratio of the media and the fixed media
-        // height.  We cap the width at 85% of the viewport width to avoid excessively wide
-        // slides when a video/image has a very wide aspect ratio.
+        const mediaHeight = mMediaElRef ? mMediaElRef.clientHeight : viewportEl.clientHeight;
+
         wrappers.forEach((wrapper) => {
             const media = wrapper.querySelector('img, video');
-            let wpx;
-            if (isMobile) {
-                // Mobile: each slide occupies full viewport width
-                wpx = viewportWidth;
-            } else {
-                // Desktop: determine the aspect ratio of the media
-                let ratio = 1;
-                if (media) {
-                    if (media.tagName === 'VIDEO') {
-                        const vw = media.videoWidth;
-                        const vh = media.videoHeight;
-                        ratio = vh ? vw / vh : 1;
-                    } else {
-                        const nw = media.naturalWidth;
-                        const nh = media.naturalHeight;
-                        ratio = nh ? nw / nh : 1;
-                    }
+            let ratio = 1;
+            if (media) {
+                if (media.tagName === 'VIDEO') {
+                    const vw = media.videoWidth;
+                    const vh = media.videoHeight;
+                    ratio = vh ? vw / vh : 1;
+                } else {
+                    const nw = media.naturalWidth;
+                    const nh = media.naturalHeight;
+                    ratio = nh ? nw / nh : 1;
                 }
-                // Map the intrinsic aspect ratio to a width factor.  A wide ratio gets a larger
-                // width and a tall ratio gets a slightly smaller width, but the range of
-                // difference is limited to keep gaps small.  We clamp the ratio to a
-                // reasonable range and then interpolate it to a factor between 0.88 and 0.96
-                const minRatio = 0.5;
-                const maxRatio = 2.0;
-                const clampedRatio = Math.max(minRatio, Math.min(maxRatio, ratio));
-                const factorMin = 0.88;
-                const factorMax = 0.96;
-                const t = (clampedRatio - minRatio) / (maxRatio - minRatio);
-                const factor = factorMin + (factorMax - factorMin) * t;
-                wpx = viewportWidth * factor;
             }
-            widths.push(wpx);
-            offsets.push(sum);
-            sum += wpx;
+            const wpx = mediaHeight * ratio;
             wrapper.style.width = `${wpx}px`;
-            wrapper.style.flex = '0 0 auto';
         });
-        track.style.width = `${sum}px`;
-        // After computing widths, position the track without animation
+
+        await new Promise(resolve => requestAnimationFrame(resolve));
         updateTransform(false);
     })();
 }
