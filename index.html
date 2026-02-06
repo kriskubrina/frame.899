@@ -734,6 +734,82 @@
         background: rgba(122,92,250,0.4);
         box-shadow: 0 0 12px rgba(122,92,250,0.6);
     }
+
+    /* FULLSCREEN OVERLAY */
+    #fs-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 5000;
+        background: rgba(0, 0, 0, 0.95);
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    #fs-overlay.show { display: flex; }
+    .fs-close {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 5002;
+    }
+    .fs-viewport {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        position: relative;
+    }
+    .fs-track {
+        display: flex;
+        height: 100%;
+        transition: transform 0.4s ease;
+    }
+    .fs-slide {
+        min-width: 100vw;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+    }
+    .fs-slide img, .fs-slide video {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+    .fs-nav {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        transform: translateY(-50%);
+        display: flex;
+        justify-content: space-between;
+        padding: 0 20px;
+        pointer-events: none;
+        z-index: 5001;
+    }
+    .fs-nav button {
+        pointer-events: auto;
+        background: rgba(0, 0, 0, 0.4);
+        border: none;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
     </style>
 </head>
 <body>
@@ -859,6 +935,24 @@
         </div>
     </div>
 </div>
+
+<div id="fs-overlay" aria-hidden="true">
+    <button class="fs-close" id="fs-close" aria-label="Close fullscreen">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M6 18l12-12"/></svg>
+    </button>
+    <div class="fs-viewport" id="fs-vp">
+        <div class="fs-track" id="fs-track"></div>
+    </div>
+    <div class="fs-nav">
+        <button class="prev" aria-label="Previous">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button class="next" aria-label="Next">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+    </div>
+</div>
+
 <!-- Scripts remain largely unchanged; they handle i18n, data, slider, and modal logic -->
 <script>
 /* ========= i18n ========= */
@@ -1059,9 +1153,11 @@ function renderMedia(){
     // Triple items for infinite effect
     let slides = [].concat(items, items, items);
 
-    slides.forEach((m) => {
+    slides.forEach((m, i) => {
         const wrapper = document.createElement('div');
         wrapper.className = 'slide-wrapper';
+        wrapper.style.cursor = 'zoom-in';
+        wrapper.onclick = () => openFS(items, i % items.length);
         const el = document.createElement(m.type);
         el.src = m.src;
         if(m.type === 'video'){
@@ -1292,6 +1388,71 @@ function closeModal(){
 mClose.onclick=closeModal;
 overlayEl.addEventListener('click',(e)=>{ if(e.target===overlayEl) closeModal(); });
 document.addEventListener('keydown',(e)=>{ if(!overlayEl.classList.contains('show')) return; if(e.key==='Escape') closeModal(); if(e.key==='ArrowLeft') mPrev.click(); if(e.key==='ArrowRight') mNext.click(); });
+
+/* ========= FULLSCREEN ========= */
+const fsOverlay = document.getElementById('fs-overlay');
+const fsTrack = document.getElementById('fs-track');
+const fsClose = fsOverlay.querySelector('.fs-close');
+const fsPrev = fsOverlay.querySelector('.prev');
+const fsNext = fsOverlay.querySelector('.next');
+let fsIndex = 0, fsItems = [];
+
+function openFS(items, startIdx) {
+    fsItems = items;
+    fsIndex = startIdx;
+    viewportEl.querySelectorAll('video').forEach(v => { try { v.pause(); } catch(e){} });
+    fsOverlay.classList.add('show');
+    fsOverlay.setAttribute('aria-hidden', 'false');
+    renderFS();
+}
+
+function closeFS() {
+    fsOverlay.classList.remove('show');
+    fsOverlay.setAttribute('aria-hidden', 'true');
+    fsTrack.querySelectorAll('video').forEach(v => { try { v.pause(); v.src=''; v.load(); } catch(e){} });
+    fsTrack.innerHTML = '';
+}
+
+function renderFS() {
+    fsTrack.innerHTML = '';
+    fsItems.forEach(m => {
+        const slide = document.createElement('div');
+        slide.className = 'fs-slide';
+        const el = document.createElement(m.type);
+        el.src = m.src;
+        if (m.type === 'video') { el.controls = true; el.playsInline = true; }
+        slide.append(el);
+        fsTrack.append(slide);
+    });
+
+    const update = (anim = true) => {
+        fsTrack.style.transition = anim ? 'transform 0.4s ease' : 'none';
+        fsTrack.style.transform = `translateX(${-fsIndex * 100}vw)`;
+    };
+
+    fsPrev.onclick = (e) => { e.stopPropagation(); fsIndex = (fsIndex - 1 + fsItems.length) % fsItems.length; update(); };
+    fsNext.onclick = (e) => { e.stopPropagation(); fsIndex = (fsIndex + 1) % fsItems.length; update(); };
+    update(false);
+
+    // Swipe logic
+    if (matchMedia('(pointer:coarse)').matches) {
+        let sx = 0, dx = 0, drag = false;
+        fsOverlay.ontouchstart = e => { drag = true; sx = e.touches[0].clientX; dx = 0; fsTrack.style.transition = 'none'; };
+        fsOverlay.ontouchmove = e => { if (!drag) return; dx = e.touches[0].clientX - sx; fsTrack.style.transform = `translateX(calc(${-fsIndex * 100}vw + ${dx}px))`; };
+        fsOverlay.ontouchend = () => { if (!drag) return; drag = false; if (Math.abs(dx) > 50) { dx < 0 ? fsNext.click() : fsPrev.click(); } else { update(); } };
+    }
+}
+
+fsClose.onclick = closeFS;
+fsOverlay.onclick = e => { if (e.target === fsOverlay || e.target.classList.contains('fs-slide')) closeFS(); };
+
+document.addEventListener('keydown', (e) => {
+    if (!fsOverlay.classList.contains('show')) return;
+    if (e.key === 'Escape') closeFS();
+    if (e.key === 'ArrowLeft') fsPrev.click();
+    if (e.key === 'ArrowRight') fsNext.click();
+});
+
 /* ========= rebuild on lang change ========= */
 function rebuildText(){
     document.querySelectorAll('#slides .slide').forEach(sl=>{
