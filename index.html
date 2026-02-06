@@ -262,14 +262,15 @@
     }
     .slide .meta{
         position: absolute;
-        left: var(--pad);
-        bottom: var(--pad);
-        padding: 10px 12px;
-        border-radius: 12px;
-        background: rgba(0,0,0,0.45);
-        backdrop-filter: blur(10px);
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        padding: 12px var(--pad);
+        border-radius: 0;
+        background: var(--glass-bg);
+        backdrop-filter: blur(14px) saturate(160%);
         border: none;
-        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        box-shadow: none;
     }
     .slide h3{ margin: 0; font-size: 16px; }
     .slide p{ margin: 4px 0 0; color: #d0d0d0; font-size: 14px; }
