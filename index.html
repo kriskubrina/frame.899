@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SQZLKLFBYJ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SQZLKLFBYJ');
+</script>
+    <link rel="icon" href="/favicon.ico" sizes="any">
+
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <!-- Added Google Font for Space Grotesk (free and open source) -->
@@ -8,6 +19,7 @@
     <title>frame.899 — cyprus art collective</title>
     <meta name="description" content="frame.899 — poetic multimedia installations from Cyprus"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://player.vimeo.com/api/player.js"></script>
     <!-- NOTE: We leave the existing liquid.css in place for the WebGL effect -->
     <link rel="stylesheet" href="assets/liquid.css">
     <style>
@@ -734,6 +746,82 @@
         background: rgba(122,92,250,0.4);
         box-shadow: 0 0 12px rgba(122,92,250,0.6);
     }
+
+    /* FULLSCREEN OVERLAY */
+    #fs-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 5000;
+        background: rgba(0, 0, 0, 0.95);
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    #fs-overlay.show { display: flex; }
+    .fs-close {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 5002;
+    }
+    .fs-viewport {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        position: relative;
+    }
+    .fs-track {
+        display: flex;
+        height: 100%;
+        transition: transform 0.4s ease;
+    }
+    .fs-slide {
+        min-width: 100vw;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+    }
+    .fs-slide img, .fs-slide video {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+    .fs-nav {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        transform: translateY(-50%);
+        display: flex;
+        justify-content: space-between;
+        padding: 0 20px;
+        pointer-events: none;
+        z-index: 5001;
+    }
+    .fs-nav button {
+        pointer-events: auto;
+        background: rgba(0, 0, 0, 0.4);
+        border: none;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
     </style>
 </head>
 <body>
@@ -804,13 +892,13 @@
                 <div>
                     <h3>Kristina Kubrina</h3>
                     <p data-i18n="about.kristina">
-                        Co-founder. Creative Producer / Multimedia Artist. Builds visual systems end-to-end — art direction, production, R&D, pipeline design, and coordination of teams and vendors. Focused on making ambitious ideas technically real in specific site conditions. 
+                        Co-founder. Creative Producer / Multimedia Artist. Builds visual systems end-to-end — art direction, production, R&D, pipeline design, and coordination of teams and vendors. Focused on making ideas technically real in specific site conditions. 
                     </p>
                 </div>
                 <div>
                     <h3>Ivan Maksimov</h3>
                     <p data-i18n="about.ivan">
-                       Co-founder. CG Artist / Architect. Works across architecture, sculpture, and digital media — from location research and concept development to technical direction and implementation. Strong systems thinking: designs frameworks that connect space, form, and generative visuals.
+                       Co-founder. CG Artist / Architect. Works across architecture, sculpture, and digital media — from location research and concept development to technical direction and implementation. 
                     </p>
                 </div>
             </div>
@@ -825,7 +913,7 @@
             <div class="contacts-grid">
                 <div>
                     <p class="muted" data-i18n="contacts.loc">Base: Cyprus, Limassol</p>
-                    <p>Email: <a href="mailto:kris.kubrina@gmail.com">kris.kubrina@gmail.com</a></p>
+                    <p>Email: <a href="mailto:hello.frame.899@gmail.com">hello.frame.899@gmail.com</a></p>
                     <p>Instagram: <a href="https://instagram.com/frame.899" target="_blank" rel="noopener">@frame.899</a></p>
                     <p>TikTok: <a href="https://tiktok.com/@frame.899" target="_blank" rel="noopener">@frame.899</a></p>
                 </div>
@@ -859,6 +947,24 @@
         </div>
     </div>
 </div>
+
+<div id="fs-overlay" aria-hidden="true">
+    <button class="fs-close" id="fs-close" aria-label="Close fullscreen">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M6 18l12-12"/></svg>
+    </button>
+    <div class="fs-viewport" id="fs-vp">
+        <div class="fs-track" id="fs-track"></div>
+    </div>
+    <div class="fs-nav">
+        <button class="prev" aria-label="Previous">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button class="next" aria-label="Next">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+    </div>
+</div>
+
 <!-- Scripts remain largely unchanged; they handle i18n, data, slider, and modal logic -->
 <script>
 /* ========= i18n ========= */
@@ -928,17 +1034,48 @@ mycy:{
 flora:{title:{en:"Cyprus Flora Series. 00 Anemóne coronária",ru:"Cyprus Flora Series. 00 Anemóne coronária"},
     sub:{en:"2025 · Cyprus · video series",ru:"2025 · Кипр · видео-серия"},
     desc:{en:"Endemic flora series; this chapter focuses on Anemóne coronária.\n\nCyprus Flora Series is an experimental visual project where the Cypriot landscape is treated as a living counterpart, capable of response. Using light, projection, and hypnotic imagery, the project initiates a quiet dialogue between coastal terrain and an observer.",ru:"Серия об эндемиках Кипра; выпуск про Anemóne coronária."},
-    stmt:{en:"In colaboration with Tatiana Yaksina\n\nWhite Stones, Limassol",ru:"Природа как субъект, возвращающий взгляд."},
-    folder:"anem",count:9,video:"assets/images/anemedit.mp4",collab:false}
+    stmt:{en:"In collaboration with Tatiana Yaksina\n\nWhite Stones, Limassol",ru:"Природа как субъект, возвращающий взгляд."},
+    folder:"anem",count:9,video:"assets/images/anemedit.mp4",collab:false},
+flora_dianthus:{
+    title:{en:"Cyprus Flora Series. 01 Dianthus cyprius",ru:"Cyprus Flora Series. 01 Dianthus cyprius"},
+    sub:{en:"2025 · Cyprus · video series",ru:"2025 · Кипр · видео-серия"},
+    desc:{en:"Endemic flora series; this chapter focuses on Dianthus cyprius.\n\nCyprus Flora Series is an experimental visual project where the Cypriot landscape is treated as a living counterpart, capable of response. Using light, projection, and hypnotic imagery, the project initiates a quiet dialogue between coastal terrain and an observer.",ru:"Серия об эндемиках Кипра; выпуск про Dianthus cyprius."},
+    stmt:{en:"In collaboration with Tatiana Yaksina\n\nWhite Stones, Limassol",ru:"Природа как субъект, возвращающий взгляд."},
+    folder:"Cyprus_Flora_Dianthus_",images:["01","02","03","04","05","06","07"],vimeo:"1163659564",collab:false},
+flora_gladiolus:{
+    title:{en:"Cyprus Flora Series. 02 Gladiolus triphyllus",ru:"Cyprus Flora Series. 02 Gladiolus triphyllus"},
+    sub:{en:"2025 · Cyprus · video series",ru:"2025 · Кипр · видео-серия"},
+    desc:{en:"Endemic flora series; this chapter focuses on Gladiolus triphyllus.\n\nCyprus Flora Series is an experimental visual project where the Cypriot landscape is treated as a living counterpart, capable of response. Using light, projection, and hypnotic imagery, the project initiates a quiet dialogue between coastal terrain and an observer.",ru:"Серия об эндемиках Кипра; выпуск про Gladiolus triphyllus."},
+    stmt:{en:"In collaboration with Tatiana Yaksina\n\nWhite Stones, Limassol",ru:"Природа как субъект, возвращающий взгляд."},
+    folder:"Cyprus_Flora_Gladiolus_",images:["01","02","03","04","05","06","07","08"],vimeo:"1163662472",collab:false},
+flora_delonix:{
+    title:{en:"Cyprus Flora Series. 03 Delonix regia",ru:"Cyprus Flora Series. 03 Delonix regia"},
+    sub:{en:"2025 · Cyprus · video series",ru:"2025 · Кипр · видео-серия"},
+    desc:{en:"Endemic flora series; this chapter focuses on Delonix regia.\n\nCyprus Flora Series is an experimental visual project where the Cypriot landscape is treated as a living counterpart, capable of response. Using light, projection, and hypnotic imagery, the project initiates a quiet dialogue between coastal terrain and an observer.",ru:"Серия об эндемиках Кипра; выпуск про Delonix regia."},
+    stmt:{en:"In collaboration with Tatiana Yaksina\n\nWhite Stones, Limassol",ru:"Природа как субъект, возвращающий взгляд."},
+    folder:"Cyprus_Flora_Delonix_",images:["02","03","04","05","06","07"],vimeo:"1163659258",collab:false},
+flora_tulip:{
+    title:{en:"Cyprus Flora Series. 04 Tulipa cypria",ru:"Cyprus Flora Series. 04 Tulipa cypria"},
+    sub:{en:"2025 · Cyprus · video series",ru:"2025 · Кипр · видео-серия"},
+    desc:{en:"Endemic flora series; this chapter focuses on Tulipa cypria.\n\nCyprus Flora Series is an experimental visual project where the Cypriot landscape is treated as a living counterpart, capable of response. Using light, projection, and hypnotic imagery, the project initiates a quiet dialogue between coastal terrain and an observer.",ru:"Серия об эндемиках Кипра; выпуск про Tulipa cypria."},
+    stmt:{en:"In collaboration with Tatiana Yaksina\n\nWhite Stones, Limassol",ru:"Природа как субъект, возвращающий взгляд."},
+    folder:"Cyprus_Flora_Tulip_",images:["01","02","03","04","05","06","07","08"],vimeo:"1163666484",collab:false}
 };
 function buildMedia(){
     for(const k in PROJECTS){
         const p=PROJECTS[k];
-        p.hero=`assets/images/${p.folder}00image.webp`;
-        p.grid=(k==='tri') ? `assets/images/${p.folder}00image.webp` : `assets/images/${p.folder}00image2.webp`;
-        p.media=[];
-        for(let i=0;i<p.count;i++){ const n=String(i).padStart(2,'0'); p.media.push({type:'img',src:`assets/images/${p.folder}${n}.webp`}); }
+        if(p.images){
+            p.media=p.images.map(n=>({type:'img',src:`assets/images/${p.folder}${n}.webp`}));
+            p.hero=p.media[0].src;
+            p.grid=p.media[0].src;
+        } else {
+            p.hero=`assets/images/${p.folder}00image.webp`;
+            p.grid=(k==='tri') ? `assets/images/${p.folder}00image.webp` : `assets/images/${p.folder}00image2.webp`;
+            p.media=[];
+            for(let i=0;i<p.count;i++){ const n=String(i).padStart(2,'0'); p.media.push({type:'img',src:`assets/images/${p.folder}${n}.webp`}); }
+        }
         if(p.video) p.media.splice(1,0,{type:'video',src:p.video});
+        if(p.vimeo) p.media.splice(1,0,{type:'vimeo',id:p.vimeo,ratio:0.75});
     }
 }
 buildMedia();
@@ -965,7 +1102,7 @@ preloadAllMediaMetadata();
 /* ========= HERO (order: flora → mycy → trace → tri → water) ========= */
 function buildHero(){
     const slidesEl=document.getElementById('slides');
-    const order=['flora','mycy','trace','tri','water'];
+    const order=['flora','flora_dianthus','flora_gladiolus','flora_delonix','flora_tulip','mycy','trace','tri','water'];
     const makeSlide=id=>{
         const p=PROJECTS[id];
         const a=document.createElement('article');
@@ -1013,7 +1150,7 @@ burgerNavLinks.forEach(link => {
 /* ========= GRIDS ========= */
 function buildGrids(){
     const gp=document.getElementById('grid-projects'), gc=document.getElementById('grid-collabs'); gp.innerHTML=''; gc.innerHTML='';
-    ['mycy','water','flora'].forEach(k=>{
+    ['flora','flora_dianthus','flora_gladiolus','flora_delonix','flora_tulip','mycy','water'].forEach(k=>{
         const p=PROJECTS[k], card=document.createElement('article');
         card.className='card'; card.dataset.project=k;
         card.innerHTML=`<div class="thumb"><img src="${p.grid}" onerror="this.src='${p.media[0]?.src||''}'" alt=""></div><div class="meta2"><h3>${p.title[LANG]}</h3><p>${p.sub[LANG]}</p></div>`;
@@ -1059,11 +1196,24 @@ function renderMedia(){
     // Triple items for infinite effect
     let slides = [].concat(items, items, items);
 
-    slides.forEach((m) => {
+    slides.forEach((m, i) => {
         const wrapper = document.createElement('div');
         wrapper.className = 'slide-wrapper';
-        const el = document.createElement(m.type);
-        el.src = m.src;
+        wrapper.style.cursor = 'zoom-in';
+        wrapper.onclick = () => openFS(items, i % items.length);
+        let el;
+        if(m.type === 'vimeo'){
+            el = document.createElement('iframe');
+            el.src = `https://player.vimeo.com/video/${m.id}?title=0&byline=0&portrait=0&badge=0&autopause=0`;
+            el.frameBorder = "0";
+            el.allow = "fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share";
+            el.style.width = '100%';
+            el.style.height = '100%';
+            el.style.pointerEvents = 'auto';
+        } else {
+            el = document.createElement(m.type);
+            el.src = m.src;
+        }
         if(m.type === 'video'){
             el.controls = true;
             el.playsInline = true;
@@ -1155,7 +1305,10 @@ function renderMedia(){
     const waitForMedia = (el) => {
         return new Promise((resolve) => {
             if(!el) return resolve();
-            if (el.tagName === 'VIDEO') {
+            if (el.tagName === 'IFRAME') {
+                el.onload = () => resolve();
+                setTimeout(resolve, 2000);
+            } else if (el.tagName === 'VIDEO') {
                 if (el.readyState >= 1) resolve();
                 else el.addEventListener('loadedmetadata', () => resolve(), { once: true });
             } else {
@@ -1292,6 +1445,82 @@ function closeModal(){
 mClose.onclick=closeModal;
 overlayEl.addEventListener('click',(e)=>{ if(e.target===overlayEl) closeModal(); });
 document.addEventListener('keydown',(e)=>{ if(!overlayEl.classList.contains('show')) return; if(e.key==='Escape') closeModal(); if(e.key==='ArrowLeft') mPrev.click(); if(e.key==='ArrowRight') mNext.click(); });
+
+/* ========= FULLSCREEN ========= */
+const fsOverlay = document.getElementById('fs-overlay');
+const fsTrack = document.getElementById('fs-track');
+const fsClose = fsOverlay.querySelector('.fs-close');
+const fsPrev = fsOverlay.querySelector('.prev');
+const fsNext = fsOverlay.querySelector('.next');
+let fsIndex = 0, fsItems = [];
+
+function openFS(items, startIdx) {
+    fsItems = items;
+    fsIndex = startIdx;
+    viewportEl.querySelectorAll('video').forEach(v => { try { v.pause(); } catch(e){} });
+    viewportEl.querySelectorAll('iframe').forEach(f => { const s=f.src; f.src=''; f.src=s; });
+    fsOverlay.classList.add('show');
+    fsOverlay.setAttribute('aria-hidden', 'false');
+    renderFS();
+}
+
+function closeFS() {
+    fsOverlay.classList.remove('show');
+    fsOverlay.setAttribute('aria-hidden', 'true');
+    fsTrack.querySelectorAll('video').forEach(v => { try { v.pause(); v.src=''; v.load(); } catch(e){} });
+    fsTrack.innerHTML = '';
+}
+
+function renderFS() {
+    fsTrack.innerHTML = '';
+    fsItems.forEach(m => {
+        const slide = document.createElement('div');
+        slide.className = 'fs-slide';
+        let el;
+        if(m.type === 'vimeo'){
+            el = document.createElement('iframe');
+            el.src = `https://player.vimeo.com/video/${m.id}?title=0&byline=0&portrait=0&badge=0&autopause=0`;
+            el.frameBorder = "0";
+            el.allow = "fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share";
+            el.style.width = '100%';
+            el.style.height = '100%';
+        } else {
+            el = document.createElement(m.type);
+            el.src = m.src;
+        }
+        if (m.type === 'video') { el.controls = true; el.playsInline = true; }
+        slide.append(el);
+        fsTrack.append(slide);
+    });
+
+    const update = (anim = true) => {
+        fsTrack.style.transition = anim ? 'transform 0.4s ease' : 'none';
+        fsTrack.style.transform = `translateX(${-fsIndex * 100}vw)`;
+    };
+
+    fsPrev.onclick = (e) => { e.stopPropagation(); fsIndex = (fsIndex - 1 + fsItems.length) % fsItems.length; update(); };
+    fsNext.onclick = (e) => { e.stopPropagation(); fsIndex = (fsIndex + 1) % fsItems.length; update(); };
+    update(false);
+
+    // Swipe logic
+    if (matchMedia('(pointer:coarse)').matches) {
+        let sx = 0, dx = 0, drag = false;
+        fsOverlay.ontouchstart = e => { drag = true; sx = e.touches[0].clientX; dx = 0; fsTrack.style.transition = 'none'; };
+        fsOverlay.ontouchmove = e => { if (!drag) return; dx = e.touches[0].clientX - sx; fsTrack.style.transform = `translateX(calc(${-fsIndex * 100}vw + ${dx}px))`; };
+        fsOverlay.ontouchend = () => { if (!drag) return; drag = false; if (Math.abs(dx) > 50) { dx < 0 ? fsNext.click() : fsPrev.click(); } else { update(); } };
+    }
+}
+
+fsClose.onclick = closeFS;
+fsOverlay.onclick = e => { if (e.target === fsOverlay || e.target.classList.contains('fs-slide')) closeFS(); };
+
+document.addEventListener('keydown', (e) => {
+    if (!fsOverlay.classList.contains('show')) return;
+    if (e.key === 'Escape') closeFS();
+    if (e.key === 'ArrowLeft') fsPrev.click();
+    if (e.key === 'ArrowRight') fsNext.click();
+});
+
 /* ========= rebuild on lang change ========= */
 function rebuildText(){
     document.querySelectorAll('#slides .slide').forEach(sl=>{
@@ -1304,7 +1533,7 @@ function rebuildText(){
 /* ========= HERO init ========= */
 (function buildHeroInit(){
     const slidesEl=document.getElementById('slides');
-    const order=['flora','mycy','trace','tri','water'];
+    const order=['flora','flora_dianthus','flora_gladiolus','flora_delonix','flora_tulip','mycy','trace','tri','water'];
     const makeSlide=id=>{
         const p=PROJECTS[id];
         const a=document.createElement('article');
