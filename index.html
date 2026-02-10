@@ -19,6 +19,7 @@
     <title>frame.899 — cyprus art collective</title>
     <meta name="description" content="frame.899 — poetic multimedia installations from Cyprus"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://player.vimeo.com/api/player.js"></script>
     <!-- NOTE: We leave the existing liquid.css in place for the WebGL effect -->
     <link rel="stylesheet" href="assets/liquid.css">
     <style>
@@ -1033,17 +1034,48 @@ mycy:{
 flora:{title:{en:"Cyprus Flora Series. 00 Anemóne coronária",ru:"Cyprus Flora Series. 00 Anemóne coronária"},
     sub:{en:"2025 · Cyprus · video series",ru:"2025 · Кипр · видео-серия"},
     desc:{en:"Endemic flora series; this chapter focuses on Anemóne coronária.\n\nCyprus Flora Series is an experimental visual project where the Cypriot landscape is treated as a living counterpart, capable of response. Using light, projection, and hypnotic imagery, the project initiates a quiet dialogue between coastal terrain and an observer.",ru:"Серия об эндемиках Кипра; выпуск про Anemóne coronária."},
-    stmt:{en:"In colaboration with Tatiana Yaksina\n\nWhite Stones, Limassol",ru:"Природа как субъект, возвращающий взгляд."},
-    folder:"anem",count:9,video:"assets/images/anemedit.mp4",collab:false}
+    stmt:{en:"In collaboration with Tatiana Yaksina\n\nWhite Stones, Limassol",ru:"Природа как субъект, возвращающий взгляд."},
+    folder:"anem",count:9,video:"assets/images/anemedit.mp4",collab:false},
+flora_dianthus:{
+    title:{en:"Cyprus Flora Series. 01 Dianthus cyprius",ru:"Cyprus Flora Series. 01 Dianthus cyprius"},
+    sub:{en:"2025 · Cyprus · video series",ru:"2025 · Кипр · видео-серия"},
+    desc:{en:"Endemic flora series; this chapter focuses on Dianthus cyprius.\n\nCyprus Flora Series is an experimental visual project where the Cypriot landscape is treated as a living counterpart, capable of response. Using light, projection, and hypnotic imagery, the project initiates a quiet dialogue between coastal terrain and an observer.",ru:"Серия об эндемиках Кипра; выпуск про Dianthus cyprius."},
+    stmt:{en:"In collaboration with Tatiana Yaksina\n\nWhite Stones, Limassol",ru:"Природа как субъект, возвращающий взгляд."},
+    folder:"Cyprus_Flora_Dianthus_",images:["01","02","03","04","05","06","07"],vimeo:"1163659564",collab:false},
+flora_gladiolus:{
+    title:{en:"Cyprus Flora Series. 02 Gladiolus triphyllus",ru:"Cyprus Flora Series. 02 Gladiolus triphyllus"},
+    sub:{en:"2025 · Cyprus · video series",ru:"2025 · Кипр · видео-серия"},
+    desc:{en:"Endemic flora series; this chapter focuses on Gladiolus triphyllus.\n\nCyprus Flora Series is an experimental visual project where the Cypriot landscape is treated as a living counterpart, capable of response. Using light, projection, and hypnotic imagery, the project initiates a quiet dialogue between coastal terrain and an observer.",ru:"Серия об эндемиках Кипра; выпуск про Gladiolus triphyllus."},
+    stmt:{en:"In collaboration with Tatiana Yaksina\n\nWhite Stones, Limassol",ru:"Природа как субъект, возвращающий взгляд."},
+    folder:"Cyprus_Flora_Gladiolus_",images:["01","02","03","04","05","06","07","08"],vimeo:"1163662472",collab:false},
+flora_delonix:{
+    title:{en:"Cyprus Flora Series. 03 Delonix regia",ru:"Cyprus Flora Series. 03 Delonix regia"},
+    sub:{en:"2025 · Cyprus · video series",ru:"2025 · Кипр · видео-серия"},
+    desc:{en:"Endemic flora series; this chapter focuses on Delonix regia.\n\nCyprus Flora Series is an experimental visual project where the Cypriot landscape is treated as a living counterpart, capable of response. Using light, projection, and hypnotic imagery, the project initiates a quiet dialogue between coastal terrain and an observer.",ru:"Серия об эндемиках Кипра; выпуск про Delonix regia."},
+    stmt:{en:"In collaboration with Tatiana Yaksina\n\nWhite Stones, Limassol",ru:"Природа как субъект, возвращающий взгляд."},
+    folder:"Cyprus_Flora_Delonix_",images:["02","03","04","05","06","07"],vimeo:"1163659258",collab:false},
+flora_tulip:{
+    title:{en:"Cyprus Flora Series. 04 Tulipa cypria",ru:"Cyprus Flora Series. 04 Tulipa cypria"},
+    sub:{en:"2025 · Cyprus · video series",ru:"2025 · Кипр · видео-серия"},
+    desc:{en:"Endemic flora series; this chapter focuses on Tulipa cypria.\n\nCyprus Flora Series is an experimental visual project where the Cypriot landscape is treated as a living counterpart, capable of response. Using light, projection, and hypnotic imagery, the project initiates a quiet dialogue between coastal terrain and an observer.",ru:"Серия об эндемиках Кипра; выпуск про Tulipa cypria."},
+    stmt:{en:"In collaboration with Tatiana Yaksina\n\nWhite Stones, Limassol",ru:"Природа как субъект, возвращающий взгляд."},
+    folder:"Cyprus_Flora_Tulip_",images:["01","02","03","04","05","06","07","08"],vimeo:"1163666484",collab:false}
 };
 function buildMedia(){
     for(const k in PROJECTS){
         const p=PROJECTS[k];
-        p.hero=`assets/images/${p.folder}00image.webp`;
-        p.grid=(k==='tri') ? `assets/images/${p.folder}00image.webp` : `assets/images/${p.folder}00image2.webp`;
-        p.media=[];
-        for(let i=0;i<p.count;i++){ const n=String(i).padStart(2,'0'); p.media.push({type:'img',src:`assets/images/${p.folder}${n}.webp`}); }
+        if(p.images){
+            p.media=p.images.map(n=>({type:'img',src:`assets/images/${p.folder}${n}.webp`}));
+            p.hero=p.media[0].src;
+            p.grid=p.media[0].src;
+        } else {
+            p.hero=`assets/images/${p.folder}00image.webp`;
+            p.grid=(k==='tri') ? `assets/images/${p.folder}00image.webp` : `assets/images/${p.folder}00image2.webp`;
+            p.media=[];
+            for(let i=0;i<p.count;i++){ const n=String(i).padStart(2,'0'); p.media.push({type:'img',src:`assets/images/${p.folder}${n}.webp`}); }
+        }
         if(p.video) p.media.splice(1,0,{type:'video',src:p.video});
+        if(p.vimeo) p.media.splice(1,0,{type:'vimeo',id:p.vimeo,ratio:0.75});
     }
 }
 buildMedia();
@@ -1070,7 +1102,7 @@ preloadAllMediaMetadata();
 /* ========= HERO (order: flora → mycy → trace → tri → water) ========= */
 function buildHero(){
     const slidesEl=document.getElementById('slides');
-    const order=['flora','mycy','trace','tri','water'];
+    const order=['flora','flora_dianthus','flora_gladiolus','flora_delonix','flora_tulip','mycy','trace','tri','water'];
     const makeSlide=id=>{
         const p=PROJECTS[id];
         const a=document.createElement('article');
@@ -1118,7 +1150,7 @@ burgerNavLinks.forEach(link => {
 /* ========= GRIDS ========= */
 function buildGrids(){
     const gp=document.getElementById('grid-projects'), gc=document.getElementById('grid-collabs'); gp.innerHTML=''; gc.innerHTML='';
-    ['mycy','water','flora'].forEach(k=>{
+    ['flora','flora_dianthus','flora_gladiolus','flora_delonix','flora_tulip','mycy','water'].forEach(k=>{
         const p=PROJECTS[k], card=document.createElement('article');
         card.className='card'; card.dataset.project=k;
         card.innerHTML=`<div class="thumb"><img src="${p.grid}" onerror="this.src='${p.media[0]?.src||''}'" alt=""></div><div class="meta2"><h3>${p.title[LANG]}</h3><p>${p.sub[LANG]}</p></div>`;
@@ -1169,8 +1201,19 @@ function renderMedia(){
         wrapper.className = 'slide-wrapper';
         wrapper.style.cursor = 'zoom-in';
         wrapper.onclick = () => openFS(items, i % items.length);
-        const el = document.createElement(m.type);
-        el.src = m.src;
+        let el;
+        if(m.type === 'vimeo'){
+            el = document.createElement('iframe');
+            el.src = `https://player.vimeo.com/video/${m.id}?title=0&byline=0&portrait=0&badge=0&autopause=0`;
+            el.frameBorder = "0";
+            el.allow = "fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share";
+            el.style.width = '100%';
+            el.style.height = '100%';
+            el.style.pointerEvents = 'auto';
+        } else {
+            el = document.createElement(m.type);
+            el.src = m.src;
+        }
         if(m.type === 'video'){
             el.controls = true;
             el.playsInline = true;
@@ -1262,7 +1305,10 @@ function renderMedia(){
     const waitForMedia = (el) => {
         return new Promise((resolve) => {
             if(!el) return resolve();
-            if (el.tagName === 'VIDEO') {
+            if (el.tagName === 'IFRAME') {
+                el.onload = () => resolve();
+                setTimeout(resolve, 2000);
+            } else if (el.tagName === 'VIDEO') {
                 if (el.readyState >= 1) resolve();
                 else el.addEventListener('loadedmetadata', () => resolve(), { once: true });
             } else {
@@ -1412,6 +1458,7 @@ function openFS(items, startIdx) {
     fsItems = items;
     fsIndex = startIdx;
     viewportEl.querySelectorAll('video').forEach(v => { try { v.pause(); } catch(e){} });
+    viewportEl.querySelectorAll('iframe').forEach(f => { const s=f.src; f.src=''; f.src=s; });
     fsOverlay.classList.add('show');
     fsOverlay.setAttribute('aria-hidden', 'false');
     renderFS();
@@ -1429,8 +1476,18 @@ function renderFS() {
     fsItems.forEach(m => {
         const slide = document.createElement('div');
         slide.className = 'fs-slide';
-        const el = document.createElement(m.type);
-        el.src = m.src;
+        let el;
+        if(m.type === 'vimeo'){
+            el = document.createElement('iframe');
+            el.src = `https://player.vimeo.com/video/${m.id}?title=0&byline=0&portrait=0&badge=0&autopause=0`;
+            el.frameBorder = "0";
+            el.allow = "fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share";
+            el.style.width = '100%';
+            el.style.height = '100%';
+        } else {
+            el = document.createElement(m.type);
+            el.src = m.src;
+        }
         if (m.type === 'video') { el.controls = true; el.playsInline = true; }
         slide.append(el);
         fsTrack.append(slide);
@@ -1476,7 +1533,7 @@ function rebuildText(){
 /* ========= HERO init ========= */
 (function buildHeroInit(){
     const slidesEl=document.getElementById('slides');
-    const order=['flora','mycy','trace','tri','water'];
+    const order=['flora','flora_dianthus','flora_gladiolus','flora_delonix','flora_tulip','mycy','trace','tri','water'];
     const makeSlide=id=>{
         const p=PROJECTS[id];
         const a=document.createElement('article');
