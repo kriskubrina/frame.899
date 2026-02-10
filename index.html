@@ -1066,8 +1066,8 @@ function buildMedia(){
         const p=PROJECTS[k];
         if(p.images){
             p.media=p.images.map(n=>({type:'img',src:`assets/images/${p.folder}${n}.webp`}));
-            p.hero=p.media[0].src;
-            p.grid=p.media[0].src;
+            p.hero=`assets/images/${p.folder}00.webp`;
+            p.grid=`assets/images/${p.folder}00.webp`;
         } else {
             p.hero=`assets/images/${p.folder}00image.webp`;
             p.grid=(k==='tri') ? `assets/images/${p.folder}00image.webp` : `assets/images/${p.folder}00image2.webp`;
