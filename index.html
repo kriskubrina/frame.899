@@ -503,6 +503,21 @@ body {
   line-height: 1.75;
   max-width: 48ch;
 }
+.team-link {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  border-bottom: 1px solid rgba(122,92,250,0.35);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  transition: border-color 0.2s, color 0.2s;
+}
+.team-link:hover {
+  border-color: var(--accent);
+  color: #a08cff;
+}
 
 .about-note {
   padding: clamp(24px,4vw,48px) 0;
@@ -1166,14 +1181,16 @@ a:hover {
 
     <div class="about-team">
       <div class="team-member">
-        <div class="team-name"><a href="https://kriskubrina.com" target="_blank" rel="noopener" style="border-bottom: 1px solid rgba(122,92,250,0.4);">Kristina Kubrina</a></div>
+        <div class="team-name">Kristina Kubrina</div>
         <div class="team-role">Co-founder · Creative Producer · Multimedia Artist</div>
         <p class="team-bio" data-i18n="about.kristina">Builds visual systems end-to-end — art direction, production, R&D, pipeline design, and coordination of teams and vendors. Focused on making ambitious ideas technically real in specific site conditions.</p>
+        <a href="https://kriskubrina.com" target="_blank" rel="noopener" class="team-link">kriskubrina.com ↗</a>
       </div>
       <div class="team-member">
-        <div class="team-name"><a href="https://ivanmaximov.com" target="_blank" rel="noopener" style="border-bottom: 1px solid rgba(122,92,250,0.4);">Ivan Maksimov</a></div>
+        <div class="team-name">Ivan Maksimov</div>
         <div class="team-role">Co-founder · CG Artist · Architect</div>
         <p class="team-bio" data-i18n="about.ivan">Works across architecture, sculpture, and digital media — from location research and concept development to technical direction and implementation. Strong systems thinking: designs frameworks that connect space, form, and generative visuals.</p>
+        <a href="https://ivanmaximov.com" target="_blank" rel="noopener" class="team-link">ivanmaximov.com ↗</a>
       </div>
     </div>
 
