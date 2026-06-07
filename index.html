@@ -636,7 +636,7 @@ body {
 .project-media {
   position: relative;
   overflow: hidden;
-  background: #0a0a0c;
+  background: #0b0b0b;
   margin-bottom: clamp(32px,5vw,56px);
   height: 72vh;
 }
@@ -659,7 +659,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #080810;
+  background: #0b0b0b;
 }
 
 .proj-gallery-slide img,
@@ -1488,7 +1488,7 @@ function buildHero() {
   HERO_ORDER.forEach((_, i) => {
     const d = document.createElement('button');
     d.className = 'hero-dot' + (i === 0 ? ' active' : '');
-    d.onclick = () => goHero(i + 1);
+    d.onclick = () => { stopAuto(); goHero(i + 1); };
     dotsEl.append(d);
   });
 
@@ -1513,16 +1513,16 @@ function buildHero() {
     updateDots();
   });
 
-  document.getElementById('hPrev').onclick = prev;
-  document.getElementById('hNext').onclick = next;
+  document.getElementById('hPrev').onclick = () => { stopAuto(); prev(); };
+  document.getElementById('hNext').onclick = () => { stopAuto(); next(); };
 
-  // Auto-advance
+  // Auto-advance - stops permanently on any manual interaction
   let autoTimer = setInterval(next, 4500);
-  slidesEl.addEventListener('touchstart', () => clearInterval(autoTimer), { passive: true });
+  function stopAuto() { clearInterval(autoTimer); autoTimer = null; }
 
   // Touch swipe
   let sx = 0, drag = false;
-  slidesEl.addEventListener('touchstart', e => { drag = true; sx = e.touches[0].clientX; slidesEl.style.transition = 'none'; }, { passive: true });
+  slidesEl.addEventListener('touchstart', e => { stopAuto(); drag = true; sx = e.touches[0].clientX; slidesEl.style.transition = 'none'; }, { passive: true });
   slidesEl.addEventListener('touchmove', e => {
     if (!drag) return;
     const dx = (e.touches[0].clientX - sx) / slidesEl.clientWidth * 100;
