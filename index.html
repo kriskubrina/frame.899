@@ -143,6 +143,7 @@ body {
   align-items: center;
   justify-content: flex-end;
   gap: 6px;
+  min-width: 0;
 }
 
 .lang-btn {
@@ -170,6 +171,7 @@ body {
   cursor: pointer;
   padding: 4px;
   color: var(--fg);
+  margin-left: auto;
 }
 
 /* ─── MOBILE MENU ─── */
@@ -638,7 +640,8 @@ body {
 .project-media {
   position: relative;
   overflow: hidden;
-  background: #0b0b0b;
+  background: rgba(11,11,14,0.55);
+  backdrop-filter: blur(4px);
   margin-bottom: clamp(32px,5vw,56px);
   height: 72vh;
 }
@@ -935,6 +938,34 @@ a:hover {
   }
 
   .proj-thumbs { padding-bottom: 24px; }
+
+  /* Media container — auto height on mobile, not fixed 72vh */
+  .project-media {
+    height: auto !important;
+  }
+  .proj-gallery {
+    height: auto !important;
+  }
+  .proj-gallery-slide {
+    height: auto !important;
+    min-height: unset;
+  }
+  .proj-gallery-slide img,
+  .proj-gallery-slide video {
+    width: 100%;
+    height: auto !important;
+    max-height: 60vw;
+    object-fit: contain;
+  }
+  .proj-gallery-slide iframe {
+    width: 100%;
+    height: 56vw !important;
+  }
+  .proj-media-counter {
+    position: static;
+    text-align: right;
+    padding: 6px 12px 0;
+  }
 }
 
 @media (max-width: 540px) {
@@ -1050,10 +1081,6 @@ a:hover {
       </div>
     </div>
 
-    <div class="about-note">
-      <p data-i18n="about.note2">Some major projects were made as part of previous teams; media is not published due to IP rights.</p>
-    </div>
-
     <footer class="site-footer">
       <div class="footer-logo">frame.<b>899</b></div>
       <div class="footer-copy">Cyprus Art Collective — Limassol</div>
@@ -1166,7 +1193,6 @@ const I18N = {
     "about.kristina": "Builds visual systems end-to-end — art direction, production, R&D, pipeline design, and coordination of teams and vendors. Focused on making ambitious ideas technically real in specific site conditions.",
     "about.ivan": "Works across architecture, sculpture, and digital media — from location research and concept development to technical direction and implementation. Strong systems thinking: designs frameworks that connect space, form, and generative visuals.",
     "about.note": "Together we form a small creative unit, developing projects that unite artistic research and experiments. Our focus is on poetic, site-sensitive works that invite audiences into experiences of memory, place, and transformation.",
-    "about.note2": "Часть крупных проектов выполнена в составе предыдущих команд; медиа не публикуются из-за прав ИС.",
     "contacts.loc": "Base: Cyprus, Limassol",
     "contacts.press": "Press / deck — on request.",
     "contacts.col1": "Get in touch",
@@ -1189,7 +1215,6 @@ const I18N = {
     "about.kristina": "Креативный продюсер и медиа-художник (Кипр). Соединяет художественное видение и продакшен-точность: визуальные системы, адаптация под площадку, планы шоу.",
     "about.ivan": "CG-артист и архитектор. Пространственная визуализация, читаемость сцены, интеграция медиа в архитектуру. Фокус — интерактив и световые инсталляции.",
     "about.note": "Вместе мы небольшая творческая единица, развивающая проекты на стыке художественного исследования и эксперимента. Наш фокус — поэтические, чуткие к месту работы, приглашающие зрителей в опыт памяти, пространства и трансформации.",
-    "about.note2": "Часть крупных проектов выполнена в составе предыдущих команд; медиа не публикуются из-за прав ИС.",
     "contacts.loc": "База: Кипр, Лимассол",
     "contacts.press": "Пресс / дека — по запросу.",
     "contacts.col1": "Написать нам",
@@ -1411,7 +1436,7 @@ function showPage(page, anchor, projectId) {
       setTimeout(() => {
         const sec = document.getElementById('section-' + anchor);
         if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 80);
+      }, 300);
     } else {
       window.scrollTo(0, 0);
     }
@@ -1437,8 +1462,8 @@ window.addEventListener('load', handleHash);
 
 function handleHash() {
   const hash = location.hash.replace('#', '');
-  if (!hash) {
-    showPage('home');
+  if (!hash || hash === '') {
+    showPage('home', null);
   } else if (hash === 'about') {
     showPage('about');
   } else if (hash === 'contacts') {
@@ -1518,13 +1543,12 @@ function buildHero() {
   document.getElementById('hPrev').onclick = () => { stopAuto(); prev(); };
   document.getElementById('hNext').onclick = () => { stopAuto(); next(); };
 
-  // Auto-advance - stops permanently on any manual interaction
-  let autoTimer = setInterval(next, 4500);
-  function stopAuto() { clearInterval(autoTimer); autoTimer = null; }
+  // No auto-advance — manual only
+  function stopAuto() {}
 
   // Touch swipe
   let sx = 0, drag = false;
-  slidesEl.addEventListener('touchstart', e => { stopAuto(); drag = true; sx = e.touches[0].clientX; slidesEl.style.transition = 'none'; }, { passive: true });
+  slidesEl.addEventListener('touchstart', e => { drag = true; sx = e.touches[0].clientX; slidesEl.style.transition = 'none'; }, { passive: true });
   slidesEl.addEventListener('touchmove', e => {
     if (!drag) return;
     const dx = (e.touches[0].clientX - sx) / slidesEl.clientWidth * 100;
