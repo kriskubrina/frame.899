@@ -51,9 +51,11 @@ body {
 /* ─── WebGL BG ─── */
 #liquid-ether-container {
   position: fixed;
-  inset: 0;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
   z-index: 0;
-  pointer-events: auto;
+  pointer-events: none; /* mouse tracked on window by liquid.js */
 }
 
 /* ─── LAYOUT WRAPPER ─── */
@@ -1822,16 +1824,20 @@ buildGrids();
 <!-- WebGL Effect -->
 <script src="assets/liquid.js"></script>
 <script>
-  const container = document.getElementById('liquid-ether-container');
-  if (typeof LiquidEther !== 'undefined') {
-    const liquidEther = new LiquidEther(container, {
-      colors: ['#5227FF', '#6a9ef5', '#e5eeff'],
-      mouseForce: 12,
-      isBounce: true,
-      cursorSize: 150,
-      autoSpeed: 0.1
-    });
-  }
+  window.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('liquid-ether-container');
+    if (!container || typeof LiquidEther === 'undefined') return;
+    // Small delay ensures container is painted and IntersectionObserver sees it
+    setTimeout(() => {
+      new LiquidEther(container, {
+        colors: ['#5227FF', '#6a9ef5', '#e5eeff'],
+        mouseForce: 12,
+        isBounce: true,
+        cursorSize: 150,
+        autoSpeed: 0.1
+      });
+    }, 100);
+  });
 </script>
 
 </body>
