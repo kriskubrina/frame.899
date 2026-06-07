@@ -54,8 +54,8 @@ body {
   top: 0; left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 0;
-  pointer-events: none; /* mouse tracked on window by liquid.js */
+  z-index: -1;
+  pointer-events: none;
 }
 
 /* ─── LAYOUT WRAPPER ─── */
@@ -236,7 +236,7 @@ body {
 .mobile-lang button.is-active { color: var(--accent); }
 
 /* ─── PAGES ─── */
-.page { display: none; }
+.page { display: none; position: relative; z-index: 1; }
 .page.active { display: block; }
 
 /* ─── HOME PAGE ─── */
