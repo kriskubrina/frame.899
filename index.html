@@ -640,8 +640,7 @@ body {
 .project-media {
   position: relative;
   overflow: hidden;
-  background: rgba(11,11,14,0.55);
-  backdrop-filter: blur(4px);
+  background: transparent;
   margin-bottom: clamp(32px,5vw,56px);
   height: 72vh;
 }
@@ -667,13 +666,17 @@ body {
   background: #0b0b0b;
 }
 
-.proj-gallery-slide img,
+.proj-gallery-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
 .proj-gallery-slide video {
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
+  background: #0b0b0b;
   display: block;
 }
 
@@ -900,11 +903,104 @@ a:hover {
   margin-bottom: 10px;
 }
 
+/* ─── LIGHTBOX ─── */
+#lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0,0,0,0.95);
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+}
+#lightbox.open { display: flex; }
+
+#lightbox-inner {
+  position: relative;
+  max-width: 95vw;
+  max-height: 95vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#lightbox img, #lightbox video {
+  max-width: 95vw;
+  max-height: 95vh;
+  object-fit: contain;
+  display: block;
+  cursor: default;
+}
+
+#lightbox iframe {
+  width: 90vw;
+  height: 50.625vw; /* 16:9 */
+  max-height: 90vh;
+  border: none;
+  cursor: default;
+}
+
+#lightbox-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: #fff;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  transition: background 0.2s;
+}
+#lightbox-close:hover { background: rgba(122,92,250,0.4); }
+
+#lightbox-prev, #lightbox-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.5);
+  border: none;
+  color: #fff;
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  font-size: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  transition: background 0.2s;
+}
+#lightbox-prev { left: -64px; }
+#lightbox-next { right: -64px; }
+#lightbox-prev:hover, #lightbox-next:hover { background: rgba(122,92,250,0.4); }
+
+@media (max-width: 700px) {
+  #lightbox-prev { left: 8px; }
+  #lightbox-next { right: 8px; }
+}
+
+/* Cursor on gallery slides */
+.proj-gallery-slide { cursor: zoom-in; }
+
 /* ─── MOBILE ─── */
 @media (max-width: 900px) {
   .main-nav { display: none; }
   .lang-btn { display: none; }
   .burger-btn { display: flex; }
+  .header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .header-right {
+    margin-left: auto;
+  }
 
   .projects-grid {
     grid-template-columns: 1fr;
@@ -1674,6 +1770,8 @@ function buildProjGallery() {
   projItems.forEach((m, i) => {
     const slide = document.createElement('div');
     slide.className = 'proj-gallery-slide';
+    const mIdx = i; // capture index for lightbox
+    slide.addEventListener('click', () => openLightbox(projItems, mIdx));
     let el;
     if (m.type === 'vimeo') {
       el = document.createElement('iframe');
@@ -1823,6 +1921,70 @@ function rebuildAll() {
 }
 
 /* ══════════════════════════════════════
+   LIGHTBOX
+══════════════════════════════════════ */
+let lbItems = [];
+let lbIdx = 0;
+
+function openLightbox(items, idx) {
+  lbItems = items;
+  lbIdx = idx;
+  renderLightbox();
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.addEventListener('keydown', lbKeyHandler);
+}
+
+function closeLightbox(e) {
+  if (e && e.target !== document.getElementById('lightbox') && !e.target.closest('#lightbox-close')) return;
+  document.getElementById('lightbox').classList.remove('open');
+  document.getElementById('lightbox-media').innerHTML = '';
+  document.body.style.overflow = '';
+  document.removeEventListener('keydown', lbKeyHandler);
+}
+
+function lbNav(dir) {
+  lbIdx = (lbIdx + dir + lbItems.length) % lbItems.length;
+  renderLightbox();
+}
+
+function lbKeyHandler(e) {
+  if (e.key === 'Escape') { document.getElementById('lightbox').classList.remove('open'); document.getElementById('lightbox-media').innerHTML = ''; document.body.style.overflow = ''; document.removeEventListener('keydown', lbKeyHandler); }
+  if (e.key === 'ArrowLeft') lbNav(-1);
+  if (e.key === 'ArrowRight') lbNav(1);
+}
+
+function renderLightbox() {
+  const m = lbItems[lbIdx];
+  const el = document.getElementById('lightbox-media');
+  el.innerHTML = '';
+  // Show/hide nav buttons
+  const showNav = lbItems.length > 1;
+  document.getElementById('lightbox-prev').style.display = showNav ? '' : 'none';
+  document.getElementById('lightbox-next').style.display = showNav ? '' : 'none';
+  let media;
+  if (m.type === 'vimeo') {
+    media = document.createElement('iframe');
+    media.src = `https://player.vimeo.com/video/${m.id}?autoplay=1&title=0&byline=0&portrait=0`;
+    media.allow = 'autoplay; fullscreen; picture-in-picture';
+    media.allowFullscreen = true;
+    media.onclick = e => e.stopPropagation();
+  } else if (m.type === 'video') {
+    media = document.createElement('video');
+    media.src = m.src;
+    media.controls = true;
+    media.autoplay = true;
+    media.playsInline = true;
+    media.onclick = e => e.stopPropagation();
+  } else {
+    media = document.createElement('img');
+    media.src = m.src;
+    media.onclick = e => e.stopPropagation();
+  }
+  el.append(media);
+}
+
+/* ══════════════════════════════════════
    HEADER HIDE ON SCROLL
 ══════════════════════════════════════ */
 let lastScroll = 0;
@@ -1844,6 +2006,22 @@ applyI18n();
 buildHero();
 buildGrids();
 </script>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" onclick="closeLightbox(event)">
+  <button id="lightbox-close" onclick="closeLightbox()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M6 18l12-12"/></svg>
+  </button>
+  <div id="lightbox-inner">
+    <button id="lightbox-prev" onclick="event.stopPropagation();lbNav(-1)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div id="lightbox-media"></div>
+    <button id="lightbox-next" onclick="event.stopPropagation();lbNav(1)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
+  </div>
+</div>
 
 <!-- WebGL Effect -->
 <script src="assets/liquid.js"></script>
